@@ -43,6 +43,14 @@ COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
 RUN composer dump-autoload --optimize --no-dev
 
+# Environment for Wayfinder build — Laravel requires APP_KEY to boot.
+# This is a throwaway key; the runtime stage uses the real APP_KEY from Render env vars.
+ENV APP_KEY=base64:xWx5K4rQ8eJ3mNp1vB7hD2fG6aL0sT4uY9cR5iO3kE=
+ENV APP_ENV=local
+ENV APP_DEBUG=true
+ENV DB_CONNECTION=sqlite
+ENV DB_DATABASE=:memory:
+
 # Copy application source needed for Vite build
 COPY resources/ resources/
 COPY vite.config.ts ./
