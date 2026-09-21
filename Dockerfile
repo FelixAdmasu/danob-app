@@ -164,9 +164,9 @@ COPY --from=frontend /app/public/build/ public/build/
 COPY --from=frontend /app/vendor/ vendor/
 
 # Ensure Wayfinder-generated types exist (copied from frontend build)
-COPY --from=frontend /app/resources/js/routes/ resources/js/routes/ 2>/dev/null || true
-COPY --from=frontend /app/resources/js/actions/ resources/js/actions/ 2>/dev/null || true
-COPY --from=frontend /app/resources/js/wayfinder/ resources/js/wayfinder/ 2>/dev/null || true
+COPY --from=frontend /app/resources/js/routes/ resources/js/routes/
+COPY --from=frontend /app/resources/js/actions/ resources/js/actions/
+COPY --from=frontend /app/resources/js/wayfinder/ resources/js/wayfinder/
 
 # Set production environment defaults
 ENV APP_ENV=production
