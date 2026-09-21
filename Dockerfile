@@ -4,7 +4,7 @@
 # =============================================================================
 
 # ---- Stage 1: Build frontend with Node ----
-FROM node:20-bookworm-slim AS frontend
+FROM node:20-bookworm AS frontend
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 
 # Install node dependencies
-RUN npm ci --prefer-offline
+RUN npm ci
 
 # Install PHP CLI for Wayfinder type generation during Vite build
 RUN apt-get update && apt-get install -y --no-install-recommends \
