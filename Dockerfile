@@ -67,6 +67,9 @@ RUN echo "=== DIAGNOSTICS: Node / npm / PHP ===" && \
     test -f node_modules/@rolldown/binding-linux-x64-gnu/package.json || (echo "ERROR: binding package.json missing" && exit 1) && \
     node -e "console.log('binding version:', require('./node_modules/@rolldown/binding-linux-x64-gnu/package.json').version)"
 
+# Create required Laravel cache directories for Wayfinder (Compiler.php needs storage/framework/*)
+RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache
+
 # --- Explicit Wayfinder generation (temporary diagnostic) ---
 RUN echo "=== Wayfinder source check ===" && \
     test -f artisan || (echo "ERROR: artisan missing" && exit 1) && \
@@ -75,6 +78,13 @@ RUN echo "=== Wayfinder source check ===" && \
     test -d bootstrap || (echo "ERROR: bootstrap/ missing" && exit 1) && \
     test -d config || (echo "ERROR: config/ missing" && exit 1) && \
     test -d vendor || (echo "ERROR: vendor/ missing" && exit 1) && \
+    echo "=== Laravel cache directories ready ===" && \
+    test -d storage/framework/cache || (echo "ERROR: storage/framework/cache missing" && exit 1) && \
+    test -d storage/framework/sessions || (echo "ERROR: storage/framework/sessions missing" && exit 1) && \
+    test -d storage/framework/views || (echo "ERROR: storage/framework/views missing" && exit 1) && \
+    test -d storage/logs || (echo "ERROR: storage/logs missing" && exit 1) && \
+    test -d bootstrap/cache || (echo "ERROR: bootstrap/cache missing" && exit 1) && \
+    find storage/framework -maxdepth 2 -type d -print && find bootstrap/cache -maxdepth 1 -type d -print && \
     echo "=== Running php artisan wayfinder:generate ===" && \
     php artisan wayfinder:generate && \
     echo "=== Wayfinder generation succeeded ===" && \
