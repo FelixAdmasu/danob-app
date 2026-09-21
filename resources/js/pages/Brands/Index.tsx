@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { ChevronRight } from 'lucide-react';
+import { Package } from 'lucide-react';
 
 type Brand = {
     id: number;
@@ -17,34 +17,60 @@ export default function BrandsIndex({ brands }: Props) {
     return (
         <>
             <Head title="Brands" />
-            <div className="mx-auto max-w-7xl px-4 py-12 lg:px-8">
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl">Brands</h1>
-                    <p className="mt-3 text-base text-neutral-500">Browse the brands available through Danob.</p>
+
+            <section className="relative bg-[#ECF3E5] pt-32 md:pt-48 overflow-hidden">
+                <div className="absolute left-6 md:left-12 top-0 bottom-0 w-[1px] bg-[#070E01]/10 hidden md:block">
+                    <div className="absolute w-full h-16 bg-[#A5FFA9]/60 blur-sm animate-trail" />
                 </div>
 
-                {brands.length > 0 ? (
-                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                        {brands.map((brand) => (
-                            <Link key={brand.id} href={`/brands/${brand.slug}`} className="group rounded-xl border border-neutral-200 bg-white p-6 transition-all hover:border-neutral-300 hover:shadow-md">
-                                <h3 className="text-lg font-semibold text-neutral-900 group-hover:text-amber-700">{brand.name}</h3>
-                                {brand.description && (
-                                    <p className="mt-3 text-sm text-neutral-500 line-clamp-2">{brand.description}</p>
-                                )}
-                                <div className="mt-4 flex items-center text-xs font-medium text-neutral-400 group-hover:text-neutral-600">
-                                    {brand.products_count} {brand.products_count === 1 ? 'product' : 'products'}
-                                    <ChevronRight className="ml-1 h-3 w-3" />
-                                </div>
-                            </Link>
-                        ))}
+                <div className="max-w-[1920px] mx-auto relative z-10 px-6 md:px-12">
+                    <div className="max-w-[1000px] mb-12">
+                        <span className="inline-block text-[10px] font-bold uppercase tracking-[0.4em] text-[#4A4A4A] mb-8">
+                            — Partners
+                        </span>
+                        <h1 className="font-serif text-4xl md:text-5xl lg:text-7xl leading-[1.1] tracking-tighter text-[#070E01] max-w-4xl">
+                            Trusted Brands.
+                        </h1>
+                        <p className="text-lg text-[#4A4A4A] mt-6 max-w-xl">
+                            Browse the brands available through Danob.
+                        </p>
                     </div>
-                ) : (
-                    <div className="rounded-xl border border-neutral-200 bg-white p-12 text-center">
-                        <h3 className="text-lg font-semibold text-neutral-900">No brands found</h3>
-                        <p className="mt-2 text-sm text-neutral-500">Brand information will appear here once added.</p>
-                    </div>
-                )}
-            </div>
+                </div>
+            </section>
+
+            <section className="py-32 md:py-48 px-6 md:px-12 bg-[#ECF3E5]">
+                <div className="max-w-[1920px] mx-auto">
+                    {brands.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-16 gap-x-12">
+                            {brands.map((brand) => (
+                                <Link key={brand.id} href={`/brands/${brand.slug}`} className="group cursor-pointer">
+                                    <div className="aspect-[4/5] overflow-hidden mb-8 relative bg-[#D4E8C8]">
+                                        <div className="w-full h-full flex items-center justify-center">
+                                            <Package className="h-16 w-16 text-[#070E01]/15 group-hover:text-[#070E01]/30 transition-colors duration-700" />
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-between items-start border-b border-[#070E01]/10 pb-6">
+                                        <div>
+                                            <h3 className="font-serif text-2xl mb-2">{brand.name}</h3>
+                                            {brand.description && (
+                                                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#4A4A4A] line-clamp-2">
+                                                    {brand.description}
+                                                </p>
+                                            )}
+                                        </div>
+                                        <p className="font-bold text-sm text-[#070E01]">{brand.products_count} Products</p>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-24">
+                            <h3 className="font-serif text-2xl text-[#070E01]">No brands found</h3>
+                            <p className="text-sm text-[#4A4A4A] mt-2">Brand information will appear here once added.</p>
+                        </div>
+                    )}
+                </div>
+            </section>
         </>
     );
 }

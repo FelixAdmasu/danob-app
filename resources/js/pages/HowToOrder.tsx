@@ -1,79 +1,105 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowRight } from 'lucide-react';
 
 export default function HowToOrder() {
     return (
         <>
             <Head title="How to Order" />
-            <div className="mx-auto max-w-7xl px-4 py-12 lg:px-8">
-                <div className="mx-auto max-w-3xl text-center">
-                    <h1 className="text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl">How to Order</h1>
-                    <p className="mt-4 text-lg text-neutral-500">
-                        Ordering from Danob is simple. Follow these steps to get started.
-                    </p>
+
+            <section className="relative bg-[#ECF3E5] pt-32 md:pt-48 overflow-hidden">
+                <div className="absolute left-6 md:left-12 top-0 bottom-0 w-[1px] bg-[#070E01]/10 hidden md:block">
+                    <div className="absolute w-full h-16 bg-[#A5FFA9]/60 blur-sm animate-trail" />
                 </div>
 
-                <div className="mx-auto mt-16 max-w-4xl space-y-12">
-                    <div className="flex gap-6">
-                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-neutral-900 text-sm font-bold text-white">1</div>
-                        <div>
-                            <h2 className="text-lg font-semibold text-neutral-900">Browse Our Products</h2>
-                            <p className="mt-2 text-sm leading-relaxed text-neutral-500">
-                                Explore our range of bakery and pastry ingredients. Filter by category or brand to find what you need.
-                            </p>
-                            <Link href="/products" className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-amber-700 hover:text-amber-800">
-                                Browse Products <ArrowRight className="h-3 w-3" />
+                <div className="max-w-[1920px] mx-auto relative z-10 px-6 md:px-12">
+                    <div className="text-center mb-32 max-w-3xl mx-auto">
+                        <span className="inline-block text-[10px] font-bold uppercase tracking-[0.4em] text-[#4A4A4A] mb-8">
+                            — The Process
+                        </span>
+                        <h1 className="font-serif text-4xl md:text-5xl lg:text-7xl leading-[1.1] tracking-tighter text-[#070E01]">
+                            How to Order.
+                        </h1>
+                        <p className="text-lg text-[#4A4A4A] mt-6 max-w-xl mx-auto">
+                            Ordering from Danob is simple. Follow these steps to get started.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-4 border-t border-[#070E01]/10">
+                        {[
+                            {
+                                num: '01',
+                                title: 'Browse Products',
+                                description: 'Explore our range of bakery and pastry ingredients. Filter by category or brand to find what you need.',
+                                link: '/products',
+                                linkText: 'Browse Products',
+                            },
+                            {
+                                num: '02',
+                                title: 'Contact a Branch',
+                                description: 'Once you know what you need, reach out to your nearest Danob branch by phone or visit in person.',
+                                link: '/branches',
+                                linkText: 'Find a Branch',
+                            },
+                            {
+                                num: '03',
+                                title: 'Place Order',
+                                description: 'Confirm your order with our staff. We accept orders for pickup at any of our branches.',
+                                link: null,
+                                linkText: null,
+                            },
+                            {
+                                num: '04',
+                                title: 'Receive Order',
+                                description: 'Pick up your order from the branch at your convenience.',
+                                link: null,
+                                linkText: null,
+                            },
+                        ].map((step) => (
+                            <div
+                                key={step.num}
+                                className="p-12 border-b md:border-b-0 md:border-r border-[#070E01]/10 group hover:bg-[#070E01] transition-colors duration-500 last:border-r-0"
+                            >
+                                <span className="block text-[10px] font-bold uppercase tracking-[0.4em] text-[#4A4A4A] group-hover:text-[#A5FFA9] mb-12">
+                                    {step.num} // Step
+                                </span>
+                                <h3 className="font-serif text-3xl mb-8 group-hover:text-[#ECF3E5]">{step.title}</h3>
+                                <p className="text-sm leading-relaxed opacity-60 group-hover:text-[#ECF3E5] group-hover:opacity-100">
+                                    {step.description}
+                                </p>
+                                {step.link && (
+                                    <Link
+                                        href={step.link}
+                                        className="inline-block mt-6 text-[10px] font-bold uppercase tracking-[0.3em] text-[#5B21B6] group-hover:text-[#A5FFA9] transition-colors"
+                                    >
+                                        {step.linkText} →
+                                    </Link>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* CTA */}
+                    <div className="mt-32 bg-[#070E01] text-[#ECF3E5] p-16 text-center">
+                        <h2 className="font-serif text-3xl md:text-4xl mb-6">Need Help?</h2>
+                        <p className="text-sm text-white/60 mb-8 max-w-md mx-auto">
+                            Contact us directly or visit one of our branches for assistance.
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                            <Link
+                                href="/contact"
+                                className="bg-[#A5FFA9] text-[#070E01] px-8 py-4 text-[10px] font-bold uppercase tracking-[0.5em] hover:bg-[#5B21B6] hover:text-white transition-colors duration-500"
+                            >
+                                Contact Us
+                            </Link>
+                            <Link
+                                href="/branches"
+                                className="border border-white/20 px-8 py-4 text-[10px] font-bold uppercase tracking-[0.5em] text-white hover:bg-white/10 transition-colors duration-500"
+                            >
+                                Find a Branch
                             </Link>
                         </div>
                     </div>
-
-                    <div className="flex gap-6">
-                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-neutral-900 text-sm font-bold text-white">2</div>
-                        <div>
-                            <h2 className="text-lg font-semibold text-neutral-900">Contact Your Nearest Branch</h2>
-                            <p className="mt-2 text-sm leading-relaxed text-neutral-500">
-                                Once you know what you need, reach out to your nearest Danob branch by phone or visit in person.
-                            </p>
-                            <Link href="/branches" className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-amber-700 hover:text-amber-800">
-                                Find a Branch <ArrowRight className="h-3 w-3" />
-                            </Link>
-                        </div>
-                    </div>
-
-                    <div className="flex gap-6">
-                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-neutral-900 text-sm font-bold text-white">3</div>
-                        <div>
-                            <h2 className="text-lg font-semibold text-neutral-900">Place Your Order</h2>
-                            <p className="mt-2 text-sm leading-relaxed text-neutral-500">
-                                Confirm your order with our staff. We accept orders for pickup at any of our branches.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="flex gap-6">
-                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-neutral-900 text-sm font-bold text-white">4</div>
-                        <div>
-                            <h2 className="text-lg font-semibold text-neutral-900">Receive Your Order</h2>
-                            <p className="mt-2 text-sm leading-relaxed text-neutral-500">
-                                Pick up your order from the branch at your convenience.
-                            </p>
-                        </div>
-                    </div>
                 </div>
-
-                <div className="mx-auto mt-16 max-w-4xl rounded-2xl bg-neutral-900 px-8 py-12 text-center">
-                    <h2 className="text-2xl font-bold text-white">Need Help?</h2>
-                    <p className="mt-3 text-neutral-400">Contact us directly or visit one of our branches for assistance.</p>
-                    <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                        <Link href="/contact" className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-neutral-900 hover:bg-neutral-100">
-                            Contact Us <ArrowRight className="h-4 w-4" />
-                        </Link>
-                        <Link href="/branches" className="inline-flex items-center gap-2 rounded-lg border border-neutral-600 px-6 py-3 text-sm font-medium text-neutral-300 hover:border-neutral-400 hover:text-white">
-                            Find a Branch
-                        </Link>
-                    </div>
-                </div>
-            </div>
+            </section>
         </>
     );
 }

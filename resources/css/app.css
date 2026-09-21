@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
 @import 'tailwindcss';
 
 @import 'tw-animate-css';
@@ -9,9 +11,13 @@
 
 @theme {
     --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Inter Tight', ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
+
+    --font-serif:
+        'Playfair Display', ui-serif, Georgia, Cambria,
+        'Times New Roman', Times, serif;
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
@@ -38,8 +44,10 @@
     --color-accent: var(--accent);
     --color-accent-foreground: var(--accent-foreground);
 
-    --color-danob: oklch(0.205 0 0);
-    --color-danob-foreground: oklch(0.985 0 0);
+    --color-danob: #5B21B6;
+    --color-danob-light: #7C3AED;
+    --color-danob-dark: #4C1D95;
+    --color-danob-foreground: #FFFFFF;
 
     --color-destructive: var(--destructive);
     --color-destructive-foreground: var(--destructive-foreground);
@@ -62,42 +70,55 @@
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
+
+    --animate-marquee: marquee 40s linear infinite;
+    --animate-trail: moveTrail 8s ease-in-out infinite;
+
+    @keyframes marquee {
+        0% { transform: translateX(0%); }
+        100% { transform: translateX(-50%); }
+    }
+
+    @keyframes moveTrail {
+        0% { top: -20%; }
+        100% { top: 120%; }
+    }
 }
 
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
+    --background: #ECF3E5;
+    --foreground: #070E01;
+    --card: #FFFFFF;
+    --card-foreground: #070E01;
+    --popover: #FFFFFF;
+    --popover-foreground: #070E01;
+    --primary: #5B21B6;
+    --primary-foreground: #FFFFFF;
+    --secondary: #D4E8C8;
+    --secondary-foreground: #070E01;
+    --muted: #D4E8C8;
+    --muted-foreground: #4A4A4A;
+    --accent: #A5FFA9;
+    --accent-foreground: #070E01;
     --destructive: oklch(0.577 0.245 27.325);
     --destructive-foreground: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.87 0 0);
+    --border: rgba(7, 14, 1, 0.1);
+    --input: rgba(7, 14, 1, 0.1);
+    --ring: #5B21B6;
     --chart-1: oklch(0.646 0.222 41.116);
     --chart-2: oklch(0.6 0.118 184.704);
     --chart-3: oklch(0.398 0.07 227.392);
     --chart-4: oklch(0.828 0.189 84.429);
     --chart-5: oklch(0.769 0.188 70.08);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.87 0 0);
+    --radius: 8px;
+    --sidebar: #ECF3E5;
+    --sidebar-foreground: #070E01;
+    --sidebar-primary: #5B21B6;
+    --sidebar-primary-foreground: #FFFFFF;
+    --sidebar-accent: #D4E8C8;
+    --sidebar-accent-foreground: #070E01;
+    --sidebar-border: rgba(7, 14, 1, 0.1);
+    --sidebar-ring: #5B21B6;
 }
 
 .dark {
@@ -107,21 +128,21 @@
     --card-foreground: oklch(0.985 0 0);
     --popover: oklch(0.145 0 0);
     --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.985 0 0);
-    --primary-foreground: oklch(0.205 0 0);
+    --primary: oklch(0.55 0.18 290);
+    --primary-foreground: oklch(0.985 0 0);
     --secondary: oklch(0.269 0 0);
     --secondary-foreground: oklch(0.985 0 0);
     --muted: oklch(0.269 0 0);
     --muted-foreground: oklch(0.708 0 0);
     --accent: oklch(0.269 0 0);
     --accent-foreground: oklch(0.985 0 0);
-    --color-danob: oklch(0.985 0 0);
-    --color-danob-foreground: oklch(0.205 0 0);
+    --color-danob: #7C3AED;
+    --color-danob-foreground: oklch(0.145 0 0);
     --destructive: oklch(0.396 0.141 25.723);
     --destructive-foreground: oklch(0.637 0.237 25.331);
     --border: oklch(0.269 0 0);
     --input: oklch(0.269 0 0);
-    --ring: oklch(0.439 0 0);
+    --ring: oklch(0.55 0.18 290);
     --chart-1: oklch(0.488 0.243 264.376);
     --chart-2: oklch(0.696 0.17 162.48);
     --chart-3: oklch(0.769 0.188 70.08);
@@ -129,12 +150,12 @@
     --chart-5: oklch(0.645 0.246 16.439);
     --sidebar: oklch(0.205 0 0);
     --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.55 0.18 290);
     --sidebar-primary-foreground: oklch(0.985 0 0);
     --sidebar-accent: oklch(0.269 0 0);
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(0.269 0 0);
-    --sidebar-ring: oklch(0.439 0 0);
+    --sidebar-ring: oklch(0.55 0.18 290);
 }
 
 @layer base {
@@ -145,4 +166,57 @@
     body {
         @apply bg-background text-foreground;
     }
+
+    html {
+        scroll-behavior: smooth;
+    }
+    * {
+    border-color: var(--color-border);
+  }
+  body {
+    background-color: var(--color-background);
+    color: oklch(0.06 0 0);
+  }
+}
+
+/* Scroll reveal */
+.animate-on-scroll-hidden {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 1s ease-out, transform 1s ease-out;
+}
+
+.animate-on-scroll-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+}
+
+.animation-float {
+    animation: float 4s ease-in-out infinite;
+}
+
+/* Trail animation */
+.animate-trail {
+    animation: moveTrail 8s ease-in-out infinite;
+}
+
+/* Marquee */
+.animate-marquee {
+    display: flex;
+    min-width: 200%;
+}
+
+/* No scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }

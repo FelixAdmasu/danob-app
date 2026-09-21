@@ -21,57 +21,82 @@ export default function BranchesIndex({ branches }: Props) {
     return (
         <>
             <Head title="Branches" />
-            <div className="mx-auto max-w-7xl px-4 py-12 lg:px-8">
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl">Our Branches</h1>
-                    <p className="mt-3 text-base text-neutral-500">Find a Danob branch near you.</p>
+
+            <section className="relative bg-[#ECF3E5] pt-32 md:pt-48 overflow-hidden">
+                <div className="absolute left-6 md:left-12 top-0 bottom-0 w-[1px] bg-[#070E01]/10 hidden md:block">
+                    <div className="absolute w-full h-16 bg-[#A5FFA9]/60 blur-sm animate-trail" />
                 </div>
 
-                {branches.length > 0 ? (
-                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                        {branches.map((branch) => (
-                            <div key={branch.id} className="rounded-xl border border-neutral-200 bg-white p-6">
-                                <h3 className="text-lg font-semibold text-neutral-900">{branch.name}</h3>
-                                <div className="mt-4 space-y-3">
-                                    <div className="flex items-start gap-3 text-sm text-neutral-600">
-                                        <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-neutral-400" />
-                                        <span>
-                                            {branch.address}
-                                            {branch.city ? `, ${branch.city}` : ''}
-                                            {branch.sub_city ? `, ${branch.sub_city}` : ''}
-                                            {branch.kebele ? `, Kebele ${branch.kebele}` : ''}
-                                        </span>
+                <div className="max-w-[1920px] mx-auto relative z-10 px-6 md:px-12">
+                    <div className="max-w-[1000px] mb-12">
+                        <span className="inline-block text-[10px] font-bold uppercase tracking-[0.4em] text-[#4A4A4A] mb-8">
+                            — Locations
+                        </span>
+                        <h1 className="font-serif text-4xl md:text-5xl lg:text-7xl leading-[1.1] tracking-tighter text-[#070E01] max-w-4xl">
+                            Our Branches.
+                        </h1>
+                        <p className="text-lg text-[#4A4A4A] mt-6 max-w-xl">
+                            Find a Danob branch near you.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section className="py-32 md:py-48 px-6 md:px-12 bg-[#ECF3E5]">
+                <div className="max-w-[1920px] mx-auto">
+                    {branches.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-16 gap-x-12">
+                            {branches.map((branch) => (
+                                <div key={branch.id} className="group">
+                                    <div className="aspect-[4/5] overflow-hidden mb-8 relative bg-[#D4E8C8]">
+                                        <div className="w-full h-full flex items-center justify-center">
+                                            <MapPin className="h-16 w-16 text-[#070E01]/15" />
+                                        </div>
                                     </div>
-                                    {branch.phone && (
-                                        <div className="flex items-center gap-3 text-sm text-neutral-600">
-                                            <Phone className="h-4 w-4 flex-shrink-0 text-neutral-400" />
-                                            <span>{branch.phone}</span>
+                                    <div className="border-b border-[#070E01]/10 pb-6">
+                                        <h3 className="font-serif text-2xl mb-4">{branch.name}</h3>
+                                        <div className="space-y-2">
+                                            <div className="flex items-start gap-3 text-[11px] text-[#4A4A4A]">
+                                                <MapPin className="mt-0.5 h-3 w-3 flex-shrink-0" />
+                                                <span>
+                                                    {branch.address}
+                                                    {branch.city ? `, ${branch.city}` : ''}
+                                                    {branch.sub_city ? `, ${branch.sub_city}` : ''}
+                                                    {branch.kebele ? `, Kebele ${branch.kebele}` : ''}
+                                                </span>
+                                            </div>
+                                            {branch.phone && (
+                                                <div className="flex items-center gap-3 text-[11px] text-[#4A4A4A]">
+                                                    <Phone className="h-3 w-3 flex-shrink-0" />
+                                                    <span>{branch.phone}</span>
+                                                </div>
+                                            )}
+                                            {branch.opening_hours && (
+                                                <div className="flex items-center gap-3 text-[11px] text-[#4A4A4A]">
+                                                    <Clock className="h-3 w-3 flex-shrink-0" />
+                                                    <span>{branch.opening_hours}</span>
+                                                </div>
+                                            )}
                                         </div>
-                                    )}
-                                    {branch.opening_hours && (
-                                        <div className="flex items-center gap-3 text-sm text-neutral-600">
-                                            <Clock className="h-4 w-4 flex-shrink-0 text-neutral-400" />
-                                            <span>{branch.opening_hours}</span>
-                                        </div>
-                                    )}
+                                        {branch.services && (
+                                            <div className="mt-4 pt-4 border-t border-[#070E01]/10">
+                                                <p className="text-[10px] font-bold uppercase tracking-widest text-[#4A4A4A] mb-1">Services</p>
+                                                <p className="text-[11px] text-[#4A4A4A]">{branch.services}</p>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                                {branch.services && (
-                                    <div className="mt-4 border-t border-neutral-100 pt-4">
-                                        <p className="text-xs font-medium text-neutral-500">Services</p>
-                                        <p className="mt-1 text-sm text-neutral-600">{branch.services}</p>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="rounded-xl border border-neutral-200 bg-white p-12 text-center">
-                        <MapPin className="mx-auto h-12 w-12 text-neutral-300" />
-                        <h3 className="mt-4 text-lg font-semibold text-neutral-900">No branches found</h3>
-                        <p className="mt-2 text-sm text-neutral-500">Branch locations will appear here once added.</p>
-                    </div>
-                )}
-            </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-24">
+                            <MapPin className="mx-auto h-16 w-16 text-[#070E01]/15 mb-6" />
+                            <h3 className="font-serif text-2xl text-[#070E01]">No branches found</h3>
+                            <p className="text-sm text-[#4A4A4A] mt-2">Branch locations will appear here once added.</p>
+                        </div>
+                    )}
+                </div>
+            </section>
         </>
     );
 }
