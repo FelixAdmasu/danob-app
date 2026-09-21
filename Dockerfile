@@ -4,7 +4,7 @@
 # =============================================================================
 
 # ---- Stage 1: Build frontend with Node ----
-FROM node:20-bookworm AS frontend
+FROM node:20.20-bookworm AS frontend
 
 WORKDIR /app
 
@@ -58,6 +58,30 @@ COPY resources/ resources/
 COPY vite.config.ts ./
 COPY tsconfig.json ./
 COPY public/ public/
+
+# --- DIAGNOSTICS before Vite build (temporary) ---
+RUN echo "=== DIAGNOSTICS: Node / npm / PHP ===" && \
+    node -v && npm -v && php -v && php -m && php artisan --version && \
+    echo "=== Rolldown binding check ===" && \
+    test -d node_modules/@rolldown/binding-linux-x64-gnu || (echo "ERROR: @rolldown/binding-linux-x64-gnu dir missing" && exit 1) && \
+    test -f node_modules/@rolldown/binding-linux-x64-gnu/package.json || (echo "ERROR: binding package.json missing" && exit 1) && \
+    node -e "console.log('binding version:', require('./node_modules/@rolldown/binding-linux-x64-gnu/package.json').version)"
+
+# --- Explicit Wayfinder generation (temporary diagnostic) ---
+RUN echo "=== Wayfinder source check ===" && \
+    test -f artisan || (echo "ERROR: artisan missing" && exit 1) && \
+    test -d app || (echo "ERROR: app/ missing" && exit 1) && \
+    test -d routes || (echo "ERROR: routes/ missing" && exit 1) && \
+    test -d bootstrap || (echo "ERROR: bootstrap/ missing" && exit 1) && \
+    test -d config || (echo "ERROR: config/ missing" && exit 1) && \
+    test -d vendor || (echo "ERROR: vendor/ missing" && exit 1) && \
+    echo "=== Running php artisan wayfinder:generate ===" && \
+    php artisan wayfinder:generate && \
+    echo "=== Wayfinder generation succeeded ===" && \
+    test -d resources/js/routes || (echo "ERROR: resources/js/routes missing after wayfinder" && exit 1) && \
+    test -d resources/js/actions || (echo "ERROR: resources/js/actions missing after wayfinder" && exit 1) && \
+    test -d resources/js/wayfinder || (echo "ERROR: resources/js/wayfinder missing after wayfinder" && exit 1) && \
+    ls -la resources/js/routes && ls -la resources/js/actions && ls -la resources/js/wayfinder
 
 # Generate Wayfinder types and build production assets
 # Wayfinder runs "php artisan wayfinder:generate" during Vite build
