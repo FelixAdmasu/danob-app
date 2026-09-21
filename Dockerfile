@@ -19,7 +19,6 @@ RUN npm ci
 COPY --from=dunglas/frankenphp:php8.4-bookworm /usr/local/bin/php /usr/local/bin/php
 COPY --from=dunglas/frankenphp:php8.4-bookworm /usr/local/lib/php /usr/local/lib/php
 COPY --from=dunglas/frankenphp:php8.4-bookworm /usr/local/etc/php /usr/local/etc/php
-COPY --from=dunglas/frankenphp:php8.4-bookworm /usr/local/php/lib/php /usr/local/php/lib/php
 ENV PATH="/usr/local/bin:${PATH}"
 
 # Install Composer (needed to bootstrap Laravel for Wayfinder)
