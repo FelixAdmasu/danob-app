@@ -24,7 +24,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         > /etc/apt/sources.list.d/sury-php.list \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
-        php8.4-cli php8.4-xml php8.4-mbstring php8.4-curl php8.4-zip php8.4-tokenizer \
+        php8.4-cli php8.4-xml php8.4-mbstring php8.4-curl php8.4-zip php8.4-tokenizer php8.4-sqlite3 \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Composer (needed to bootstrap Laravel for Wayfinder)
