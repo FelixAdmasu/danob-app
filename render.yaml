@@ -65,4 +65,3 @@ services:
         value: log
 
     healthCheckPath: /up
-    preDeployCommand: php artisan migrate --force

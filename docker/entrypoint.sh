@@ -13,6 +13,9 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
+# Run migrations (temporary — needed for free Render tier without preDeployCommand)
+php artisan migrate --force
+
 # Start FrankenPHP on the port Render provides
 echo "Starting server on port ${PORT:-8000}..."
 exec frankenphp php-server --listen 0.0.0.0:${PORT:-8000} --root public/

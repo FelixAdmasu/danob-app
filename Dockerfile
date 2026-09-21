@@ -68,7 +68,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Install FrankenPHP
-COPY --from=ghcr.io/dunglas/frankenphp:latest /usr/local/bin/frankenphp /usr/local/bin/frankenphp
+COPY --from=dunglas/frankenphp:php8.4-bookworm /usr/local/bin/frankenphp /usr/local/bin/frankenphp
 RUN mkdir -p /etc/frankenphp/caddy /etc/frankenphp/php.ini
 
 # Set recommended PHP production settings
