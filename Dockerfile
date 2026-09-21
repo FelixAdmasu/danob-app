@@ -21,8 +21,12 @@ COPY --from=dunglas/frankenphp:php8.4-bookworm /usr/local/lib/php /usr/local/lib
 COPY --from=dunglas/frankenphp:php8.4-bookworm /usr/local/etc/php /usr/local/etc/php
 ENV PATH="/usr/local/bin:${PATH}"
 
-# unzip required for composer --prefer-dist
-RUN apt-get update && apt-get install -y --no-install-recommends unzip \
+# Runtime libs for FrankenPHP PHP binary + unzip for composer
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        unzip \
+        libonig5 libpq5 libzip4 libxml2 libcurl4 libsqlite3-0 \
+        libsodium23 libargon2-1 libicu72 libxslt1.1 libfreetype6 \
+        libjpeg62-turbo libpng16-16 libssl3 zlib1g \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Composer (needed to bootstrap Laravel for Wayfinder)
