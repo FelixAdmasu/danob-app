@@ -1,0 +1,68 @@
+# =============================================================================
+# Danob Trading PLC — Render Blueprint
+# This file defines the Render infrastructure for the application.
+# =============================================================================
+
+services:
+  - type: web
+    name: danob-app
+    runtime: docker
+    dockerfilePath: Dockerfile
+    dockerContext: .
+    envVars:
+      # Application
+      - key: APP_NAME
+        value: Danob
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_URL
+        sync: false  # Set to your Render URL after first deploy, e.g. https://danob-app.onrender.com
+      - key: APP_KEY
+        generateValue: true  # Render auto-generates on first deploy
+
+      # Database — connect to Supabase PostgreSQL
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        sync: false  # Set from Supabase dashboard
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_DATABASE
+        sync: false  # Set from Supabase dashboard
+      - key: DB_USERNAME
+        sync: false  # Set from Supabase dashboard
+      - key: DB_PASSWORD
+        sync: false  # Set from Supabase dashboard
+      - key: DB_SSLMODE
+        value: require
+
+      # Session / Cache / Queue — all use database
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+
+      # Logging
+      - key: LOG_CHANNEL
+        value: stack
+      - key: LOG_LEVEL
+        value: error
+
+      # Broadcasting
+      - key: BROADCAST_CONNECTION
+        value: log
+
+      # Filesystem
+      - key: FILESYSTEM_DISK
+        value: local
+
+      # Mail — default to log until SMTP is configured
+      - key: MAIL_MAILER
+        value: log
+
+    healthCheckPath: /up
+    preDeployCommand: php artisan migrate --force

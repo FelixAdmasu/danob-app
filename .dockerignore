@@ -1,0 +1,83 @@
+# =============================================================================
+# Danob Trading PLC — Docker Ignore
+# Excludes files not needed in the Docker build context
+# =============================================================================
+
+# Environment files (secrets must come from Render env vars)
+.env
+.env.*
+!.env.example
+
+# Version control
+.git
+.gitignore
+
+# IDE / editor files
+.idea
+.vscode
+.vs
+.fleet
+.nova
+.zed
+.agents
+.amp
+.claude
+.cursor
+.factory
+.grok
+.junie
+.kiro
+.pi
+.mcp.json
+
+# Dependencies (installed fresh in container)
+node_modules
+vendor
+
+# Build artifacts (rebuilt in container)
+public/build
+
+# Logs
+storage/logs/*
+!storage/logs/.gitignore
+
+# Tests
+tests
+
+# Documentation
+*.md
+AGENTS.md
+CLAUDE.md
+
+# Development files
+.phpunit.cache
+.phpunit.result.cache
+.phpactor.json
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+auth.json
+boost.json
+opencode.json
+opencode.jsonc
+
+# Docker files (don't include in context)
+Dockerfile
+docker-compose.yml
+docker-compose.yaml
+
+# Render config
+render.yaml
+
+# SSR (not used in production)
+bootstrap/ssr
+
+# Wayfinder generated files (rebuilt in container)
+resources/js/actions
+resources/js/routes
+resources/js/wayfinder
+
+# Fonts manifest
+public/fonts-manifest.dev.json
+public/hot

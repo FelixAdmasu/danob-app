@@ -26,7 +26,7 @@ export default defineConfig({
         tailwindcss(),
         wayfinder({
             formVariants: true,
-            command: 'C:\\PHP85\\php.exe artisan wayfinder:generate',
+            command: process.env.WAYFINDER_PHP ?? (process.platform === 'win32' ? 'C:\\PHP85\\php.exe artisan wayfinder:generate' : 'php artisan wayfinder:generate'),
         }),
     ]),
     server: {
