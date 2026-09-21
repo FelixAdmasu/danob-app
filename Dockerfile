@@ -15,17 +15,12 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 # Install PHP 8.4+ CLI for Wayfinder type generation during Vite build
-# Debian Bookworm ships PHP 8.2; Sury repo provides PHP 8.4+ (required by Laravel 13 / Symfony)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        apt-transport-https ca-certificates curl gnupg unzip \
-    && curl -sSL https://packages.sury.org/php/apt.gpg \
-        | gpg --dearmor -o /usr/share/keyrings/deb.sury.org-php.gpg \
-    && echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ bookworm main" \
-        > /etc/apt/sources.list.d/sury-php.list \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
-        php8.4-cli php8.4-xml php8.4-mbstring php8.4-curl php8.4-zip php8.4-tokenizer php8.4-sqlite3 php8.4-pdo-sqlite \
-    && rm -rf /var/lib/apt/lists/*
+# Use pre-built PHP 8.4 from FrankenPHP image (avoids 106s Sury compile + timeout)
+COPY --from=dunglas/frankenphp:php8.4-bookworm /usr/local/bin/php /usr/local/bin/php
+COPY --from=dunglas/frankenphp:php8.4-bookworm /usr/local/lib/php /usr/local/lib/php
+COPY --from=dunglas/frankenphp:php8.4-bookworm /usr/local/etc/php /usr/local/etc/php
+COPY --from=dunglas/frankenphp:php8.4-bookworm /usr/local/php/lib/php /usr/local/php/lib/php
+ENV PATH="/usr/local/bin:${PATH}"
 
 # Install Composer (needed to bootstrap Laravel for Wayfinder)
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
