@@ -154,10 +154,10 @@ WORKDIR /app
 # Install composer dependencies (no dev)
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
-RUN composer dump-autoload --optimize --no-dev
 
-# Copy application code
+# Copy application code (artisan required for post-autoload-dump package:discover)
 COPY . .
+RUN composer dump-autoload --optimize --no-dev
 
 # Copy built frontend assets from Stage 1
 COPY --from=frontend /app/public/build/ public/build/
