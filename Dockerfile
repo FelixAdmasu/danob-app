@@ -16,8 +16,24 @@ RUN npm ci
 
 # Install PHP CLI for Wayfinder type generation during Vite build
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        php-cli php-xml php-mbstring php-curl php-zip php-tokenizer \
+        php-cli php-xml php-mbstring php-curl php-zip php-tokenizer unzip \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Composer (needed to bootstrap Laravel for Wayfinder)
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Copy Laravel files required by "php artisan wayfinder:generate"
+COPY artisan ./
+COPY app/ app/
+COPY routes/ routes/
+COPY bootstrap/ bootstrap/
+COPY config/ config/
+COPY composer.json composer.lock ./
+
+# Install Composer dependencies (no-dev, no-scripts, no-autoloader)
+# Wayfinder needs a bootable Laravel app but does NOT need dev packages or scripts
+RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
+RUN composer dump-autoload --optimize --no-dev
 
 # Copy application source needed for Vite build
 COPY resources/ resources/
