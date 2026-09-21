@@ -1,6 +1,27 @@
 import { Head } from '@inertiajs/react';
 
-export default function About() {
+type Category = {
+    id: number;
+    name: string;
+    slug: string;
+    products_count: number;
+};
+
+type Brand = {
+    id: number;
+    name: string;
+    slug: string;
+    products_count: number;
+};
+
+type Props = {
+    categories: Category[];
+    brands: Brand[];
+};
+
+export default function About({ categories, brands }: Props) {
+    const totalProducts = categories.reduce((sum, c) => sum + c.products_count, 0);
+
     return (
         <>
             <Head title="About" />
@@ -86,19 +107,13 @@ export default function About() {
                                         <span className="text-[10px] font-bold uppercase tracking-widest text-[#A5FFA9] mb-2">
                                             Products
                                         </span>
-                                        <span className="text-2xl font-serif tracking-widest italic">150+</span>
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#A5FFA9] mb-2">
-                                            Branches
-                                        </span>
-                                        <span className="text-2xl font-serif tracking-widest italic">3</span>
+                                        <span className="text-2xl font-serif tracking-widest italic">{totalProducts}+</span>
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="text-[10px] font-bold uppercase tracking-widest text-[#A5FFA9] mb-2">
                                             Brands
                                         </span>
-                                        <span className="text-2xl font-serif tracking-widest italic">6</span>
+                                        <span className="text-2xl font-serif tracking-widest italic">{brands.length}</span>
                                     </div>
                                 </div>
                             </div>

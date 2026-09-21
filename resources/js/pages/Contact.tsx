@@ -91,10 +91,13 @@ export default function Contact() {
                                 </div>
                                 <button
                                     type="button"
-                                    className="w-full py-6 bg-[#070E01] text-[#ECF3E5] text-[10px] font-bold uppercase tracking-[0.5em] hover:bg-[#5B21B6] transition-colors duration-500"
+                                    className="w-full py-6 bg-[#070E01] text-[#ECF3E5] text-[10px] font-bold uppercase tracking-[0.5em] hover:bg-[#2D5016] transition-colors duration-500"
                                 >
                                     Submit Inquiry
                                 </button>
+                                <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.3em] text-[#4A4A4A] text-center">
+                                    Inquiry form coming soon — contact us by phone or email for now.
+                                </p>
                             </div>
                         </div>
                     </div>

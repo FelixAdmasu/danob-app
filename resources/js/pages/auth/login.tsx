@@ -27,19 +27,26 @@ export default function Login({ status, canResetPassword }: Props) {
             <Head title="Log in" />
 
             {/* @chisel-passkeys */}
-            <PasskeyVerify />
+            <div className="login-passkey-wrap">
+                <PasskeyVerify />
+            </div>
             {/* @end-chisel-passkeys */}
 
             <Form
                 {...store.form()}
                 resetOnSuccess={['password']}
-                className="flex flex-col gap-6"
+                className="flex flex-col gap-0"
             >
                 {({ processing, errors }) => (
                     <>
-                        <div className="grid gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
+                        <div className="space-y-5">
+                            <div className="space-y-2">
+                                <Label
+                                    htmlFor="email"
+                                    className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#070E01]/50"
+                                >
+                                    Email
+                                </Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -48,21 +55,27 @@ export default function Login({ status, canResetPassword }: Props) {
                                     autoFocus
                                     tabIndex={1}
                                     autoComplete="email"
-                                    placeholder="email@example.com"
+                                    placeholder="name@company.com"
+                                    className="h-13 bg-white border border-[#070E01]/15 rounded-2xl text-[14px] text-[#070E01] placeholder:text-[#070E01]/20 focus:outline-none focus:border-[#2D5016]/40 focus:bg-white focus:shadow-[0_0_0_4px_rgba(45,80,22,0.06)] transition-all duration-200"
                                 />
                                 <InputError message={errors.email} />
                             </div>
 
-                            <div className="grid gap-2">
-                                <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <Label
+                                        htmlFor="password"
+                                        className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#070E01]/50"
+                                    >
+                                        Password
+                                    </Label>
                                     {canResetPassword && (
                                         <TextLink
                                             href={request()}
-                                            className="ml-auto text-sm"
+                                            className="text-[11px] text-[#070E01]/30 hover:text-[#2D5016] transition-colors"
                                             tabIndex={5}
                                         >
-                                            Forgot your password?
+                                            Forgot?
                                         </TextLink>
                                     )}
                                 </div>
@@ -72,54 +85,67 @@ export default function Login({ status, canResetPassword }: Props) {
                                     required
                                     tabIndex={2}
                                     autoComplete="current-password"
-                                    placeholder="Password"
+                                    placeholder="Enter password"
+                                    className="h-13 bg-white border border-[#070E01]/15 rounded-2xl text-[14px] text-[#070E01] placeholder:text-[#070E01]/20 focus:outline-none focus:border-[#2D5016]/40 focus:bg-white focus:shadow-[0_0_0_4px_rgba(45,80,22,0.06)] transition-all duration-200"
                                 />
                                 <InputError message={errors.password} />
                             </div>
 
-                            <div className="flex items-center space-x-3">
+                            <div className="flex items-center gap-3 pt-1">
                                 <Checkbox
                                     id="remember"
                                     name="remember"
                                     tabIndex={3}
+                                    className="border-[#070E01]/15 data-[state=checked]:bg-[#2D5016] data-[state=checked]:border-[#2D5016]"
                                 />
-                                <Label htmlFor="remember">Remember me</Label>
+                                <Label
+                                    htmlFor="remember"
+                                    className="text-[13px] text-[#070E01]/40 cursor-pointer"
+                                >
+                                    Remember me
+                                </Label>
                             </div>
-
-                            <Button
-                                type="submit"
-                                className="mt-4 w-full"
-                                tabIndex={4}
-                                disabled={processing}
-                                data-test="login-button"
-                            >
-                                {processing && <Spinner />}
-                                Log in
-                            </Button>
                         </div>
 
+                        <Button
+                            type="submit"
+                            className="mt-8 h-13 w-full bg-[#070E01] hover:bg-[#2D5016] text-[#ECF3E5] text-[13px] font-semibold tracking-[0.15em] uppercase rounded-2xl transition-all duration-300 cursor-pointer shadow-[0_2px_12px_rgba(7,14,1,0.12)] hover:shadow-[0_4px_20px_rgba(45,80,22,0.2)]"
+                            tabIndex={4}
+                            disabled={processing}
+                            data-test="login-button"
+                        >
+                            {processing && <Spinner />}
+                            Log in
+                        </Button>
+
                         {/* @chisel-registration */}
-                        <div className="text-muted-foreground text-center text-sm">
-                            Don't have an account?{' '}
-                            <TextLink href={register()} tabIndex={5}>
+                        <div className="mt-6 text-center">
+                            <span className="text-[13px] text-[#070E01]/30">
+                                Don't have an account?{' '}
+                            </span>
+                            <TextLink
+                                href={register()}
+                                tabIndex={5}
+                                className="text-[13px] text-[#2D5016] hover:text-[#1A3A0A] font-semibold transition-colors"
+                            >
                                 Sign up
                             </TextLink>
                         </div>
                         {/* @end-chisel-registration */}
+
+                        {status && (
+                            <div className="mt-4 text-center text-[13px] font-medium text-[#2D5016]">
+                                {status}
+                            </div>
+                        )}
                     </>
                 )}
             </Form>
-
-            {status && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
-                    {status}
-                </div>
-            )}
         </>
     );
 }
 
 Login.layout = {
-    title: 'Log in to your account',
-    description: 'Enter your email and password below to log in',
+    title: 'Welcome back',
+    description: 'Sign in to your Danob account',
 };

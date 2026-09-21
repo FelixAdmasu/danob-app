@@ -73,7 +73,7 @@ export default function ProductShow({ product }: Props) {
                                         <div
                                             key={img.id}
                                             className={`aspect-square overflow-hidden bg-[#D4E8C8] ${
-                                                img.id === primaryImage?.id ? 'ring-2 ring-[#5B21B6]' : ''
+                                                img.id === primaryImage?.id ? 'ring-2 ring-[#2D5016]' : ''
                                             }`}
                                         >
                                             <img src={img.url} alt={product.name} className="h-full w-full object-cover" />
@@ -86,7 +86,7 @@ export default function ProductShow({ product }: Props) {
                         <div className="space-y-10">
                             <div>
                                 {product.brand && (
-                                    <Link href={`/brands/${product.brand.slug}`} className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#5B21B6] hover:text-[#4C1D95] transition-colors">
+                                    <Link href={`/brands/${product.brand.slug}`} className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#2D5016] hover:text-[#1A3A0A] transition-colors">
                                         {product.brand.name}
                                     </Link>
                                 )}
@@ -120,7 +120,15 @@ export default function ProductShow({ product }: Props) {
                                                 <div>
                                                     <h3 className="font-serif text-lg text-[#070E01]">{variant.name}</h3>
                                                     <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#4A4A4A]">{variant.unit}</p>
+                                                    {variant.sku && (
+                                                        <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-[#070E01]/40">SKU: {variant.sku}</p>
+                                                    )}
                                                 </div>
+                                                {variant.public_price && (
+                                                    <span className="text-sm font-bold text-[#070E01]">
+                                                        {variant.public_price}
+                                                    </span>
+                                                )}
                                             </div>
                                         ))}
                                     </div>

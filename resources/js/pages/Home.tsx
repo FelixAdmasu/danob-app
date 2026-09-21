@@ -2,51 +2,6 @@ import { Head, Link } from '@inertiajs/react';
 import { useEffect, useRef } from 'react';
 import { MapPin, Phone, Clock } from 'lucide-react';
 
-// Image URL helpers — picsum.photos (guaranteed to load)
-const categoryImages: Record<string, string> = {
-    'cake-mixes': 'https://picsum.photos/seed/cake-mixes/800/1000',
-    'chocolate-cocoa': 'https://picsum.photos/seed/chocolate-cocoa/800/1000',
-    'baking-powders-improvers': 'https://picsum.photos/seed/baking-powders/800/1000',
-    'yeast-fermentation': 'https://picsum.photos/seed/yeast-fermentation/800/1000',
-    'custards-cream-products': 'https://picsum.photos/seed/custards-cream/800/1000',
-    'gelatin-gelling-products': 'https://picsum.photos/seed/gelatin-gel/800/1000',
-    'ice-cream-mixes': 'https://picsum.photos/seed/ice-cream-mix/800/1000',
-    'flavours': 'https://picsum.photos/seed/flavours/800/1000',
-    'food-colors': 'https://picsum.photos/seed/food-colors/800/1000',
-    'fondant': 'https://picsum.photos/seed/fondant/800/1000',
-    'food-sprays': 'https://picsum.photos/seed/food-sprays/800/1000',
-    'baking-cups': 'https://picsum.photos/seed/baking-cups/800/1000',
-    'cake-decoration': 'https://picsum.photos/seed/cake-deco/800/1000',
-    'cake-tools': 'https://picsum.photos/seed/cake-tools/800/1000',
-    'cake-molds': 'https://picsum.photos/seed/cake-molds/800/1000',
-};
-
-const productImages: Record<string, string> = {
-    'gelatine-powder': 'https://picsum.photos/seed/gelatine/800/1000',
-    'pure-baking-soda': 'https://picsum.photos/seed/baking-soda/800/1000',
-    'bex-baking-powder': 'https://picsum.photos/seed/bex-powder/800/1000',
-    'neo-vanilla-powder': 'https://picsum.photos/seed/vanilla-powder/800/1000',
-    'vanilla-ice-cream-mix': 'https://picsum.photos/seed/vanilla-ice-cream/800/1000',
-    'ramco-white-cake-mix': 'https://picsum.photos/seed/white-cake/800/1000',
-    'ramco-chocolate-mix': 'https://picsum.photos/seed/chocolate-cake/800/1000',
-    'dough-hammer-soft': 'https://picsum.photos/seed/dough-hammer/800/1000',
-    'potassium-sorbate': 'https://picsum.photos/seed/potassium/800/1000',
-    'cream-shantille': 'https://picsum.photos/seed/cream-shantille/800/1000',
-    'custard': 'https://picsum.photos/seed/custard/800/1000',
-    'super-gato': 'https://picsum.photos/seed/super-gato/800/1000',
-    'corn-starch': 'https://picsum.photos/seed/corn-starch/800/1000',
-    'instant-dry-yeast': 'https://picsum.photos/seed/dry-yeast/800/1000',
-    'bakemate-vanilla-ice-cream': 'https://picsum.photos/seed/bakemate-vanilla/800/1000',
-};
-
-const heroImage = 'https://picsum.photos/seed/bakery-hero/1200/800';
-const aboutImage = 'https://picsum.photos/seed/bakery-quality/800/600';
-const branchImages = [
-    'https://picsum.photos/seed/branch-kolfe/800/1000',
-    'https://picsum.photos/seed/branch-nifas/800/1000',
-    'https://picsum.photos/seed/branch-yeka/800/1000',
-];
-
 type Category = {
     id: number;
     name: string;
@@ -131,6 +86,8 @@ export default function Home({ featuredProducts, categories, brands, branches }:
     const branchesRef = useScrollReveal();
     const contactRef = useScrollReveal();
 
+    const totalProducts = categories.reduce((sum, c) => sum + c.products_count, 0);
+
     return (
         <>
             <Head title="Home" />
@@ -172,34 +129,32 @@ export default function Home({ featuredProducts, categories, brands, branches }:
                         <div className="flex animate-marquee">
                             <div className="flex items-center gap-20 px-10">
                                 <span className="text-sm font-bold uppercase tracking-[0.5em]">Cake Mixes</span>
-                                <span className="w-1.5 h-1.5 bg-[#ECF3E5] rotate-45" />
+                                <span className="w-1.5 h-1.5 bg-[#070E01] rotate-45" />
                                 <span className="text-sm font-bold uppercase tracking-[0.5em]">Chocolate</span>
-                                <span className="w-1.5 h-1.5 bg-[#ECF3E5] rotate-45" />
+                                <span className="w-1.5 h-1.5 bg-[#070E01] rotate-45" />
                                 <span className="text-sm font-bold uppercase tracking-[0.5em]">Cream Powders</span>
-                                <span className="w-1.5 h-1.5 bg-[#ECF3E5] rotate-45" />
+                                <span className="w-1.5 h-1.5 bg-[#070E01] rotate-45" />
                                 <span className="text-sm font-bold uppercase tracking-[0.5em]">Baking Tools</span>
-                                <span className="w-1.5 h-1.5 bg-[#ECF3E5] rotate-45" />
+                                <span className="w-1.5 h-1.5 bg-[#070E01] rotate-45" />
                             </div>
                             <div className="flex items-center gap-20 px-10">
                                 <span className="text-sm font-bold uppercase tracking-[0.5em]">Cake Mixes</span>
-                                <span className="w-1.5 h-1.5 bg-[#ECF3E5] rotate-45" />
+                                <span className="w-1.5 h-1.5 bg-[#070E01] rotate-45" />
                                 <span className="text-sm font-bold uppercase tracking-[0.5em]">Chocolate</span>
-                                <span className="w-1.5 h-1.5 bg-[#ECF3E5] rotate-45" />
+                                <span className="w-1.5 h-1.5 bg-[#070E01] rotate-45" />
                                 <span className="text-sm font-bold uppercase tracking-[0.5em]">Cream Powders</span>
-                                <span className="w-1.5 h-1.5 bg-[#ECF3E5] rotate-45" />
+                                <span className="w-1.5 h-1.5 bg-[#070E01] rotate-45" />
                                 <span className="text-sm font-bold uppercase tracking-[0.5em]">Baking Tools</span>
-                                <span className="w-1.5 h-1.5 bg-[#ECF3E5] rotate-45" />
+                                <span className="w-1.5 h-1.5 bg-[#070E01] rotate-45" />
                             </div>
                         </div>
                     </div>
 
-                    {/* Hero image */}
+                    {/* Hero image — neutral placeholder */}
                     <div className="relative w-full" data-animation-on-scroll>
-                        <img
-                            src={heroImage}
-                            alt="Danob Premium Bakery Ingredients"
-                            className="w-full h-[400px] md:h-[600px] object-cover grayscale hover:grayscale-0 transition-all duration-1000"
-                        />
+                        <div className="w-full h-[600px] md:h-[850px] bg-gradient-to-br from-[#D4E8C8] via-[#ECF3E5] to-[#A5FFA9]/20 flex items-center justify-center">
+                            <span className="font-serif text-[#070E01]/10 text-7xl md:text-9xl italic tracking-tighter select-none">Danob</span>
+                        </div>
                         <div className="absolute bottom-0 left-0 p-8 md:p-12 bg-[#ECF3E5] max-w-lg hidden md:block">
                             <p className="text-xs font-medium uppercase tracking-widest text-[#4A4A4A] mb-4">
                                 Trail Entry 01 // The Foundation
@@ -229,7 +184,7 @@ export default function Home({ featuredProducts, categories, brands, branches }:
                                 Total Products
                             </p>
                             <p className="font-serif text-3xl md:text-5xl text-[#070E01]">
-                                {categories.reduce((sum, c) => sum + c.products_count, 0)}+
+                                {totalProducts}
                             </p>
                         </div>
                     </div>
@@ -242,12 +197,8 @@ export default function Home({ featuredProducts, categories, brands, branches }:
                                 className="group cursor-pointer"
                                 data-animation-on-scroll
                             >
-                                <div className="aspect-[4/5] overflow-hidden mb-8 relative">
-                                    <img
-                                        src={categoryImages[category.slug] || 'https://picsum.photos/seed/fallback-bakery/800/1000'}
-                                        alt={category.name}
-                                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
-                                    />
+                                <div className="aspect-[4/5] overflow-hidden mb-8 relative bg-gradient-to-br from-[#D4E8C8] to-[#ECF3E5] flex items-center justify-center">
+                                    <span className="font-serif text-[#070E01]/10 text-5xl italic select-none">{category.name.split(' ').map(w => w[0]).join('').slice(0, 3)}</span>
                                     <div className="absolute top-6 left-6 px-3 py-1 bg-[#ECF3E5] text-[#070E01] text-[9px] font-bold uppercase tracking-widest">
                                         {category.products_count} Products
                                     </div>
@@ -283,7 +234,7 @@ export default function Home({ featuredProducts, categories, brands, branches }:
                             </div>
                             <Link
                                 href="/products"
-                                className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#070E01] hover:text-[#5B21B6] transition-colors"
+                                className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#070E01] hover:text-[#2D5016] transition-colors"
                             >
                                 View All →
                             </Link>
@@ -297,12 +248,8 @@ export default function Home({ featuredProducts, categories, brands, branches }:
                                     className="group cursor-pointer"
                                     data-animation-on-scroll
                                 >
-                                    <div className="aspect-[4/5] overflow-hidden mb-8 relative">
-                                        <img
-                                            src={productImages[product.slug] || 'https://picsum.photos/seed/fallback-bakery/800/1000'}
-                                            alt={product.name}
-                                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
-                                        />
+                                    <div className="aspect-[4/5] overflow-hidden mb-8 relative bg-gradient-to-br from-[#D4E8C8] to-[#ECF3E5] flex items-center justify-center">
+                                        <span className="font-serif text-[#070E01]/10 text-5xl italic select-none">{product.name.split(' ').map(w => w[0]).join('').slice(0, 3)}</span>
                                         {product.brand && (
                                             <div className="absolute top-6 left-6 px-3 py-1 bg-[#ECF3E5] text-[#070E01] text-[9px] font-bold uppercase tracking-widest">
                                                 {product.brand.name}
@@ -356,30 +303,28 @@ export default function Home({ featuredProducts, categories, brands, branches }:
                                         <span className="text-[10px] font-bold uppercase tracking-widest text-[#A5FFA9] mb-2">
                                             Products
                                         </span>
-                                        <span className="text-2xl font-serif tracking-widest italic">150+</span>
+                                        <span className="text-2xl font-serif tracking-widest italic">{totalProducts}+</span>
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="text-[10px] font-bold uppercase tracking-widest text-[#A5FFA9] mb-2">
                                             Branches
                                         </span>
-                                        <span className="text-2xl font-serif tracking-widest italic">3</span>
+                                        <span className="text-2xl font-serif tracking-widest italic">{branches.length}</span>
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="text-[10px] font-bold uppercase tracking-widest text-[#A5FFA9] mb-2">
                                             Brands
                                         </span>
-                                        <span className="text-2xl font-serif tracking-widest italic">6</span>
+                                        <span className="text-2xl font-serif tracking-widest italic">{brands.length}</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div className="relative" data-animation-on-scroll>
                             <div className="rounded-[16px] overflow-hidden border border-white/10">
-                                <img
-                                    src={aboutImage}
-                                    alt="Danob Quality Ingredients"
-                                    className="w-full h-[500px] object-cover grayscale brightness-75"
-                                />
+                                <div className="w-full h-[500px] bg-gradient-to-br from-[#D4E8C8] to-[#070E01] flex items-center justify-center">
+                                    <span className="font-serif text-[#ECF3E5]/10 text-8xl italic select-none">Danob</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -462,12 +407,8 @@ export default function Home({ featuredProducts, categories, brands, branches }:
                                     className="group cursor-pointer"
                                     data-animation-on-scroll
                                 >
-                                    <div className="aspect-[4/5] overflow-hidden mb-8 relative">
-                                        <img
-                                            src={categoryImages['cake-mixes'] || 'https://picsum.photos/seed/fallback-bakery/800/1000'}
-                                            alt={brand.name}
-                                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
-                                        />
+                                    <div className="aspect-[4/5] overflow-hidden mb-8 relative bg-gradient-to-br from-[#D4E8C8] to-[#ECF3E5] flex items-center justify-center">
+                                        <span className="font-serif text-[#070E01]/10 text-5xl italic select-none">{brand.name.split(' ').map(w => w[0]).join('').slice(0, 3)}</span>
                                     </div>
                                     <div className="flex justify-between items-start border-b border-[#070E01]/10 pb-6">
                                         <div>
@@ -478,7 +419,7 @@ export default function Home({ featuredProducts, categories, brands, branches }:
                                                 </p>
                                             )}
                                         </div>
-                                        <p className="font-bold text-sm">{brand.products_count} Products</p>
+                                        <p className="font-bold text-sm text-[#070E01]">{brand.products_count} Products</p>
                                     </div>
                                 </Link>
                             ))}
@@ -505,12 +446,8 @@ export default function Home({ featuredProducts, categories, brands, branches }:
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-16 gap-x-12">
                             {branches.map((branch) => (
                                 <div key={branch.id} className="group" data-animation-on-scroll>
-                                    <div className="aspect-[4/5] overflow-hidden mb-8 relative">
-                                        <img
-                                            src={branchImages[branches.indexOf(branch)] || 'https://picsum.photos/seed/fallback-bakery/800/1000'}
-                                            alt={branch.name}
-                                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
-                                        />
+                                    <div className="aspect-[4/5] overflow-hidden mb-8 relative bg-gradient-to-br from-[#D4E8C8] to-[#ECF3E5] flex items-center justify-center">
+                                        <MapPin className="w-12 h-12 text-[#070E01]/10" strokeWidth={1} />
                                     </div>
                                     <div className="border-b border-[#070E01]/10 pb-6">
                                         <h3 className="font-serif text-2xl mb-4">{branch.name}</h3>
@@ -620,7 +557,7 @@ export default function Home({ featuredProducts, categories, brands, branches }:
                                 </div>
                                 <button
                                     type="button"
-                                    className="w-full py-6 bg-[#ECF3E5] text-[#070E01] text-[10px] font-bold uppercase tracking-[0.5em] hover:bg-[#5B21B6] transition-colors duration-500"
+                                    className="w-full py-6 bg-[#070E01] text-[#ECF3E5] text-[10px] font-bold uppercase tracking-[0.5em] hover:bg-[#2D5016] transition-colors duration-500"
                                 >
                                     Submit Inquiry
                                 </button>

@@ -44,9 +44,9 @@
     --color-accent: var(--accent);
     --color-accent-foreground: var(--accent-foreground);
 
-    --color-danob: #5B21B6;
-    --color-danob-light: #7C3AED;
-    --color-danob-dark: #4C1D95;
+    --color-danob: #2D5016;
+    --color-danob-light: #4A8C2A;
+    --color-danob-dark: #1A3A0A;
     --color-danob-foreground: #FFFFFF;
 
     --color-destructive: var(--destructive);
@@ -92,7 +92,7 @@
     --card-foreground: #070E01;
     --popover: #FFFFFF;
     --popover-foreground: #070E01;
-    --primary: #5B21B6;
+    --primary: #2D5016;
     --primary-foreground: #FFFFFF;
     --secondary: #D4E8C8;
     --secondary-foreground: #070E01;
@@ -104,7 +104,7 @@
     --destructive-foreground: oklch(0.577 0.245 27.325);
     --border: rgba(7, 14, 1, 0.1);
     --input: rgba(7, 14, 1, 0.1);
-    --ring: #5B21B6;
+    --ring: #2D5016;
     --chart-1: oklch(0.646 0.222 41.116);
     --chart-2: oklch(0.6 0.118 184.704);
     --chart-3: oklch(0.398 0.07 227.392);
@@ -113,12 +113,12 @@
     --radius: 8px;
     --sidebar: #ECF3E5;
     --sidebar-foreground: #070E01;
-    --sidebar-primary: #5B21B6;
+    --sidebar-primary: #2D5016;
     --sidebar-primary-foreground: #FFFFFF;
     --sidebar-accent: #D4E8C8;
     --sidebar-accent-foreground: #070E01;
     --sidebar-border: rgba(7, 14, 1, 0.1);
-    --sidebar-ring: #5B21B6;
+    --sidebar-ring: #2D5016;
 }
 
 .dark {
@@ -128,7 +128,7 @@
     --card-foreground: oklch(0.985 0 0);
     --popover: oklch(0.145 0 0);
     --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.55 0.18 290);
+    --primary: #2D5016;
     --primary-foreground: oklch(0.985 0 0);
     --secondary: oklch(0.269 0 0);
     --secondary-foreground: oklch(0.985 0 0);
@@ -136,13 +136,13 @@
     --muted-foreground: oklch(0.708 0 0);
     --accent: oklch(0.269 0 0);
     --accent-foreground: oklch(0.985 0 0);
-    --color-danob: #7C3AED;
+    --color-danob: #2D5016;
     --color-danob-foreground: oklch(0.145 0 0);
     --destructive: oklch(0.396 0.141 25.723);
     --destructive-foreground: oklch(0.637 0.237 25.331);
     --border: oklch(0.269 0 0);
     --input: oklch(0.269 0 0);
-    --ring: oklch(0.55 0.18 290);
+    --ring: #2D5016;
     --chart-1: oklch(0.488 0.243 264.376);
     --chart-2: oklch(0.696 0.17 162.48);
     --chart-3: oklch(0.769 0.188 70.08);
@@ -150,12 +150,12 @@
     --chart-5: oklch(0.645 0.246 16.439);
     --sidebar: oklch(0.205 0 0);
     --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.55 0.18 290);
+    --sidebar-primary: #2D5016;
     --sidebar-primary-foreground: oklch(0.985 0 0);
     --sidebar-accent: oklch(0.269 0 0);
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(0.269 0 0);
-    --sidebar-ring: oklch(0.55 0.18 290);
+    --sidebar-ring: #2D5016;
 }
 
 @layer base {
@@ -219,4 +219,43 @@
 .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+}
+
+/* Passkey button — match input size, distinct outline style */
+.login-passkey-wrap .grid.gap-2 button {
+    height: 52px !important;
+    width: 100% !important;
+    background: transparent !important;
+    border: 1.5px solid rgba(7, 14, 1, 0.15) !important;
+    border-radius: 16px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.08em !important;
+    color: #070E01 !important;
+    transition: all 0.2s ease !important;
+    cursor: pointer !important;
+}
+
+.login-passkey-wrap .grid.gap-2 button:hover {
+    background: rgba(7, 14, 1, 0.04) !important;
+    border-color: rgba(7, 14, 1, 0.3) !important;
+}
+
+/* Auth page separator — subtle styling */
+.login-passkey-wrap .relative.my-6 .bg-background {
+    background: #ECF3E5 !important;
+}
+
+.login-passkey-wrap .relative.my-6 span {
+    background: #ECF3E5 !important;
+    color: rgba(7, 14, 1, 0.2) !important;
+    font-size: 9px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.3em !important;
+    text-transform: uppercase !important;
+}
+
+.login-passkey-wrap [data-orientation="horizontal"] {
+    background: rgba(7, 14, 1, 0.06) !important;
+    height: 1px !important;
 }

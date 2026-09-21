@@ -68,7 +68,7 @@ export default function HowToOrder() {
                                 {step.link && (
                                     <Link
                                         href={step.link}
-                                        className="inline-block mt-6 text-[10px] font-bold uppercase tracking-[0.3em] text-[#5B21B6] group-hover:text-[#A5FFA9] transition-colors"
+                                        className="inline-block mt-6 text-[10px] font-bold uppercase tracking-[0.3em] text-[#2D5016] group-hover:text-[#A5FFA9] transition-colors"
                                     >
                                         {step.linkText} →
                                     </Link>
@@ -86,7 +86,7 @@ export default function HowToOrder() {
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link
                                 href="/contact"
-                                className="bg-[#A5FFA9] text-[#070E01] px-8 py-4 text-[10px] font-bold uppercase tracking-[0.5em] hover:bg-[#5B21B6] hover:text-white transition-colors duration-500"
+                                className="bg-[#A5FFA9] text-[#070E01] px-8 py-4 text-[10px] font-bold uppercase tracking-[0.5em] hover:bg-[#2D5016] hover:text-white transition-colors duration-500"
                             >
                                 Contact Us
                             </Link>

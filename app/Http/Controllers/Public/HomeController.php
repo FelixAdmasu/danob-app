@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
-use App\Models\Brand;
 use App\Models\Branch;
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -16,7 +16,7 @@ class HomeController extends Controller
     {
         $categories = Category::where('is_active', true)
             ->withCount('products')
-            ->limit(8)
+            ->orderBy('name')
             ->get();
 
         $featuredProducts = Product::where('status', 'active')
@@ -26,9 +26,10 @@ class HomeController extends Controller
 
         $brands = Brand::where('is_active', true)
             ->withCount('products')
+            ->orderBy('name')
             ->get();
 
-        $branches = Branch::limit(6)->get();
+        $branches = Branch::where('is_active', true)->get();
 
         return Inertia::render('Home', [
             'featuredProducts' => $featuredProducts,

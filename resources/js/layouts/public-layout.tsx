@@ -7,6 +7,14 @@ type Props = {
     children: ReactNode;
 };
 
+type Category = {
+    id: number;
+    name: string;
+    slug: string;
+    description: string | null;
+    products_count: number;
+};
+
 const sectionLinks = [
     { label: 'About', href: '#about', page: '/about' },
     { label: 'How to Order', href: '#how-to-order', page: '/how-to-order' },
@@ -15,14 +23,26 @@ const sectionLinks = [
     { label: 'Contact', href: '#contact', page: '/contact' },
 ];
 
-const productCategories = [
-    { label: 'Cake Mixes', href: '/products?category=cake-mixes', icon: Cake, description: 'Professional-grade cake mixes for every occasion' },
-    { label: 'Chocolate', href: '/products?category=chocolate', icon: Cookie, description: 'Premium chocolate for baking and decoration' },
-    { label: 'Cream Powders', href: '/products?category=cream-powders', icon: Milk, description: 'Whipping and pastry cream powders' },
-    { label: 'Baking Tools', href: '/products?category=baking-tools', icon: Package, description: 'Essential tools and equipment for bakers' },
-    { label: 'Flour & Bases', href: '/products?category=flour-bases', icon: Wheat, description: 'Specialty flours and baking bases' },
-    { label: 'Fillings & Frostings', href: '/products?category=fillings-frostings', icon: Cookie, description: 'Ready-to-use fillings and frosting mixes' },
-];
+function getCategoryIcon(slug: string) {
+    const iconMap: Record<string, typeof Cake> = {
+        'cake-mixes': Cake,
+        'chocolate-cocoa': Cookie,
+        'baking-powders-improvers': Milk,
+        'yeast-fermentation': Wheat,
+        'custards-cream-products': Milk,
+        'gelatin-gelling-products': Cookie,
+        'ice-cream-mixes': Cake,
+        'flavours': Cookie,
+        'food-colors': Wheat,
+        'fondant': Cookie,
+        'food-sprays': Package,
+        'baking-cups': Package,
+        'cake-decoration': Cookie,
+        'cake-tools': Package,
+        'cake-molds': Package,
+    };
+    return iconMap[slug] || Package;
+}
 
 export default function PublicLayout({ children }: Props) {
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -33,6 +53,8 @@ export default function PublicLayout({ children }: Props) {
     const navRef = useRef<HTMLElement>(null);
     const { url } = usePage();
     const isHome = url === '/' || url === '';
+    const { props } = usePage<{ categories?: Category[] }>();
+    const categories = props.categories ?? [];
 
     // Track scroll position for header background
     useEffect(() => {
@@ -93,7 +115,7 @@ export default function PublicLayout({ children }: Props) {
                 >
                     {/* Top Bar (Always Visible) */}
                     <nav className="max-w-[1920px] mx-auto px-6 md:px-12 py-8 flex items-center justify-between">
-                        <Link href="/" className="font-serif text-xl md:text-2xl font-bold tracking-widest uppercase text-[#070E01]">
+                        <Link href="/" className="font-serif text-xl md:text-2xl font-bold tracking-widest uppercase text-[#070E01] hover:text-[#2D5016] transition-colors">
                             Danob.
                         </Link>
 
@@ -104,7 +126,7 @@ export default function PublicLayout({ children }: Props) {
                                 onMouseEnter={handleProductsEnter}
                                 onMouseLeave={handleProductsLeave}
                             >
-                                <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#070E01] group-hover:text-[#5B21B6] transition-colors flex items-center gap-1.5">
+                                <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#070E01] group-hover:text-[#2D5016] transition-colors flex items-center gap-1.5">
                                     Products
                                     <ChevronDown
                                         className={`w-3 h-3 transition-transform duration-300 ${productsPanelOpen ? 'rotate-180' : ''}`}
@@ -116,7 +138,7 @@ export default function PublicLayout({ children }: Props) {
                                 <a
                                     key={link.label}
                                     href={isHome ? link.href : `/${link.page === '/' ? '' : link.page.replace(/^\//, '')}${link.href}`}
-                                    className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#070E01] hover:text-[#5B21B6] transition-colors"
+                                    className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#070E01] hover:text-[#2D5016] transition-colors"
                                     onClick={(e) => {
                                         if (isHome) {
                                             e.preventDefault();
@@ -145,7 +167,7 @@ export default function PublicLayout({ children }: Props) {
                     {/* Watershed-style Expansion Panel */}
                     <div
                         className={`
-                            w-full transition-all duration-500 ease-in-out overflow-hidden
+                            w-full transition-all duration-500 ease-in-out overflow-hidden bg-[#ECF3E5]
                             ${productsPanelOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}
                         `}
                         onMouseEnter={handleProductsEnter}
@@ -158,20 +180,20 @@ export default function PublicLayout({ children }: Props) {
                             <div className="grid grid-cols-12 gap-12">
                                 {/* Categories Grid — left side */}
                                 <div className="col-span-5 grid grid-cols-2 gap-x-8 gap-y-4">
-                                    {productCategories.map((cat) => {
-                                        const Icon = cat.icon;
+                                    {categories.map((cat) => {
+                                        const Icon = getCategoryIcon(cat.slug);
                                         return (
                                             <Link
-                                                key={cat.label}
-                                                href={cat.href}
+                                                key={cat.id}
+                                                href={`/products?category=${cat.slug}`}
                                                 className="flex flex-col gap-2 p-4 rounded-[16px] hover:bg-[#D4E8C8] transition-colors group/link"
                                                 onClick={() => setProductsPanelOpen(false)}
                                             >
-                                                <div className="text-[#5B21B6] mb-1">
+                                                <div className="text-[#2D5016] mb-1">
                                                     <Icon className="w-5 h-5" />
                                                 </div>
-                                                <div className="text-[15px] font-bold text-[#070E01]">{cat.label}</div>
-                                                <div className="text-xs text-[#070E01]/60">{cat.description}</div>
+                                                <div className="text-[15px] font-bold text-[#070E01]">{cat.name}</div>
+                                                <div className="text-xs text-[#070E01]/60">{cat.products_count} items</div>
                                             </Link>
                                         );
                                     })}
@@ -231,17 +253,17 @@ export default function PublicLayout({ children }: Props) {
                             </button>
                             {mobileProductsOpen && (
                                 <div className="mt-6 flex flex-col gap-5">
-                                    {productCategories.map((cat) => (
+                                    {categories.map((cat) => (
                                         <Link
-                                            key={cat.label}
-                                            href={cat.href}
+                                            key={cat.id}
+                                            href={`/products?category=${cat.slug}`}
                                             className="text-lg text-[#ECF3E5]/60 hover:text-[#A5FFA9] transition-colors"
                                             onClick={() => {
                                                 setMobileOpen(false);
                                                 setMobileProductsOpen(false);
                                             }}
                                         >
-                                            {cat.label}
+                                            {cat.name}
                                         </Link>
                                     ))}
                                 </div>
@@ -320,9 +342,9 @@ export default function PublicLayout({ children }: Props) {
                             &copy; {new Date().getFullYear()} Danob Trading PLC. All Rights Reserved.
                         </p>
                         <div className="flex gap-12 text-[9px] font-bold uppercase tracking-[0.5em] opacity-40">
-                            <Link href="/about" className="hover:opacity-100 transition-opacity">About</Link>
-                            <Link href="/contact" className="hover:opacity-100 transition-opacity">Contact</Link>
-                            <Link href="/products" className="hover:opacity-100 transition-opacity">Products</Link>
+                            <Link href="/terms" className="hover:opacity-100 hover:text-[#A5FFA9] transition-all">Terms</Link>
+                            <Link href="/privacy" className="hover:opacity-100 hover:text-[#A5FFA9] transition-all">Privacy</Link>
+                            <Link href="/login" className="hover:opacity-100 hover:text-[#A5FFA9] transition-all">Staff Login</Link>
                         </div>
                     </div>
                 </div>
