@@ -43,7 +43,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     });
 
     Route::middleware('role:admin,manager')->group(function () {
-        Route::resource('products', AdminProductController::class)->except(['show']);
+        Route::resource('products', AdminProductController::class);
         Route::resource('categories', CategoryController::class)->except(['show']);
         Route::resource('brands', AdminBrandController::class)->except(['show']);
         Route::resource('branches', AdminBranchController::class)->except(['show']);

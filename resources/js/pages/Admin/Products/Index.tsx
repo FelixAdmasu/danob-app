@@ -1,9 +1,11 @@
 import { Head, Link, router } from '@inertiajs/react';
+import { useState } from 'react';
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Package, Plus, Eye, Pencil, Trash2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Package, Plus, Eye, Pencil, Trash2, Search } from 'lucide-react';
 import { dashboard } from '@/routes';
 import * as ProductRoutes from '@/routes/admin/products';
 
@@ -33,9 +35,17 @@ type PaginatedProducts = {
 
 type Props = {
     products: PaginatedProducts;
+    filters: { search: string | null };
 };
 
-export default function Index({ products }: Props) {
+export default function Index({ products, filters }: Props) {
+    const [search, setSearch] = useState(filters.search ?? '');
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        router.get(ProductRoutes.index().url, { search: search || undefined }, { preserveState: true, replace: true });
+    };
+
     const handleDelete = (id: number) => {
         if (confirm('Delete this product?')) {
             router.delete(ProductRoutes.destroy(id).url);
@@ -54,6 +64,23 @@ export default function Index({ products }: Props) {
                         </Button>
                     </Link>
                 </div>
+
+                <form onSubmit={handleSearch} className="flex gap-2 max-w-sm">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input placeholder="Search by name, slug..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+                    </div>
+                    <Button type="submit" variant="outline">
+                        Search
+                    </Button>
+                    {filters.search && (
+                        <Link href={ProductRoutes.index().url}>
+                            <Button type="button" variant="ghost">
+                                Clear
+                            </Button>
+                        </Link>
+                    )}
+                </form>
 
                 <Card>
                     <CardContent className="p-0">

@@ -239,4 +239,160 @@ class ProductImageUploadTest extends TestCase
         Storage::disk('public')->assertMissing($path);
         $this->assertDatabaseMissing('products', ['id' => $product->id]);
     }
+
+    public function test_png_upload(): void
+    {
+        Storage::fake('public');
+        $admin = $this->admin();
+        $cat = $this->category();
+        $file = $this->fakeImage('test.png', 'image/png');
+        $response = $this->actingAs($admin)->post(route('admin.products.store'), [
+            'name' => 'P-png', 'slug' => 'p-png', 'category_id' => $cat->id, 'description' => 'D', 'status' => 'active',
+            'images' => [['file' => $file, 'alt_text' => 'PNG', 'sort_order' => 0, 'is_primary' => true]],
+        ]);
+        $response->assertRedirect(route('admin.products.index'));
+        $this->assertDatabaseHas('product_images', ['alt_text' => 'PNG']);
+    }
+
+    public function test_webp_upload(): void
+    {
+        Storage::fake('public');
+        $admin = $this->admin();
+        $cat = $this->category();
+        $file = $this->fakeImage('test.webp', 'image/webp');
+        $response = $this->actingAs($admin)->post(route('admin.products.store'), [
+            'name' => 'P-webp', 'slug' => 'p-webp', 'category_id' => $cat->id, 'description' => 'D', 'status' => 'active',
+            'images' => [['file' => $file, 'sort_order' => 0, 'is_primary' => true]],
+        ]);
+        $response->assertRedirect(route('admin.products.index'));
+        $this->assertDatabaseHas('products', ['slug' => 'p-webp']);
+    }
+
+    public function test_pdf_rejected(): void
+    {
+        Storage::fake('public');
+        $admin = $this->admin();
+        $cat = $this->category();
+        $file = UploadedFile::fake()->create('doc.pdf', 100, 'application/pdf');
+        $response = $this->actingAs($admin)->post(route('admin.products.store'), [
+            'name' => 'P-pdf', 'slug' => 'p-pdf', 'category_id' => $cat->id, 'description' => 'D', 'status' => 'active',
+            'images' => [['file' => $file]],
+        ]);
+        $response->assertSessionHasErrors('images.0.file');
+    }
+
+    public function test_corrupted_image_rejected(): void
+    {
+        Storage::fake('public');
+        $admin = $this->admin();
+        $cat = $this->category();
+        $file = UploadedFile::fake()->create('bad.jpg', 100, 'text/plain');
+        $response = $this->actingAs($admin)->post(route('admin.products.store'), [
+            'name' => 'P-bad', 'slug' => 'p-bad', 'category_id' => $cat->id, 'description' => 'D', 'status' => 'active',
+            'images' => [['file' => $file]],
+        ]);
+        $response->assertSessionHasErrors('images.0.file');
+    }
+
+    public function test_manager_can_upload(): void
+    {
+        Storage::fake('public');
+        $manager = User::factory()->create(['role' => 'manager']);
+        $cat = $this->category();
+        $file = $this->fakeImage('test.jpg', 'image/jpeg');
+        $response = $this->actingAs($manager)->post(route('admin.products.store'), [
+            'name' => 'P-mgr', 'slug' => 'p-mgr', 'category_id' => $cat->id, 'description' => 'D', 'status' => 'active',
+            'images' => [['file' => $file, 'is_primary' => true]],
+        ]);
+        $response->assertRedirect(route('admin.products.index'));
+    }
+
+    public function test_super_admin_can_upload(): void
+    {
+        Storage::fake('public');
+        $super = User::factory()->create(['role' => 'super_admin']);
+        $cat = $this->category();
+        $file = $this->fakeImage('test.jpg', 'image/jpeg');
+        $response = $this->actingAs($super)->post(route('admin.products.store'), [
+            'name' => 'P-super', 'slug' => 'p-super', 'category_id' => $cat->id, 'description' => 'D', 'status' => 'active',
+            'images' => [['file' => $file, 'is_primary' => true]],
+        ]);
+        $response->assertRedirect(route('admin.products.index'));
+    }
+
+    public function test_multiple_primary_normalized(): void
+    {
+        Storage::fake('public');
+        $admin = $this->admin();
+        $cat = $this->category();
+        $f1 = $this->fakeImage('a.jpg', 'image/jpeg');
+        $f2 = $this->fakeImage('b.jpg', 'image/jpeg');
+        $response = $this->actingAs($admin)->post(route('admin.products.store'), [
+            'name' => 'P-multi', 'slug' => 'p-multi', 'category_id' => $cat->id, 'description' => 'D', 'status' => 'active',
+            'images' => [
+                ['file' => $f1, 'is_primary' => true, 'sort_order' => 0],
+                ['file' => $f2, 'is_primary' => true, 'sort_order' => 1],
+            ],
+        ]);
+        $response->assertRedirect(route('admin.products.index'));
+        $product = Product::where('slug', 'p-multi')->first();
+        $this->assertEquals(1, $product->images()->where('is_primary', true)->count());
+    }
+
+    public function test_no_primary_becomes_first(): void
+    {
+        Storage::fake('public');
+        $admin = $this->admin();
+        $cat = $this->category();
+        $f1 = $this->fakeImage('a.jpg', 'image/jpeg');
+        $f2 = $this->fakeImage('b.jpg', 'image/jpeg');
+        $response = $this->actingAs($admin)->post(route('admin.products.store'), [
+            'name' => 'P-noprim', 'slug' => 'p-noprim', 'category_id' => $cat->id, 'description' => 'D', 'status' => 'active',
+            'images' => [
+                ['file' => $f1, 'is_primary' => false, 'sort_order' => 0],
+                ['file' => $f2, 'is_primary' => false, 'sort_order' => 1],
+            ],
+        ]);
+        $response->assertRedirect(route('admin.products.index'));
+        $product = Product::where('slug', 'p-noprim')->first();
+        $first = $product->images()->orderBy('sort_order')->first();
+        $this->assertTrue($first->is_primary);
+    }
+
+    public function test_cross_product_image_id_rejected(): void
+    {
+        Storage::fake('public');
+        $admin = $this->admin();
+        $cat = $this->category();
+        $p1 = Product::create(['category_id' => $cat->id, 'name' => 'P1', 'slug' => 'p1', 'description' => 'D', 'status' => 'active']);
+        $p2 = Product::create(['category_id' => $cat->id, 'name' => 'P2', 'slug' => 'p2', 'description' => 'D', 'status' => 'active']);
+        $img = $p1->images()->create(['url' => '/storage/a.jpg', 'sort_order' => 0, 'is_primary' => true]);
+        // try to update p2 using p1's image id
+        $this->actingAs($admin)->put(route('admin.products.update', $p2), [
+            'name' => 'P2', 'slug' => 'p2', 'category_id' => $cat->id, 'description' => 'D', 'status' => 'active',
+            'images' => [['id' => $img->id, 'url' => '/storage/hacked.jpg', 'sort_order' => 0, 'is_primary' => true]],
+        ])->assertRedirect(route('admin.products.index'));
+        // p1's image should remain unchanged or a new image created for p2, but p1's image url should not be hacked
+        $this->assertDatabaseHas('product_images', ['id' => $img->id, 'url' => '/storage/a.jpg']);
+        $this->assertDatabaseHas('product_images', ['product_id' => $p2->id]);
+    }
+
+    public function test_replacement_deletes_old_owned_file(): void
+    {
+        Storage::fake('public');
+        $admin = $this->admin();
+        $cat = $this->category();
+        $product = Product::create(['category_id' => $cat->id, 'name' => 'P', 'slug' => 'p-replace', 'description' => 'D', 'status' => 'active']);
+        $oldPath = 'products/'.$product->id.'/old.jpg';
+        Storage::disk('public')->put($oldPath, 'old');
+        $oldUrl = Storage::disk('public')->url($oldPath);
+        $img = $product->images()->create(['url' => $oldUrl, 'sort_order' => 0, 'is_primary' => true]);
+        $newFile = $this->fakeImage('new.jpg', 'image/jpeg');
+        $this->actingAs($admin)->put(route('admin.products.update', $product), [
+            'name' => 'P', 'slug' => 'p-replace', 'category_id' => $cat->id, 'description' => 'D', 'status' => 'active',
+            'images' => [['id' => $img->id, 'file' => $newFile, 'sort_order' => 0, 'is_primary' => true]],
+        ])->assertRedirect(route('admin.products.index'));
+        Storage::disk('public')->assertMissing($oldPath);
+        $this->assertDatabaseMissing('product_images', ['url' => $oldUrl]);
+    }
 }
