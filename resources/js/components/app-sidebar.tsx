@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Github, BookOpen, LayoutGrid, Package, Tag, Building2, ShoppingCart, Users, Layers, Store, Archive, ArrowUpDown, History } from 'lucide-react';
+import { Github, BookOpen, LayoutGrid, Package, Tag, Building2, ShoppingCart, Users, Layers, Store, Archive, ArrowUpDown, History, Truck } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -21,6 +21,7 @@ import * as branchRoutes from '@/routes/admin/branches';
 import * as orderRoutes from '@/routes/admin/orders';
 import * as customerRoutes from '@/routes/admin/customers';
 import * as inventoryRoutes from '@/routes/admin/inventory';
+import * as supplierRoutes from '@/routes/admin/suppliers';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
@@ -56,6 +57,7 @@ export function AppSidebar() {
               { title: 'Categories', href: categoryRoutes.index().url, icon: Tag },
               { title: 'Brands', href: brandRoutes.index().url, icon: Layers },
               { title: 'Branches', href: branchRoutes.index().url, icon: Building2 },
+              { title: 'Suppliers', href: supplierRoutes.index().url, icon: Truck },
               { title: 'Opening Stock', href: inventoryRoutes.openingStock().url, icon: Archive },
               { title: 'Stock Adjustments', href: inventoryRoutes.adjustments().url, icon: ArrowUpDown },
               { title: 'Inventory History', href: inventoryRoutes.history().url, icon: History },
