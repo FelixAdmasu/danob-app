@@ -52,6 +52,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::post('inventory/opening-stock', [InventoryController::class, 'storeOpeningStock'])->name('inventory.opening-stock.store');
         Route::get('inventory/adjustments', [InventoryController::class, 'adjustments'])->name('inventory.adjustments');
         Route::post('inventory/adjustments', [InventoryController::class, 'storeAdjustment'])->name('inventory.adjustments.store');
+        Route::get('inventory/history', [InventoryController::class, 'history'])->name('inventory.history');
     });
 
 });
