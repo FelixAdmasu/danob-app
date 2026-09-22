@@ -189,33 +189,40 @@ export default function Home({ featuredProducts, categories, brands, branches }:
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-16 gap-x-8">
-                        {categories.map((category, i) => (
-                            <Link
-                                key={category.id}
-                                href={`/products?category=${category.slug}`}
-                                className="group cursor-pointer"
-                                data-animation-on-scroll
-                            >
-                                <div className="aspect-[4/5] overflow-hidden mb-8 relative bg-gradient-to-br from-[#D4E8C8] to-[#ECF3E5] flex items-center justify-center">
-                                    <span className="font-serif text-[#070E01]/10 text-5xl italic select-none">{category.name.split(' ').map(w => w[0]).join('').slice(0, 3)}</span>
-                                    <div className="absolute top-6 left-6 px-3 py-1 bg-[#ECF3E5] text-[#070E01] text-[9px] font-bold uppercase tracking-widest">
-                                        {category.products_count} Products
+                    {categories.length === 0 ? (
+                        <div className="rounded-xl border border-dashed border-[#070E01]/10 bg-white/50 p-12 text-center">
+                            <p className="font-serif text-xl text-[#070E01]">No categories yet</p>
+                            <p className="mt-2 text-sm text-[#4A4A4A]">Categories will appear here once added in Admin → Categories.</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-16 gap-x-8">
+                            {categories.map((category, i) => (
+                                <Link
+                                    key={category.id}
+                                    href={`/products?category=${category.slug}`}
+                                    className="group cursor-pointer"
+                                    data-animation-on-scroll
+                                >
+                                    <div className="aspect-[4/5] overflow-hidden mb-8 relative bg-gradient-to-br from-[#D4E8C8] to-[#ECF3E5] flex items-center justify-center">
+                                        <span className="font-serif text-[#070E01]/10 text-5xl italic select-none">{category.name.split(' ').map(w => w[0]).join('').slice(0, 3)}</span>
+                                        <div className="absolute top-6 left-6 px-3 py-1 bg-[#ECF3E5] text-[#070E01] text-[9px] font-bold uppercase tracking-widest">
+                                            {category.products_count} Products
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="flex justify-between items-start border-b border-[#070E01]/10 pb-6">
-                                    <div>
-                                        <h3 className="font-serif text-2xl mb-2">{category.name}</h3>
-                                        {category.description && (
-                                            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#4A4A4A] line-clamp-2">
-                                                {category.description}
-                                            </p>
-                                        )}
+                                    <div className="flex justify-between items-start border-b border-[#070E01]/10 pb-6">
+                                        <div>
+                                            <h3 className="font-serif text-2xl mb-2">{category.name}</h3>
+                                            {category.description && (
+                                                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#4A4A4A] line-clamp-2">
+                                                    {category.description}
+                                                </p>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </section>
 
