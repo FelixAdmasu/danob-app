@@ -10,7 +10,7 @@ export default function Edit({ purchase_order }: { purchase_order: { id: number;
     return (
         <>
             <Head title={`Edit ${purchase_order.po_number}`} />
-            <div className="p-6">
+            <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
                 <Heading title={`Edit ${purchase_order.po_number}`} description="Only draft orders can be edited" />
                 <Card className="mt-6">
                     <CardHeader>

@@ -19,7 +19,7 @@ void createInertiaApp({
                 return AuthLayout;
             case name.startsWith('settings/'):
                 return [AppLayout, SettingsLayout];
-            case name.startsWith('admin/') || name === 'dashboard':
+            case name.toLowerCase().startsWith('admin/') || name === 'dashboard':
                 return AppLayout;
             default:
                 return PublicLayout;
