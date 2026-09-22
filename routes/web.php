@@ -50,6 +50,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::resource('branches', AdminBranchController::class)->except(['show']);
         Route::get('inventory/opening-stock', [InventoryController::class, 'openingStock'])->name('inventory.opening-stock');
         Route::post('inventory/opening-stock', [InventoryController::class, 'storeOpeningStock'])->name('inventory.opening-stock.store');
+        Route::get('inventory/adjustments', [InventoryController::class, 'adjustments'])->name('inventory.adjustments');
+        Route::post('inventory/adjustments', [InventoryController::class, 'storeAdjustment'])->name('inventory.adjustments.store');
     });
 
 });

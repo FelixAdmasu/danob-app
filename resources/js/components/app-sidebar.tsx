@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Github, BookOpen, LayoutGrid, Package, Tag, Building2, ShoppingCart, Users, Layers, Store, Archive } from 'lucide-react';
+import { Github, BookOpen, LayoutGrid, Package, Tag, Building2, ShoppingCart, Users, Layers, Store, Archive, ArrowUpDown } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -57,6 +57,7 @@ export function AppSidebar() {
               { title: 'Brands', href: brandRoutes.index().url, icon: Layers },
               { title: 'Branches', href: branchRoutes.index().url, icon: Building2 },
               { title: 'Opening Stock', href: inventoryRoutes.openingStock().url, icon: Archive },
+              { title: 'Stock Adjustments', href: inventoryRoutes.adjustments().url, icon: ArrowUpDown },
           ]
         : [];
 
