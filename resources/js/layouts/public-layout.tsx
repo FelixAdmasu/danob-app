@@ -109,7 +109,7 @@ export default function PublicLayout({ children }: Props) {
                         w-full transition-all duration-500 ease-in-out overflow-hidden
                         ${scrolled
                             ? 'bg-[#ECF3E5]/95 backdrop-blur-md shadow-[0_1px_0_0_rgba(7,14,1,0.1)]'
-                            : 'bg-transparent'
+                            : 'bg-[#ECF3E5] shadow-sm'
                         }
                     `}
                 >
