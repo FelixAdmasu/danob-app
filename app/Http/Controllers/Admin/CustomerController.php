@@ -11,11 +11,24 @@ class CustomerController extends Controller
 {
     public function index(Request $request)
     {
-        $customers = Customer::latest()
-            ->paginate(20);
+        $search = $request->input('search');
+
+        $query = Customer::withCount('orders')->latest();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('company_name', 'like', "%{$search}%")
+                    ->orWhere('contact_name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        $customers = $query->paginate(20)->withQueryString();
 
         return Inertia::render('Admin/Customers/Index', [
             'customers' => $customers,
+            'filters' => ['search' => $search],
         ]);
     }
 

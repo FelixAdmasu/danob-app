@@ -11,10 +11,23 @@ class BranchController extends Controller
 {
     public function index(Request $request)
     {
-        $branches = Branch::latest()->paginate(20);
+        $search = $request->input('search');
+
+        $query = Branch::latest();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('city', 'like', "%{$search}%")
+                    ->orWhere('address', 'like', "%{$search}%");
+            });
+        }
+
+        $branches = $query->paginate(20)->withQueryString();
 
         return Inertia::render('Admin/Branches/Index', [
             'branches' => $branches,
+            'filters' => ['search' => $search],
         ]);
     }
 
