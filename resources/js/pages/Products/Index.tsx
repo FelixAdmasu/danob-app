@@ -1,6 +1,20 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import { Package, Search, X } from 'lucide-react';
 
+type ProductImage = {
+    id: number;
+    url: string;
+    sort_order: number;
+    is_primary: boolean;
+    alt_text: string | null;
+};
+
+type ProductVariant = {
+    id: number;
+    public_price: string | null;
+    is_active: boolean;
+};
+
 type Product = {
     id: number;
     name: string;
@@ -8,6 +22,8 @@ type Product = {
     description: string;
     category: { id: number; name: string; slug: string } | null;
     brand: { id: number; name: string; slug: string } | null;
+    images: ProductImage[];
+    variants: ProductVariant[];
 };
 
 type PaginatedProducts = {
@@ -184,28 +200,54 @@ export default function ProductsIndex({ products, filters, categories, brands }:
                 <div className="max-w-[1920px] mx-auto">
                     {products.data.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-16 gap-x-12">
-                            {products.data.map((product) => (
-                                <Link key={product.id} href={`/products/${product.slug}`} className="group cursor-pointer">
-                                    <div className="aspect-[4/5] overflow-hidden mb-8 relative bg-[#D4E8C8]">
-                                        <div className="w-full h-full flex items-center justify-center">
-                                            <Package className="h-16 w-16 text-[#070E01]/15 group-hover:text-[#070E01]/30 transition-colors duration-700" />
+                            {products.data.map((product) => {
+                                const primaryImage =
+                                    product.images.find((img) => img.is_primary) || product.images[0] || null;
+                                const cheapestPrice = product.variants
+                                    .filter((v) => v.is_active && v.public_price !== null)
+                                    .map((v) => parseFloat(v.public_price as string))
+                                    .filter((n) => !isNaN(n))
+                                    .sort((a, b) => a - b)[0] ?? null;
+                                return (
+                                    <Link key={product.id} href={`/products/${product.slug}`} className="group cursor-pointer">
+                                        <div className="aspect-[4/5] overflow-hidden mb-8 relative bg-[#D4E8C8]">
+                                            {primaryImage ? (
+                                                <img
+                                                    src={primaryImage.url}
+                                                    alt={primaryImage.alt_text || product.name}
+                                                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center">
+                                                    <Package className="h-16 w-16 text-[#070E01]/15 group-hover:text-[#070E01]/30 transition-colors duration-700" />
+                                                </div>
+                                            )}
+                                            {product.brand && (
+                                                <div className="absolute top-6 left-6 px-3 py-1 bg-[#070E01] text-[#ECF3E5] text-[9px] font-bold uppercase tracking-widest">
+                                                    {product.brand.name}
+                                                </div>
+                                            )}
                                         </div>
-                                        {product.brand && (
-                                            <div className="absolute top-6 left-6 px-3 py-1 bg-[#070E01] text-[#ECF3E5] text-[9px] font-bold uppercase tracking-widest">
-                                                {product.brand.name}
+                                        <div className="flex justify-between items-start border-b border-[#070E01]/10 pb-6">
+                                            <div>
+                                                <h3 className="font-serif text-2xl mb-2">{product.name}</h3>
+                                                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#4A4A4A]">
+                                                    {product.category?.name || 'Uncategorized'}
+                                                </p>
                                             </div>
-                                        )}
-                                    </div>
-                                    <div className="flex justify-between items-start border-b border-[#070E01]/10 pb-6">
-                                        <div>
-                                            <h3 className="font-serif text-2xl mb-2">{product.name}</h3>
-                                            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#4A4A4A]">
-                                                {product.category?.name || 'Uncategorized'}
-                                            </p>
+                                            <div className="text-right">
+                                                {cheapestPrice !== null ? (
+                                                    <p className="text-sm font-bold text-[#070E01]">{cheapestPrice.toFixed(2)}</p>
+                                                ) : (
+                                                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#4A4A4A]">
+                                                        Contact for price
+                                                    </p>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                </Link>
-                            ))}
+                                    </Link>
+                                );
+                            })}
                         </div>
                     ) : (
                         <div className="text-center py-24">

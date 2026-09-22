@@ -18,7 +18,12 @@ class ProductController extends Controller
         $brandSlug = $request->input('brand');
 
         $query = Product::where('status', 'active')
-            ->with(['category', 'brand']);
+            ->with([
+                'category',
+                'brand',
+                'images' => fn ($q) => $q->orderBy('sort_order')->orderBy('id'),
+                'variants' => fn ($q) => $q->where('is_active', true),
+            ]);
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -62,7 +67,12 @@ class ProductController extends Controller
     {
         abort_if($product->status !== 'active', 404);
 
-        $product->load(['category', 'brand', 'variants', 'images']);
+        $product->load([
+            'category',
+            'brand',
+            'images' => fn ($q) => $q->orderBy('sort_order')->orderBy('id'),
+            'variants' => fn ($q) => $q->where('is_active', true)->orderBy('id'),
+        ]);
 
         return Inertia::render('Products/Show', [
             'product' => $product,

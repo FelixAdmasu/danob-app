@@ -1,0 +1,155 @@
+import { Head, Link, router } from '@inertiajs/react';
+import Heading from '@/components/heading';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Package, Plus, Eye, Pencil, Trash2 } from 'lucide-react';
+import { dashboard } from '@/routes';
+import * as ProductRoutes from '@/routes/admin/products';
+
+type ProductImage = {
+    id: number;
+    url: string;
+    is_primary: boolean;
+};
+
+type Product = {
+    id: number;
+    name: string;
+    slug: string;
+    status: string;
+    category: { id: number; name: string; slug: string } | null;
+    brand: { id: number; name: string; slug: string } | null;
+    variants_count: number;
+    images: ProductImage[];
+};
+
+type PaginatedProducts = {
+    data: Product[];
+    links: { url: string | null; label: string; active: boolean }[];
+    current_page: number;
+    last_page: number;
+};
+
+type Props = {
+    products: PaginatedProducts;
+};
+
+export default function Index({ products }: Props) {
+    const handleDelete = (id: number) => {
+        if (confirm('Delete this product?')) {
+            router.delete(ProductRoutes.destroy(id).url);
+        }
+    };
+
+    return (
+        <>
+            <Head title="Products" />
+            <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
+                <div className="flex items-center justify-between">
+                    <Heading title="Products" description={`${products.data.length} products — manage catalog`} />
+                    <Link href={ProductRoutes.create().url}>
+                        <Button>
+                            <Plus className="mr-2 h-4 w-4" /> Add Product
+                        </Button>
+                    </Link>
+                </div>
+
+                <Card>
+                    <CardContent className="p-0">
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead className="border-b bg-muted/50">
+                                    <tr className="text-left text-xs uppercase tracking-widest text-muted-foreground">
+                                        <th className="px-4 py-3">Image</th>
+                                        <th className="px-4 py-3">Name</th>
+                                        <th className="px-4 py-3">Category</th>
+                                        <th className="px-4 py-3">Brand</th>
+                                        <th className="px-4 py-3">Status</th>
+                                        <th className="px-4 py-3">Variants</th>
+                                        <th className="px-4 py-3">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {products.data.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={7} className="px-4 py-12 text-center text-sm text-muted-foreground">
+                                                <Package className="mx-auto h-8 w-8 opacity-20 mb-2" />
+                                                No products yet.
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        products.data.map((product) => {
+                                            const primary = product.images.find((i) => i.is_primary) || product.images[0] || null;
+                                            return (
+                                                <tr key={product.id} className="border-b hover:bg-muted/20">
+                                                    <td className="px-4 py-3">
+                                                        {primary ? (
+                                                            <img src={primary.url} alt={product.name} className="h-10 w-10 rounded object-cover" />
+                                                        ) : (
+                                                            <div className="h-10 w-10 rounded bg-muted flex items-center justify-center">
+                                                                <Package className="h-4 w-4 opacity-30" />
+                                                            </div>
+                                                        )}
+                                                    </td>
+                                                    <td className="px-4 py-3 font-medium">{product.name}</td>
+                                                    <td className="px-4 py-3 text-sm">{product.category?.name || '—'}</td>
+                                                    <td className="px-4 py-3 text-sm">{product.brand?.name || '—'}</td>
+                                                    <td className="px-4 py-3">
+                                                        <Badge variant={product.status === 'active' ? 'default' : 'secondary'}>{product.status}</Badge>
+                                                    </td>
+                                                    <td className="px-4 py-3 text-sm">{product.variants_count}</td>
+                                                    <td className="px-4 py-3">
+                                                        <div className="flex gap-1">
+                                                            <Link href={ProductRoutes.show(product.id).url}>
+                                                                <Button variant="ghost" size="icon">
+                                                                    <Eye className="h-4 w-4" />
+                                                                </Button>
+                                                            </Link>
+                                                            <Link href={ProductRoutes.edit(product.id).url}>
+                                                                <Button variant="ghost" size="icon">
+                                                                    <Pencil className="h-4 w-4" />
+                                                                </Button>
+                                                            </Link>
+                                                            <Button variant="ghost" size="icon" onClick={() => handleDelete(product.id)}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {products.last_page > 1 && (
+                    <div className="flex gap-2 justify-center">
+                        {products.links.map((link, i) =>
+                            link.url ? (
+                                <Link
+                                    key={i}
+                                    href={link.url}
+                                    className={`px-3 py-1 text-xs border rounded ${link.active ? 'bg-black text-white' : 'bg-white'}`}
+                                    dangerouslySetInnerHTML={{ __html: link.label }}
+                                />
+                            ) : (
+                                <span key={i} className="px-3 py-1 text-xs opacity-30" dangerouslySetInnerHTML={{ __html: link.label }} />
+                            ),
+                        )}
+                    </div>
+                )}
+            </div>
+        </>
+    );
+}
+
+Index.layout = {
+    breadcrumbs: [
+        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Products', href: ProductRoutes.index().url },
+    ],
+};
