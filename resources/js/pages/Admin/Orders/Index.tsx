@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search } from 'lucide-react';
+import { AdminQuickNav } from '@/components/admin-quick-nav';
 import { dashboard } from '@/routes';
 import * as OrderRoutes from '@/routes/admin/orders';
 
@@ -49,6 +50,8 @@ export default function Index({ orders, filters }: Props) {
             <Head title="Orders" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
                 <Heading title="Orders" description={`${orders.data.length} orders`} />
+
+                <AdminQuickNav />
 
                 <form onSubmit={handleSearch} className="flex gap-2 max-w-lg">
                     <div className="relative flex-1">

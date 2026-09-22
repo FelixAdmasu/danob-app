@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
+import { AdminQuickNav } from '@/components/admin-quick-nav';
 import { dashboard } from '@/routes';
 import * as CustomerRoutes from '@/routes/admin/customers';
 
@@ -42,6 +43,7 @@ export default function Index({ customers, filters }: Props) {
             <Head title="Customers" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
                 <Heading title="Customers" description={`${customers.data.length} customers`} />
+                <AdminQuickNav />
                 <form onSubmit={handleSearch} className="flex gap-2 max-w-sm">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

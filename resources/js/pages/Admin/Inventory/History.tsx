@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { AdminQuickNav } from '@/components/admin-quick-nav';
 import { dashboard } from '@/routes';
 import * as InventoryRoutes from '@/routes/admin/inventory';
 
@@ -83,6 +84,8 @@ export default function History({ movements, filters, products, variants, users,
             <Head title="Inventory History" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
                 <Heading title="Inventory History" description="Searchable, filterable, paginated stock movement ledger" />
+
+                <AdminQuickNav />
 
                 <Card>
                     <CardContent className="p-4">

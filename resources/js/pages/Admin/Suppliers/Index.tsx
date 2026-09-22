@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Plus, Pencil, Eye, Power } from 'lucide-react';
+import { AdminQuickNav } from '@/components/admin-quick-nav';
 import { dashboard } from '@/routes';
 import * as SupplierRoutes from '@/routes/admin/suppliers';
 
@@ -64,6 +65,8 @@ export default function Index({ suppliers, filters }: Props) {
                         </Button>
                     </Link>
                 </div>
+
+                <AdminQuickNav />
 
                 <Card>
                     <CardContent className="p-4">

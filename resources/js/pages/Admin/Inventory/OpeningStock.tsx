@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { AdminQuickNav } from '@/components/admin-quick-nav';
 import { dashboard } from '@/routes';
 import * as InventoryRoutes from '@/routes/admin/inventory';
 
@@ -64,6 +65,8 @@ export default function OpeningStock({ products }: Props) {
                 <Heading title="Opening Stock" description="Establish initial inventory for a variant. This creates an opening_balance ledger entry." />
 
                 {flashSuccess && <div className="rounded border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">{flashSuccess}</div>}
+
+                <AdminQuickNav />
 
                 <Card>
                     <CardHeader>
