@@ -137,6 +137,8 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Install FrankenPHP
 COPY --from=dunglas/frankenphp:php8.4-bookworm /usr/local/bin/frankenphp /usr/local/bin/frankenphp
+COPY --from=dunglas/frankenphp:php8.4-bookworm /usr/local/lib/libwatcher* /usr/local/lib/
+RUN ldconfig
 # Render runs on unprivileged port 10000 — strip CAP_NET_BIND_SERVICE to avoid EPERM (Operation not permitted)
 RUN apt-get update && apt-get install -y --no-install-recommends libcap2-bin \
     && setcap -r /usr/local/bin/frankenphp \
