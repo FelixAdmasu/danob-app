@@ -16,7 +16,7 @@ type Order = {
     status: string;
     total: string;
     ordered_at: string;
-    customer: { id: number; name: string } | null;
+    customer: { id: number; company_name?: string | null; contact_name?: string | null } | null;
 };
 
 type PaginatedOrders = {
@@ -108,7 +108,7 @@ export default function Index({ orders, filters }: Props) {
                                                         {order.reference_number}
                                                     </Link>
                                                 </td>
-                                                <td className="px-4 py-3 text-sm">{order.customer?.name || '—'}</td>
+                                                <td className="px-4 py-3 text-sm">{order.customer?.company_name || order.customer?.contact_name || '—'}</td>
                                                 <td className="px-4 py-3">
                                                     <Badge variant={order.status === 'delivered' ? 'default' : 'secondary'}>{order.status}</Badge>
                                                 </td>

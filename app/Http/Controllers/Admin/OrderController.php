@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Services\OrderService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -19,11 +20,12 @@ class OrderController extends Controller
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('reference_number', 'like', "%{$search}%")
-                    ->orWhereHas('customer', fn ($c) => $c->where('name', 'like', "%{$search}%"));
+                    ->orWhereHas('customer', fn ($c) => $c->where('company_name', 'like', "%{$search}%")
+                        ->orWhere('contact_name', 'like', "%{$search}%"));
             });
         }
 
-        if ($status && in_array($status, ['pending', 'confirmed', 'delivered', 'cancelled'])) {
+        if ($status && in_array($status, Order::STATUSES, true)) {
             $query->where('status', $status);
         }
 
@@ -42,5 +44,26 @@ class OrderController extends Controller
         return Inertia::render('Admin/Orders/Show', [
             'order' => $order,
         ]);
+    }
+
+    public function confirm(Order $order, OrderService $service)
+    {
+        $service->confirm($order, (int) auth()->id());
+
+        return redirect()->back()->with('success', 'Order confirmed. Stock deducted.');
+    }
+
+    public function cancel(Order $order, OrderService $service)
+    {
+        $service->cancel($order);
+
+        return redirect()->back()->with('success', 'Order cancelled.');
+    }
+
+    public function deliver(Order $order, OrderService $service)
+    {
+        $service->deliver($order);
+
+        return redirect()->back()->with('success', 'Order delivered.');
     }
 }

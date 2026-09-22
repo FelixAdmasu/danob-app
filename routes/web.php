@@ -65,6 +65,12 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::post('purchase-orders/{purchaseOrder}/cancel', [PurchaseOrderController::class, 'cancel'])->name('purchase-orders.cancel');
         Route::get('purchase-orders/{purchaseOrder}/receive', [ReceivingController::class, 'create'])->name('purchase-orders.receive');
         Route::post('purchase-orders/{purchaseOrder}/receive', [ReceivingController::class, 'store'])->name('purchase-orders.receive.store');
+
+        // Sales lifecycle: confirmation deducts stock, so it lives with the
+        // other inventory-affecting routes (admin, manager only).
+        Route::post('orders/{order}/confirm', [OrderController::class, 'confirm'])->name('orders.confirm');
+        Route::post('orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+        Route::post('orders/{order}/deliver', [OrderController::class, 'deliver'])->name('orders.deliver');
     });
 
 });

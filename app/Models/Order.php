@@ -13,6 +13,21 @@ class Order extends Model
 {
     use HasFactory;
 
+    public const STATUS_PENDING = 'pending';
+
+    public const STATUS_CONFIRMED = 'confirmed';
+
+    public const STATUS_DELIVERED = 'delivered';
+
+    public const STATUS_CANCELLED = 'cancelled';
+
+    public const STATUSES = [
+        self::STATUS_PENDING,
+        self::STATUS_CONFIRMED,
+        self::STATUS_DELIVERED,
+        self::STATUS_CANCELLED,
+    ];
+
     protected function casts(): array
     {
         return [
@@ -30,5 +45,20 @@ class Order extends Model
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function canBeConfirmed(): bool
+    {
+        return $this->status === self::STATUS_PENDING;
+    }
+
+    public function canBeCancelled(): bool
+    {
+        return $this->status === self::STATUS_PENDING;
+    }
+
+    public function canBeDelivered(): bool
+    {
+        return $this->status === self::STATUS_CONFIRMED;
     }
 }
