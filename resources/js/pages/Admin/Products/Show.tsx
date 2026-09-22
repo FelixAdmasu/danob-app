@@ -115,7 +115,10 @@ export default function Show({ product }: Props) {
                                                 <td className="px-3 py-2 font-medium">{v.name}</td>
                                                 <td className="px-3 py-2 font-mono text-xs">{v.sku || '—'}</td>
                                                 <td className="px-3 py-2">{v.unit || '—'}</td>
-                                                <td className="px-3 py-2">{v.quantity}</td>
+                                                <td className="px-3 py-2">
+                                                    <span className={v.quantity <= 5 && v.is_active ? 'text-red-600 font-bold' : ''}>{v.quantity}</span>
+                                                    {v.quantity <= 5 && v.is_active && <Badge variant="destructive" className="ml-2 text-[10px]">Low</Badge>}
+                                                </td>
                                                 <td className="px-3 py-2">{v.public_price ?? '—'}</td>
                                                 <td className="px-3 py-2">
                                                     <Badge variant={v.is_active ? 'default' : 'secondary'}>

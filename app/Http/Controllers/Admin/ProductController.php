@@ -21,6 +21,7 @@ class ProductController extends Controller
 
         $query = Product::with(['category', 'brand'])
             ->withCount('variants')
+            ->withCount(['variants as low_stock_variants_count' => fn ($q) => $q->where('quantity', '<=', 5)->where('is_active', true)])
             ->with(['images' => fn ($q) => $q->orderBy('sort_order')->orderBy('id')]);
 
         if ($search) {
