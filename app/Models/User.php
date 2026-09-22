@@ -54,21 +54,30 @@ class User extends Authenticatable implements PasskeyUser
 
     public function isRole(string ...$roles): bool
     {
+        if ($this->role === 'super_admin') {
+            return true;
+        }
+
         return in_array($this->role, $roles);
     }
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return in_array($this->role, ['admin', 'super_admin']);
     }
 
     public function isManager(): bool
     {
-        return $this->role === 'manager';
+        return in_array($this->role, ['manager', 'super_admin']);
     }
 
     public function isStaff(): bool
     {
-        return $this->role === 'staff';
+        return in_array($this->role, ['staff', 'super_admin']);
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'super_admin';
     }
 }
