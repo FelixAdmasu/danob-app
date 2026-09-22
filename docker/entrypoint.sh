@@ -16,6 +16,9 @@ php artisan view:clear || true
 echo "Running migrations..."
 php artisan migrate --force || (echo "MIGRATE FAILED — check DB_* / Supabase allowlist and APP_KEY" && php artisan migrate --force --verbose)
 
+echo "DB LIVE CHECK (free-tier Shell alternative):"
+php artisan tinker --execute "echo 'DB=' . config('database.connections.pgsql.host') . ':' . config('database.connections.pgsql.database') . ' cat_total='.App\Models\Category::count().' cat_active='.App\Models\Category::where('is_active',true)->count().' prod_total='.App\Models\Product::count().' prod_active='.App\Models\Product::where('status','active')->count().' cat_products_sum='.App\Models\Category::where('is_active',true)->withCount('products')->get()->sum('products_count');" || true
+
 echo "Caching for production..."
 php artisan config:cache || (echo "config:cache failed" && php artisan config:clear)
 php artisan route:cache || true
