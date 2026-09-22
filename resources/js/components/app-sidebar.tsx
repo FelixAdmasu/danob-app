@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Github, BookOpen, LayoutGrid, Package, Tag, Building2, ShoppingCart, Users, Layers } from 'lucide-react';
+import { Github, BookOpen, LayoutGrid, Package, Tag, Building2, ShoppingCart, Users, Layers, Store } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -65,6 +65,8 @@ export function AppSidebar() {
           ]
         : [];
 
+    const platformItems = [...adminNavItems, ...orderNavItems];
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -80,12 +82,24 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
-                {adminNavItems.length > 0 && <NavMain items={adminNavItems} />}
-                {orderNavItems.length > 0 && <NavMain items={orderNavItems} />}
+                <NavMain items={mainNavItems} label="Home" />
+                {platformItems.length > 0 && <NavMain items={platformItems} label="Platform" />}
             </SidebarContent>
 
             <SidebarFooter>
+                {isStaffPlus && (
+                    <div className="px-2 pb-2">
+                        <a
+                            href="/products"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 rounded-md px-2 py-2 text-xs font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+                        >
+                            <Store className="h-4 w-4" />
+                            View Store ↗
+                        </a>
+                    </div>
+                )}
                 <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>

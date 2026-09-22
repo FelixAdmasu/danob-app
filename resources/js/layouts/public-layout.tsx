@@ -53,8 +53,9 @@ export default function PublicLayout({ children }: Props) {
     const navRef = useRef<HTMLElement>(null);
     const { url } = usePage();
     const isHome = url === '/' || url === '';
-    const { props } = usePage<{ categories?: Category[] }>();
+    const { props } = usePage<{ categories?: Category[]; auth?: { user?: { name?: string } | null } }>();
     const categories = props.categories ?? [];
+    const isAuthenticated = !!props.auth?.user;
 
     // Track scroll position for header background
     useEffect(() => {
@@ -149,6 +150,11 @@ export default function PublicLayout({ children }: Props) {
                                     {link.label}
                                 </a>
                             ))}
+                            {isAuthenticated ? (
+                                <Link href="/dashboard" className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#2D5016] hover:text-[#1A3A0A] transition-colors border border-[#2D5016]/20 px-3 py-1 rounded-full">
+                                    Dashboard →
+                                </Link>
+                            ) : null}
                         </div>
 
                         {/* Mobile Menu Toggle */}
@@ -291,6 +297,15 @@ export default function PublicLayout({ children }: Props) {
                                 </Link>
                             )
                         )}
+                        {isAuthenticated && (
+                            <Link
+                                href="/dashboard"
+                                className="text-3xl font-serif italic text-[#A5FFA9] hover:text-white transition-colors"
+                                onClick={() => setMobileOpen(false)}
+                            >
+                                Dashboard →
+                            </Link>
+                        )}
                     </nav>
                     <div className="absolute bottom-12 text-[9px] font-bold uppercase tracking-[0.5em] text-[#ECF3E5] opacity-40">
                         Addis Ababa // Bahir Dar
@@ -344,7 +359,11 @@ export default function PublicLayout({ children }: Props) {
                         <div className="flex gap-12 text-[9px] font-bold uppercase tracking-[0.5em] opacity-40">
                             <Link href="/terms" className="hover:opacity-100 hover:text-[#A5FFA9] transition-all">Terms</Link>
                             <Link href="/privacy" className="hover:opacity-100 hover:text-[#A5FFA9] transition-all">Privacy</Link>
-                            <Link href="/login" className="hover:opacity-100 hover:text-[#A5FFA9] transition-all">Staff Login</Link>
+                            {isAuthenticated ? (
+                                <Link href="/dashboard" className="hover:opacity-100 hover:text-[#A5FFA9] transition-all">Dashboard</Link>
+                            ) : (
+                                <Link href="/login" className="hover:opacity-100 hover:text-[#A5FFA9] transition-all">Staff Login</Link>
+                            )}
                         </div>
                     </div>
                 </div>
