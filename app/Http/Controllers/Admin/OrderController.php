@@ -11,12 +11,27 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $orders = Order::with('customer')
-            ->latest('ordered_at')
-            ->paginate(20);
+        $search = $request->input('search');
+        $status = $request->input('status');
+
+        $query = Order::with('customer')->latest('ordered_at');
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('reference_number', 'like', "%{$search}%")
+                    ->orWhereHas('customer', fn ($c) => $c->where('name', 'like', "%{$search}%"));
+            });
+        }
+
+        if ($status && in_array($status, ['pending', 'confirmed', 'delivered', 'cancelled'])) {
+            $query->where('status', $status);
+        }
+
+        $orders = $query->paginate(20)->withQueryString();
 
         return Inertia::render('Admin/Orders/Index', [
             'orders' => $orders,
+            'filters' => ['search' => $search, 'status' => $status],
         ]);
     }
 
