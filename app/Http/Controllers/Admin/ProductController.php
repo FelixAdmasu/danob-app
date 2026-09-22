@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\OptimizeProductImage;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
@@ -153,6 +154,10 @@ class ProductController extends Controller
                 Storage::disk($uploaded['disk'])->delete($uploaded['path']);
             }
             throw $e;
+        }
+
+        foreach ($uploadedPaths as $uploaded) {
+            OptimizeProductImage::dispatch($uploaded['disk'], $uploaded['path']);
         }
 
         return redirect()->route('admin.products.index');
@@ -395,6 +400,10 @@ class ProductController extends Controller
                 Storage::disk($uploaded['disk'])->delete($uploaded['path']);
             }
             throw $e;
+        }
+
+        foreach ($uploadedPaths as $uploaded) {
+            OptimizeProductImage::dispatch($uploaded['disk'], $uploaded['path']);
         }
 
         return redirect()->route('admin.products.index');
