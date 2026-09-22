@@ -103,7 +103,7 @@ export default function PublicLayout({ children }: Props) {
     return (
         <div className="flex min-h-screen flex-col bg-[#ECF3E5]">
             {/* Header — Watershed + Vanguard Estates hybrid */}
-            <div ref={productsTriggerRef} className="fixed top-0 left-0 right-0 z-[70]">
+            <div ref={productsTriggerRef} className="sticky top-0 left-0 right-0 z-[70]">
                 <header
                     className={`
                         w-full transition-all duration-500 ease-in-out overflow-hidden
