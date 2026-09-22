@@ -1,6 +1,5 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -105,9 +104,13 @@ export default function Index({ brands, filters }: Props) {
         <>
             <Head title="Brands" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <div className="flex items-center justify-between">
-                    <Heading title="Brands" description="Manage product brands" />
-                    <Button onClick={openCreate}>
+                <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between border-b border-[#070E01]/10 dark:border-[#ECF3E5]/15 pb-8">
+                    <div>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#4A4A4A] dark:text-[#A5FFA9]/80 mb-3">Catalog — Brands</p>
+                        <h1 className="font-serif text-3xl md:text-4xl tracking-tight text-[#070E01] dark:text-[#ECF3E5]">Brands</h1>
+                        <p className="text-sm text-[#4A4A4A] dark:text-[#ECF3E5]/70 mt-2">Manage product brands and their catalog presence.</p>
+                    </div>
+                    <Button onClick={openCreate} className="bg-[#070E01] hover:bg-[#1A3A0A] text-[#ECF3E5] dark:bg-[#A5FFA9] dark:text-[#070E01] dark:hover:bg-[#8FEF95]">
                         <Plus className="mr-2 h-4 w-4" /> Add Brand
                     </Button>
                 </div>

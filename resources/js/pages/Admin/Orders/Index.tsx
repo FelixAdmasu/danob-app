@@ -1,6 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
-import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -49,7 +48,13 @@ export default function Index({ orders, filters }: Props) {
         <>
             <Head title="Orders" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <Heading title="Orders" description={`${orders.data.length} orders`} />
+                <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between border-b border-[#070E01]/10 dark:border-[#ECF3E5]/15 pb-8">
+                    <div>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#4A4A4A] dark:text-[#A5FFA9]/80 mb-3">Sales — Orders</p>
+                        <h1 className="font-serif text-3xl md:text-4xl tracking-tight text-[#070E01] dark:text-[#ECF3E5]">Orders</h1>
+                        <p className="text-sm text-[#4A4A4A] dark:text-[#ECF3E5]/70 mt-2">Track and manage customer orders.</p>
+                    </div>
+                </div>
 
                 <AdminQuickNav />
 

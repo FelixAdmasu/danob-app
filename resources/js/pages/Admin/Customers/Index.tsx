@@ -1,6 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
-import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -42,7 +41,13 @@ export default function Index({ customers, filters }: Props) {
         <>
             <Head title="Customers" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <Heading title="Customers" description={`${customers.data.length} customers`} />
+                <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between border-b border-[#070E01]/10 dark:border-[#ECF3E5]/15 pb-8">
+                    <div>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#4A4A4A] dark:text-[#A5FFA9]/80 mb-3">Sales — Customers</p>
+                        <h1 className="font-serif text-3xl md:text-4xl tracking-tight text-[#070E01] dark:text-[#ECF3E5]">Customers</h1>
+                        <p className="text-sm text-[#4A4A4A] dark:text-[#ECF3E5]/70 mt-2">Manage customer accounts and contact details.</p>
+                    </div>
+                </div>
                 <AdminQuickNav />
                 <form onSubmit={handleSearch} className="flex gap-2 max-w-sm">
                     <div className="relative flex-1">

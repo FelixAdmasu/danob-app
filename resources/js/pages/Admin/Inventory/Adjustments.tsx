@@ -1,6 +1,5 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState, useMemo } from 'react';
-import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -76,7 +75,11 @@ export default function Adjustments({ products }: Props) {
         <>
             <Head title="Stock Adjustments" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <Heading title="Stock Adjustments" description="Correct inventory with Adjustment In/Out. Creates an immutable ledger entry." />
+                <div className="border-b border-[#070E01]/10 dark:border-[#ECF3E5]/15 pb-8">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#4A4A4A] dark:text-[#A5FFA9]/80 mb-3">Inventory — Stock Adjustments</p>
+                    <h1 className="font-serif text-3xl md:text-4xl tracking-tight text-[#070E01] dark:text-[#ECF3E5]">Stock Adjustments</h1>
+                    <p className="text-sm text-[#4A4A4A] dark:text-[#ECF3E5]/70 mt-2 max-w-xl">Correct inventory with Adjustment In/Out. Creates an immutable ledger entry.</p>
+                </div>
 
                 {flashSuccess && <div className="rounded border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">{flashSuccess}</div>}
 
