@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\BrandController as AdminBrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Public\BranchController;
@@ -47,6 +48,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::resource('categories', CategoryController::class)->except(['show']);
         Route::resource('brands', AdminBrandController::class)->except(['show']);
         Route::resource('branches', AdminBranchController::class)->except(['show']);
+        Route::get('inventory/opening-stock', [InventoryController::class, 'openingStock'])->name('inventory.opening-stock');
+        Route::post('inventory/opening-stock', [InventoryController::class, 'storeOpeningStock'])->name('inventory.opening-stock.store');
     });
 
 });
