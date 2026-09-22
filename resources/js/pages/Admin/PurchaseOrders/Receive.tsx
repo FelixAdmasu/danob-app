@@ -91,7 +91,7 @@ export default function Receive({ purchase_order }: { purchase_order: PurchaseOr
                                     return (
                                         <div
                                             key={item.id}
-                                            className="grid gap-3 rounded border p-4 md:grid-cols-4"
+                                            className="grid gap-3 rounded border p-4 md:grid-cols-3 xl:grid-cols-5"
                                         >
                                             <div className="space-y-1">
                                                 <Label>Product</Label>
@@ -107,6 +107,10 @@ export default function Receive({ purchase_order }: { purchase_order: PurchaseOr
                                                 <Label>Already Received</Label>
                                                 <p className="text-sm">{item.received_quantity}</p>
                                             </div>
+                                            <div className="space-y-1">
+                                                <Label>Unit Cost</Label>
+                                                <p className="text-sm">{item.unit_cost}</p>
+                                            </div>
                                             <div className="space-y-2">
                                                 <Label htmlFor={`receive-${item.id}`}>
                                                     Receive (remaining: {remaining})
@@ -117,6 +121,7 @@ export default function Receive({ purchase_order }: { purchase_order: PurchaseOr
                                                     min={0}
                                                     max={remaining}
                                                     value={value}
+                                                    aria-invalid={errors.quantity ? true : undefined}
                                                     onChange={(e) =>
                                                         setQuantities((prev) => ({
                                                             ...prev,
@@ -124,6 +129,13 @@ export default function Receive({ purchase_order }: { purchase_order: PurchaseOr
                                                         }))
                                                     }
                                                 />
+                                                <p className="text-xs text-muted-foreground">
+                                                    Value:{' '}
+                                                    {(
+                                                        (Number(quantities[item.id] ?? 0) || 0) *
+                                                        Number(item.unit_cost)
+                                                    ).toFixed(2)}
+                                                </p>
                                             </div>
                                         </div>
                                     );

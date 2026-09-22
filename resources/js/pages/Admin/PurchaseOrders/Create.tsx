@@ -27,6 +27,12 @@ export default function Create({ suppliers, products }: { suppliers: Supplier[];
     };
     const removeItem = (idx: number) => setItems(items.filter((_, i) => i !== idx));
 
+    // Browser-side preview only — the server recalculates authoritatively.
+    const lineTotal = (item: { quantity: string; unit_cost: string }) =>
+        ((Number(item.quantity) || 0) * (Number(item.unit_cost) || 0)).toFixed(2);
+    const poTotal = items.reduce((sum, item) => sum + Number(lineTotal(item)), 0);
+    const itemError = (idx: number, field: string) => errors[`items.${idx}.${field}`];
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setProcessing(true);
@@ -59,9 +65,9 @@ export default function Create({ suppliers, products }: { suppliers: Supplier[];
                     <CardContent>
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="space-y-2">
-                                <Label>Supplier *</Label>
+                                <Label htmlFor="po-supplier">Supplier *</Label>
                                 <Select value={supplierId} onValueChange={setSupplierId}>
-                                    <SelectTrigger>
+                                    <SelectTrigger id="po-supplier" aria-invalid={errors.supplier_id ? true : undefined}>
                                         <SelectValue placeholder="Select supplier" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -72,15 +78,17 @@ export default function Create({ suppliers, products }: { suppliers: Supplier[];
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                {errors.supplier_id && <p className="text-xs text-red-600">{errors.supplier_id}</p>}
+                                {errors.supplier_id && (
+                                    <p role="alert" className="text-xs text-red-600">{errors.supplier_id}</p>
+                                )}
                             </div>
                             <div className="space-y-4">
                                 {items.map((item, idx) => (
-                                    <div key={idx} className="grid gap-3 md:grid-cols-3 rounded border p-4">
+                                    <div key={idx} className="grid gap-3 rounded border p-4 md:grid-cols-4">
                                         <div className="space-y-2">
-                                            <Label>Variant *</Label>
+                                            <Label htmlFor={`po-variant-${idx}`}>Variant *</Label>
                                             <Select value={item.product_variant_id} onValueChange={(v) => updateItem(idx, 'product_variant_id', v)}>
-                                                <SelectTrigger>
+                                                <SelectTrigger id={`po-variant-${idx}`} aria-invalid={itemError(idx, 'product_variant_id') ? true : undefined}>
                                                     <SelectValue placeholder="Variant" />
                                                 </SelectTrigger>
                                                 <SelectContent>
@@ -91,14 +99,49 @@ export default function Create({ suppliers, products }: { suppliers: Supplier[];
                                                     )))}
                                                 </SelectContent>
                                             </Select>
+                                            {itemError(idx, 'product_variant_id') && (
+                                                <p role="alert" className="text-xs text-red-600">{itemError(idx, 'product_variant_id')}</p>
+                                            )}
                                         </div>
                                         <div className="space-y-2">
-                                            <Label>Quantity</Label>
-                                            <Input type="number" value={item.quantity} onChange={(e) => updateItem(idx, 'quantity', e.target.value)} />
+                                            <Label htmlFor={`po-quantity-${idx}`}>Quantity</Label>
+                                            <Input
+                                                id={`po-quantity-${idx}`}
+                                                type="number"
+                                                min={1}
+                                                value={item.quantity}
+                                                aria-invalid={itemError(idx, 'quantity') ? true : undefined}
+                                                onChange={(e) => updateItem(idx, 'quantity', e.target.value)}
+                                            />
+                                            {itemError(idx, 'quantity') && (
+                                                <p role="alert" className="text-xs text-red-600">{itemError(idx, 'quantity')}</p>
+                                            )}
                                         </div>
                                         <div className="space-y-2">
-                                            <Label>Unit Cost</Label>
-                                            <Input type="number" step="0.01" value={item.unit_cost} onChange={(e) => updateItem(idx, 'unit_cost', e.target.value)} />
+                                            <Label htmlFor={`po-unit-cost-${idx}`}>Unit Cost</Label>
+                                            <Input
+                                                id={`po-unit-cost-${idx}`}
+                                                type="number"
+                                                step="0.01"
+                                                min={0}
+                                                value={item.unit_cost}
+                                                aria-invalid={itemError(idx, 'unit_cost') ? true : undefined}
+                                                onChange={(e) => updateItem(idx, 'unit_cost', e.target.value)}
+                                            />
+                                            {itemError(idx, 'unit_cost') && (
+                                                <p role="alert" className="text-xs text-red-600">{itemError(idx, 'unit_cost')}</p>
+                                            )}
+                                        </div>
+                                        <div className="space-y-2">
+                                            <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                                Line Total
+                                            </span>
+                                            <output
+                                                htmlFor={`po-quantity-${idx} po-unit-cost-${idx}`}
+                                                className="block rounded border bg-muted/50 px-3 py-2 text-sm"
+                                            >
+                                                {lineTotal(item)}
+                                            </output>
                                         </div>
                                         <Button type="button" variant="ghost" onClick={() => removeItem(idx)}>
                                             Remove
@@ -108,6 +151,12 @@ export default function Create({ suppliers, products }: { suppliers: Supplier[];
                                 <Button type="button" variant="outline" onClick={addItem}>
                                     Add Item
                                 </Button>
+                            </div>
+                            <div className="flex items-center justify-between rounded border bg-muted/50 px-4 py-3">
+                                <span className="text-sm text-muted-foreground">
+                                    Estimated total (calculated by the server on save)
+                                </span>
+                                <output className="text-base font-bold" aria-live="polite">{poTotal.toFixed(2)}</output>
                             </div>
                             <div className="flex gap-2">
                                 <Button type="submit" disabled={processing}>

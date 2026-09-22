@@ -21,14 +21,16 @@ class PurchaseOrderService
 
             $poNumber = $this->generatePoNumber();
 
-            $subtotal = 0;
+            // Money math uses integer cents so totals are deterministic
+            // (no binary floating-point drift), then stored as decimal(12,2).
+            $subtotalCents = 0;
             foreach ($data['items'] as $item) {
-                $subtotal += $item['quantity'] * $item['unit_cost'];
+                $subtotalCents += $this->lineSubtotalCents($item);
             }
 
-            $discount = $data['discount'] ?? 0;
-            $tax = $data['tax'] ?? 0;
-            $total = $subtotal - $discount + $tax;
+            $discountCents = (int) round(((float) ($data['discount'] ?? 0)) * 100);
+            $taxCents = (int) round(((float) ($data['tax'] ?? 0)) * 100);
+            $totalCents = $subtotalCents - $discountCents + $taxCents;
 
             $po = PurchaseOrder::create([
                 'po_number' => $poNumber,
@@ -37,10 +39,10 @@ class PurchaseOrderService
                 'status' => PurchaseOrder::STATUS_DRAFT,
                 'ordered_at' => $data['ordered_at'] ?? now()->toDateString(),
                 'expected_at' => $data['expected_at'] ?? null,
-                'subtotal' => $subtotal,
-                'discount' => $discount,
-                'tax' => $tax,
-                'total' => $total,
+                'subtotal' => $this->cents($subtotalCents),
+                'discount' => $this->cents($discountCents),
+                'tax' => $this->cents($taxCents),
+                'total' => $this->cents($totalCents),
                 'notes' => $data['notes'] ?? null,
             ]);
 
@@ -50,8 +52,8 @@ class PurchaseOrderService
                     'purchase_order_id' => $po->id,
                     'product_variant_id' => $item['product_variant_id'],
                     'quantity' => $item['quantity'],
-                    'unit_cost' => $item['unit_cost'],
-                    'subtotal' => $item['quantity'] * $item['unit_cost'],
+                    'unit_cost' => $this->cents($this->unitCostCents($item)),
+                    'subtotal' => $this->cents($this->lineSubtotalCents($item)),
                     'received_quantity' => 0,
                 ]);
             }
@@ -73,22 +75,24 @@ class PurchaseOrderService
                 throw ValidationException::withMessages(['supplier_id' => 'Supplier is inactive.']);
             }
 
-            $subtotal = 0;
+            // Same deterministic cents math as create(): totals are always
+            // recalculated from lines, never trusted from the client.
+            $subtotalCents = 0;
             foreach ($data['items'] as $item) {
-                $subtotal += $item['quantity'] * $item['unit_cost'];
+                $subtotalCents += $this->lineSubtotalCents($item);
             }
-            $discount = $data['discount'] ?? $po->discount;
-            $tax = $data['tax'] ?? $po->tax;
-            $total = $subtotal - $discount + $tax;
+            $discountCents = (int) round(((float) ($data['discount'] ?? $po->discount)) * 100);
+            $taxCents = (int) round(((float) ($data['tax'] ?? $po->tax)) * 100);
+            $totalCents = $subtotalCents - $discountCents + $taxCents;
 
             $po->update([
                 'supplier_id' => $supplierId,
                 'ordered_at' => $data['ordered_at'] ?? $po->ordered_at,
                 'expected_at' => $data['expected_at'] ?? $po->expected_at,
-                'subtotal' => $subtotal,
-                'discount' => $discount,
-                'tax' => $tax,
-                'total' => $total,
+                'subtotal' => $this->cents($subtotalCents),
+                'discount' => $this->cents($discountCents),
+                'tax' => $this->cents($taxCents),
+                'total' => $this->cents($totalCents),
                 'notes' => $data['notes'] ?? $po->notes,
             ]);
 
@@ -100,8 +104,8 @@ class PurchaseOrderService
                     'purchase_order_id' => $po->id,
                     'product_variant_id' => $item['product_variant_id'],
                     'quantity' => $item['quantity'],
-                    'unit_cost' => $item['unit_cost'],
-                    'subtotal' => $item['quantity'] * $item['unit_cost'],
+                    'unit_cost' => $this->cents($this->unitCostCents($item)),
+                    'subtotal' => $this->cents($this->lineSubtotalCents($item)),
                     'received_quantity' => 0,
                 ]);
             }
@@ -127,6 +131,32 @@ class PurchaseOrderService
         $po->update(['status' => $newStatus]);
 
         return $po;
+    }
+
+    /**
+     * Unit cost normalised to whole cents (e.g. 250.5 => 25050), so the
+     * stored decimal(12,2) value always matches what was calculated.
+     */
+    private function unitCostCents(array $item): int
+    {
+        return (int) round(((float) $item['unit_cost']) * 100);
+    }
+
+    /**
+     * quantity x unit_cost computed entirely in integer cents:
+     * exact and deterministic regardless of binary floating-point rounding.
+     */
+    private function lineSubtotalCents(array $item): int
+    {
+        return $this->unitCostCents($item) * (int) $item['quantity'];
+    }
+
+    /**
+     * Format integer cents as a decimal(12,2) string.
+     */
+    private function cents(int $cents): string
+    {
+        return number_format($cents / 100, 2, '.', '');
     }
 
     private function validateItem(array $item): void

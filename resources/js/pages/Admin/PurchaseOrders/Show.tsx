@@ -6,7 +6,30 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { dashboard } from '@/routes';
 import * as PurchaseOrderRoutes from '@/routes/admin/purchase-orders';
 
-export default function Show({ purchase_order }: { purchase_order: { id: number; po_number: string; status: string; supplier: { name: string } | null; total: string; subtotal: string; items: { id: number; quantity: number; unit_cost: string; subtotal: string; received_quantity: number; variant: { name: string; product: { name: string } | null } | null }[] } }) {
+type OrderItem = {
+    id: number;
+    quantity: number;
+    unit_cost: string;
+    subtotal: string;
+    received_quantity: number;
+    variant: { name: string; product: { name: string } | null } | null;
+};
+
+type PurchaseOrder = {
+    id: number;
+    po_number: string;
+    status: string;
+    ordered_at: string | null;
+    supplier: { name: string } | null;
+    subtotal: string;
+    discount: string;
+    tax: string;
+    total: string;
+    items: OrderItem[];
+};
+
+export default function Show({ purchase_order }: { purchase_order: PurchaseOrder }) {
+    const canEdit = purchase_order.status === 'draft';
     const canSubmit = purchase_order.status === 'draft';
     const canApprove = purchase_order.status === 'submitted';
     const canCancel = !['received', 'cancelled'].includes(purchase_order.status);
@@ -16,8 +39,18 @@ export default function Show({ purchase_order }: { purchase_order: { id: number;
             <Head title={purchase_order.po_number} />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
                 <div className="flex items-center justify-between">
-                    <Heading title={purchase_order.po_number} description={`Status: ${purchase_order.status}`} />
+                    <Heading
+                        title={purchase_order.po_number}
+                        description={`Supplier: ${purchase_order.supplier?.name || '—'} · Ordered: ${
+                            purchase_order.ordered_at ? new Date(purchase_order.ordered_at).toLocaleDateString() : '—'
+                        } · Status: ${purchase_order.status}`}
+                    />
                     <div className="flex gap-2">
+                        {canEdit && (
+                            <Link href={PurchaseOrderRoutes.edit(purchase_order.id).url}>
+                                <Button variant="outline">Edit</Button>
+                            </Link>
+                        )}
                         {canSubmit && (
                             <Button onClick={() => router.post(PurchaseOrderRoutes.submit(purchase_order.id).url)}>Submit</Button>
                         )}
@@ -52,8 +85,9 @@ export default function Show({ purchase_order }: { purchase_order: { id: number;
                                         <th className="px-3 py-2">Variant</th>
                                         <th className="px-3 py-2">Qty</th>
                                         <th className="px-3 py-2">Unit Cost</th>
-                                        <th className="px-3 py-2">Subtotal</th>
+                                        <th className="px-3 py-2">Line Total</th>
                                         <th className="px-3 py-2">Received</th>
+                                        <th className="px-3 py-2">Remaining</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -65,14 +99,32 @@ export default function Show({ purchase_order }: { purchase_order: { id: number;
                                             <td className="px-3 py-2">{item.unit_cost}</td>
                                             <td className="px-3 py-2">{item.subtotal}</td>
                                             <td className="px-3 py-2">{item.received_quantity}</td>
+                                            <td className="px-3 py-2">{item.quantity - item.received_quantity}</td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
                         </div>
-                        <div className="mt-4 flex justify-end">
-                            <Badge>{purchase_order.status}</Badge>
-                            <span className="ml-4 font-bold">Total: {purchase_order.total}</span>
+                        <div className="mt-4 flex flex-col items-end gap-1">
+                            <div className="flex w-72 justify-between text-sm">
+                                <span className="text-muted-foreground">Subtotal</span>
+                                <span>{purchase_order.subtotal}</span>
+                            </div>
+                            <div className="flex w-72 justify-between text-sm">
+                                <span className="text-muted-foreground">Discount</span>
+                                <span>{purchase_order.discount}</span>
+                            </div>
+                            <div className="flex w-72 justify-between text-sm">
+                                <span className="text-muted-foreground">Tax</span>
+                                <span>{purchase_order.tax}</span>
+                            </div>
+                            <div className="flex w-72 justify-between border-t pt-1 font-bold">
+                                <span>Total</span>
+                                <span>{purchase_order.total}</span>
+                            </div>
+                            <div className="mt-2">
+                                <Badge>{purchase_order.status}</Badge>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
