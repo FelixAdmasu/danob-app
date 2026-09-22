@@ -23,6 +23,7 @@ type Product = {
     category: { id: number; name: string; slug: string } | null;
     brand: { id: number; name: string; slug: string } | null;
     variants_count: number;
+    low_stock_variants_count: number;
     images: ProductImage[];
 };
 
@@ -125,7 +126,16 @@ export default function Index({ products, filters }: Props) {
                                                     <td className="px-4 py-3">
                                                         <Badge variant={product.status === 'active' ? 'default' : 'secondary'}>{product.status}</Badge>
                                                     </td>
-                                                    <td className="px-4 py-3 text-sm">{product.variants_count}</td>
+                                                    <td className="px-4 py-3 text-sm">
+                                                        <div className="flex items-center gap-2">
+                                                            <span>{product.variants_count}</span>
+                                                            {product.low_stock_variants_count > 0 && (
+                                                                <Badge variant="destructive" className="text-[10px]">
+                                                                    Low: {product.low_stock_variants_count}
+                                                                </Badge>
+                                                            )}
+                                                        </div>
+                                                    </td>
                                                     <td className="px-4 py-3">
                                                         <div className="flex gap-1">
                                                             <Link href={ProductRoutes.show(product.id).url}>
