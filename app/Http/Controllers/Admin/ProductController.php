@@ -8,6 +8,8 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
@@ -51,42 +53,95 @@ class ProductController extends Controller
             'variants.*.public_price' => 'nullable|numeric|min:0|max:999999.99',
             'variants.*.is_active' => 'nullable|boolean',
             'images' => 'nullable|array',
-            'images.*.url' => 'required_with:images|string|max:2048',
+            'images.*.id' => 'nullable|integer|exists:product_images,id',
+            'images.*.url' => 'nullable|string|max:2048',
+            'images.*.file' => 'nullable|file|image|mimes:jpeg,png,jpg,webp|max:5120',
             'images.*.sort_order' => 'nullable|integer|min:0',
             'images.*.is_primary' => 'nullable|boolean',
             'images.*.alt_text' => 'nullable|string|max:255',
         ]);
 
-        DB::transaction(function () use ($validated): void {
-            $product = Product::create([
-                'name' => $validated['name'],
-                'slug' => $validated['slug'],
-                'category_id' => $validated['category_id'],
-                'brand_id' => $validated['brand_id'] ?? null,
-                'description' => $validated['description'],
-                'status' => $validated['status'],
-            ]);
-
-            foreach ($validated['variants'] ?? [] as $variantData) {
-                $product->variants()->create([
-                    'name' => $variantData['name'],
-                    'sku' => $variantData['sku'] ?? null,
-                    'unit' => $variantData['unit'] ?? null,
-                    'quantity' => $variantData['quantity'] ?? 1,
-                    'public_price' => $variantData['public_price'] ?? null,
-                    'is_active' => $variantData['is_active'] ?? true,
-                ]);
+        // Ensure at least url or file for each image
+        foreach ($validated['images'] ?? [] as $idx => $img) {
+            if (empty($img['url']) && empty($request->file("images.$idx.file"))) {
+                return back()->withErrors(["images.$idx.file" => 'Either URL or file is required.'])->withInput();
             }
+        }
 
-            foreach ($validated['images'] ?? [] as $index => $imageData) {
-                $product->images()->create([
-                    'url' => $imageData['url'],
-                    'sort_order' => $imageData['sort_order'] ?? $index,
-                    'is_primary' => $imageData['is_primary'] ?? false,
-                    'alt_text' => $imageData['alt_text'] ?? null,
+        $product = null;
+        $uploadedPaths = [];
+
+        try {
+            DB::transaction(function () use ($request, $validated, &$product, &$uploadedPaths): void {
+                $product = Product::create([
+                    'name' => $validated['name'],
+                    'slug' => $validated['slug'],
+                    'category_id' => $validated['category_id'],
+                    'brand_id' => $validated['brand_id'] ?? null,
+                    'description' => $validated['description'],
+                    'status' => $validated['status'],
                 ]);
+
+                foreach ($validated['variants'] ?? [] as $variantData) {
+                    $product->variants()->create([
+                        'name' => $variantData['name'],
+                        'sku' => $variantData['sku'] ?? null,
+                        'unit' => $variantData['unit'] ?? null,
+                        'quantity' => $variantData['quantity'] ?? 1,
+                        'public_price' => $variantData['public_price'] ?? null,
+                        'is_active' => $variantData['is_active'] ?? true,
+                    ]);
+                }
+
+                $disk = config('filesystems.product_images_disk', 'public');
+                $hasPrimary = false;
+
+                foreach ($validated['images'] ?? [] as $index => $imageData) {
+                    $url = $imageData['url'] ?? null;
+                    $file = $request->file("images.$index.file");
+
+                    if ($file) {
+                        $path = $file->store('products/'.$product->id, $disk);
+                        $uploadedPaths[] = ['disk' => $disk, 'path' => $path];
+                        $url = Storage::disk($disk)->url($path);
+                        // For local public disk, url is /storage/..., for supabase it's full https://
+                    }
+
+                    if (! $url) {
+                        continue;
+                    }
+
+                    $isPrimary = $imageData['is_primary'] ?? false;
+                    if ($isPrimary && $hasPrimary) {
+                        $isPrimary = false;
+                    }
+                    if ($isPrimary) {
+                        $hasPrimary = true;
+                    }
+
+                    $product->images()->create([
+                        'url' => $url,
+                        'sort_order' => $imageData['sort_order'] ?? $index,
+                        'is_primary' => $isPrimary,
+                        'alt_text' => $imageData['alt_text'] ?? null,
+                    ]);
+                }
+
+                // Ensure at most one primary - if none set, first image becomes primary
+                if (! $hasPrimary && $product->images()->exists()) {
+                    $first = $product->images()->orderBy('sort_order')->first();
+                    if ($first) {
+                        $product->images()->where('id', $first->id)->update(['is_primary' => true]);
+                    }
+                }
+            });
+        } catch (\Throwable $e) {
+            // Cleanup uploaded files if transaction failed
+            foreach ($uploadedPaths as $uploaded) {
+                Storage::disk($uploaded['disk'])->delete($uploaded['path']);
             }
-        });
+            throw $e;
+        }
 
         return redirect()->route('admin.products.index');
     }
@@ -140,7 +195,8 @@ class ProductController extends Controller
             'variants.*.is_active' => 'nullable|boolean',
             'images' => 'nullable|array',
             'images.*.id' => 'nullable|integer|exists:product_images,id',
-            'images.*.url' => 'required_with:images|string|max:2048',
+            'images.*.url' => 'nullable|string|max:2048',
+            'images.*.file' => 'nullable|file|image|mimes:jpeg,png,jpg,webp|max:5120',
             'images.*.sort_order' => 'nullable|integer|min:0',
             'images.*.is_primary' => 'nullable|boolean',
             'images.*.alt_text' => 'nullable|string|max:255',
@@ -159,89 +215,262 @@ class ProductController extends Controller
             $request->validate($variantRules);
         }
 
-        DB::transaction(function () use ($request, $product, $validated): void {
-            $product->update([
-                'name' => $validated['name'],
-                'slug' => $validated['slug'],
-                'category_id' => $validated['category_id'],
-                'brand_id' => $validated['brand_id'] ?? null,
-                'description' => $validated['description'],
-                'status' => $validated['status'],
-            ]);
+        // Ensure at least url or file for each image where id not set or url empty
+        foreach ($validated['images'] ?? [] as $idx => $img) {
+            $hasId = ! empty($img['id']);
+            $hasUrl = ! empty($img['url']);
+            $hasFile = $request->hasFile("images.$idx.file");
+            if (! $hasId && ! $hasUrl && ! $hasFile) {
+                return back()->withErrors(["images.$idx.file" => 'Either URL or file is required.'])->withInput();
+            }
+            if ($hasId && ! $hasUrl && ! $hasFile) {
+                // Existing image must keep url or have new file
+                $existing = $product->images()->find($img['id']);
+                if ($existing && empty($existing->url) && ! $hasFile) {
+                    return back()->withErrors(["images.$idx.file" => 'Either URL or file is required.'])->withInput();
+                }
+            }
+        }
 
-            if (array_key_exists('variants', $validated)) {
-                $keepVariantIds = [];
-                foreach ($validated['variants'] ?? [] as $variantData) {
-                    $id = $variantData['id'] ?? null;
-                    $payload = [
-                        'name' => $variantData['name'],
-                        'sku' => $variantData['sku'] ?? null,
-                        'unit' => $variantData['unit'] ?? null,
-                        'quantity' => $variantData['quantity'] ?? 1,
-                        'public_price' => $variantData['public_price'] ?? null,
-                        'is_active' => $variantData['is_active'] ?? true,
-                    ];
-                    if ($id) {
-                        $variant = $product->variants()->find($id);
-                        if ($variant) {
-                            $variant->update($payload);
-                            $keepVariantIds[] = $variant->id;
+        $uploadedPaths = [];
+
+        try {
+            DB::transaction(function () use ($request, $product, $validated, &$uploadedPaths): void {
+                $product->update([
+                    'name' => $validated['name'],
+                    'slug' => $validated['slug'],
+                    'category_id' => $validated['category_id'],
+                    'brand_id' => $validated['brand_id'] ?? null,
+                    'description' => $validated['description'],
+                    'status' => $validated['status'],
+                ]);
+
+                if (array_key_exists('variants', $validated)) {
+                    $keepVariantIds = [];
+                    foreach ($validated['variants'] ?? [] as $variantData) {
+                        $id = $variantData['id'] ?? null;
+                        $payload = [
+                            'name' => $variantData['name'],
+                            'sku' => $variantData['sku'] ?? null,
+                            'unit' => $variantData['unit'] ?? null,
+                            'quantity' => $variantData['quantity'] ?? 1,
+                            'public_price' => $variantData['public_price'] ?? null,
+                            'is_active' => $variantData['is_active'] ?? true,
+                        ];
+                        if ($id) {
+                            $variant = $product->variants()->find($id);
+                            if ($variant) {
+                                $variant->update($payload);
+                                $keepVariantIds[] = $variant->id;
+                            } else {
+                                $new = $product->variants()->create($payload);
+                                $keepVariantIds[] = $new->id;
+                            }
                         } else {
                             $new = $product->variants()->create($payload);
                             $keepVariantIds[] = $new->id;
                         }
+                    }
+                    if ($keepVariantIds) {
+                        $product->variants()->whereNotIn('id', $keepVariantIds)->delete();
                     } else {
-                        $new = $product->variants()->create($payload);
-                        $keepVariantIds[] = $new->id;
+                        $product->variants()->delete();
                     }
                 }
-                // Delete variants not sent (explicit removal)
-                if ($keepVariantIds) {
-                    $product->variants()->whereNotIn('id', $keepVariantIds)->delete();
-                } else {
-                    $product->variants()->delete();
-                }
-            }
 
-            if (array_key_exists('images', $validated)) {
-                $keepImageIds = [];
-                foreach ($validated['images'] ?? [] as $index => $imageData) {
-                    $id = $imageData['id'] ?? null;
-                    $payload = [
-                        'url' => $imageData['url'],
-                        'sort_order' => $imageData['sort_order'] ?? $index,
-                        'is_primary' => $imageData['is_primary'] ?? false,
-                        'alt_text' => $imageData['alt_text'] ?? null,
-                    ];
-                    if ($id) {
-                        $image = $product->images()->find($id);
-                        if ($image) {
-                            $image->update($payload);
-                            $keepImageIds[] = $image->id;
+                if (array_key_exists('images', $validated)) {
+                    $keepImageIds = [];
+                    $disk = config('filesystems.product_images_disk', 'public');
+                    $hasPrimary = false;
+                    $imagesToDelete = [];
+
+                    // First, handle file uploads and determine final payloads
+                    $processedImages = [];
+                    foreach ($validated['images'] ?? [] as $index => $imageData) {
+                        $id = $imageData['id'] ?? null;
+                        $file = $request->file("images.$index.file");
+                        $url = $imageData['url'] ?? null;
+
+                        if ($file) {
+                            $path = $file->store('products/'.$product->id, $disk);
+                            $uploadedPaths[] = ['disk' => $disk, 'path' => $path];
+                            $url = Storage::disk($disk)->url($path);
+                        } elseif ($id) {
+                            // Keep existing url if no new file and no url provided
+                            if (! $url) {
+                                $existing = $product->images()->find($id);
+                                $url = $existing?->url;
+                            }
+                        }
+
+                        if (! $url) {
+                            continue;
+                        }
+
+                        $isPrimary = $imageData['is_primary'] ?? false;
+                        if ($isPrimary && $hasPrimary) {
+                            $isPrimary = false;
+                        }
+                        if ($isPrimary) {
+                            $hasPrimary = true;
+                        }
+
+                        $processedImages[] = [
+                            'id' => $id,
+                            'payload' => [
+                                'url' => $url,
+                                'sort_order' => $imageData['sort_order'] ?? $index,
+                                'is_primary' => $isPrimary,
+                                'alt_text' => $imageData['alt_text'] ?? null,
+                            ],
+                        ];
+                    }
+
+                    // If none marked primary but images exist, first becomes primary
+                    if (! $hasPrimary && $processedImages) {
+                        $processedImages[0]['payload']['is_primary'] = true;
+                        $hasPrimary = true;
+                    }
+
+                    // Persist
+                    foreach ($processedImages as $item) {
+                        $id = $item['id'];
+                        $payload = $item['payload'];
+                        if ($id) {
+                            $image = $product->images()->find($id);
+                            $oldUrl = $image?->url;
+                            if ($image) {
+                                $image->update($payload);
+                                $keepImageIds[] = $image->id;
+                                // If url changed from file upload, delete old file if owned
+                                if ($oldUrl && $oldUrl !== $payload['url'] && $this->isOwnedStorageUrl($oldUrl)) {
+                                    $this->deleteOwnedFile($oldUrl);
+                                }
+                            } else {
+                                $new = $product->images()->create($payload);
+                                $keepImageIds[] = $new->id;
+                            }
                         } else {
                             $new = $product->images()->create($payload);
                             $keepImageIds[] = $new->id;
                         }
-                    } else {
-                        $new = $product->images()->create($payload);
-                        $keepImageIds[] = $new->id;
+                    }
+
+                    // Delete removed images and their storage files if owned
+                    $toDelete = $keepImageIds
+                        ? $product->images()->whereNotIn('id', $keepImageIds)->get()
+                        : $product->images()->get();
+
+                    foreach ($toDelete as $img) {
+                        if ($this->isOwnedStorageUrl($img->url)) {
+                            $this->deleteOwnedFile($img->url);
+                        }
+                        $img->delete();
+                    }
+
+                    // Ensure single primary after sync
+                    if ($hasPrimary) {
+                        $primaryId = collect($processedImages)->firstWhere(fn ($i) => $i['payload']['is_primary'])?->id
+                            ?? $product->images()->where('is_primary', true)->first()?->id;
+                        if ($primaryId) {
+                            $product->images()->where('id', '!=', $primaryId)->update(['is_primary' => false]);
+                        }
                     }
                 }
-                if ($keepImageIds) {
-                    $product->images()->whereNotIn('id', $keepImageIds)->delete();
-                } else {
-                    $product->images()->delete();
-                }
+            });
+        } catch (\Throwable $e) {
+            foreach ($uploadedPaths as $uploaded) {
+                Storage::disk($uploaded['disk'])->delete($uploaded['path']);
             }
-        });
+            throw $e;
+        }
 
         return redirect()->route('admin.products.index');
     }
 
     public function destroy(Product $product)
     {
+        // Delete owned storage files before deleting product (cascade will delete DB records)
+        foreach ($product->images as $image) {
+            if ($this->isOwnedStorageUrl($image->url)) {
+                $this->deleteOwnedFile($image->url);
+            }
+        }
+
         $product->delete();
 
         return redirect()->route('admin.products.index');
+    }
+
+    private function isOwnedStorageUrl(string $url): bool
+    {
+        // Owned if it's a storage path for product-images disk (local /storage/ or supabase bucket)
+        // External URLs (https://example.com/...) are not owned
+        if (str_starts_with($url, '/storage/product-images/')) {
+            return true;
+        }
+        if (str_contains($url, '/storage/v1/object/public/'.config('filesystems.disks.supabase.bucket', 'product-images'))) {
+            return true;
+        }
+        // Check if url is from our configured disks
+        $disk = config('filesystems.product_images_disk', 'public');
+        try {
+            $diskUrl = Storage::disk($disk)->url('');
+            if ($diskUrl && str_starts_with($url, $diskUrl)) {
+                return true;
+            }
+        } catch (\Throwable $e) {
+            // ignore
+        }
+        // Also check supabase disk
+        try {
+            $supabaseUrl = Storage::disk('supabase')->url('');
+            if ($supabaseUrl && str_starts_with($url, $supabaseUrl)) {
+                return true;
+            }
+        } catch (\Throwable $e) {
+            // ignore
+        }
+
+        return false;
+    }
+
+    private function deleteOwnedFile(string $url): void
+    {
+        // Derive storage path from url and delete from appropriate disk
+        $disks = [config('filesystems.product_images_disk', 'public'), 'supabase', 'public', 's3'];
+        $disks = array_unique(array_filter($disks));
+
+        foreach ($disks as $disk) {
+            try {
+                $diskUrl = Storage::disk($disk)->url('');
+                if ($diskUrl && str_starts_with($url, $diskUrl)) {
+                    $path = ltrim(Str::after($url, $diskUrl), '/');
+                    if ($path && Storage::disk($disk)->exists($path)) {
+                        Storage::disk($disk)->delete($path);
+
+                        return;
+                    }
+                }
+            } catch (\Throwable $e) {
+                continue;
+            }
+        }
+
+        // Fallback for local /storage/... paths
+        if (str_starts_with($url, '/storage/')) {
+            $path = ltrim(Str::after($url, '/storage/'), '/');
+            // For local public disk, product-images is under product-images/
+            if (str_starts_with($path, 'product-images/')) {
+                $actualPath = Str::after($path, 'product-images/');
+                if (Storage::disk('product-images')->exists($actualPath) || Storage::disk('public')->exists($actualPath) || Storage::disk('public')->exists('product-images/'.$actualPath)) {
+                    Storage::disk('product-images')->delete($actualPath);
+                    Storage::disk('public')->delete($actualPath);
+                    Storage::disk('public')->delete('product-images/'.$actualPath);
+                }
+            } else {
+                Storage::disk('public')->delete($path);
+            }
+        }
     }
 }

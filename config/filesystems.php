@@ -15,6 +15,8 @@ return [
 
     'default' => env('FILESYSTEM_DISK', 'local'),
 
+    'product_images_disk' => env('FILESYSTEM_DISK_PRODUCT_IMAGES', 'public'),
+
     /*
     |--------------------------------------------------------------------------
     | Filesystem Disks
@@ -56,6 +58,29 @@ return [
             'url' => env('AWS_URL'),
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'throw' => false,
+            'report' => false,
+        ],
+
+        'supabase' => [
+            'driver' => 's3',
+            'key' => env('SUPABASE_ACCESS_KEY_ID', env('AWS_ACCESS_KEY_ID')),
+            'secret' => env('SUPABASE_SECRET_ACCESS_KEY', env('AWS_SECRET_ACCESS_KEY')),
+            'region' => env('SUPABASE_DEFAULT_REGION', env('AWS_DEFAULT_REGION', 'us-east-1')),
+            'bucket' => env('SUPABASE_BUCKET', env('SUPABASE_STORAGE_BUCKET', env('AWS_BUCKET', 'product-images'))),
+            'url' => env('SUPABASE_URL') ? rtrim((string) env('SUPABASE_URL'), '/').'/storage/v1/object/public/'.env('SUPABASE_BUCKET', env('SUPABASE_STORAGE_BUCKET', 'product-images')) : env('AWS_URL'),
+            'endpoint' => env('SUPABASE_ENDPOINT', env('SUPABASE_S3_ENDPOINT', env('AWS_ENDPOINT', 'https://'.env('SUPABASE_PROJECT_REF', 'your-project').'.storage.supabase.co/storage/v1/s3'))),
+            'use_path_style_endpoint' => env('SUPABASE_USE_PATH_STYLE_ENDPOINT', env('AWS_USE_PATH_STYLE_ENDPOINT', true)),
+            'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ],
+
+        'product-images' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/product-images'),
+            'url' => rtrim((string) env('APP_URL', 'http://localhost'), '/').'/storage/product-images',
+            'visibility' => 'public',
             'throw' => false,
             'report' => false,
         ],

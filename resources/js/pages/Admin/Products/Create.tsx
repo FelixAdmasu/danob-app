@@ -1,4 +1,5 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
+import { useState } from 'react';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -9,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { dashboard } from '@/routes';
 import * as ProductRoutes from '@/routes/admin/products';
+import { Upload, X, Image as ImageIcon } from 'lucide-react';
 
 type Category = { id: number; name: string; slug: string };
 type Brand = { id: number; name: string; slug: string };
@@ -28,93 +30,93 @@ type VariantForm = {
 };
 
 type ImageForm = {
-    url: string;
+    file: File | null;
+    preview: string | null;
     alt_text: string;
     sort_order: string;
     is_primary: boolean;
 };
 
 export default function Create({ categories, brands }: Props) {
-    const { data, setData, post, processing, errors } = useForm({
+    const [data, setData] = useState({
         name: '',
         slug: '',
         category_id: '',
         brand_id: '',
         description: '',
-        status: 'active' as string,
+        status: 'active',
         variants: [] as VariantForm[],
         images: [] as ImageForm[],
     });
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [processing, setProcessing] = useState(false);
 
     const addVariant = () => {
-        setData('variants', [
-            ...data.variants,
-            { name: '', sku: '', unit: '', quantity: '1', public_price: '', is_active: true },
-        ]);
+        setData({ ...data, variants: [...data.variants, { name: '', sku: '', unit: '', quantity: '1', public_price: '', is_active: true }] });
     };
-
     const updateVariant = (idx: number, field: keyof VariantForm, value: string | boolean) => {
         const next = [...data.variants];
         (next[idx] as Record<string, unknown>)[field] = value;
-        setData('variants', next);
+        setData({ ...data, variants: next });
     };
-
-    const removeVariant = (idx: number) => {
-        setData(
-            'variants',
-            data.variants.filter((_, i) => i !== idx),
-        );
-    };
+    const removeVariant = (idx: number) => setData({ ...data, variants: data.variants.filter((_, i) => i !== idx) });
 
     const addImage = () => {
-        setData('images', [
-            ...data.images,
-            { url: '', alt_text: '', sort_order: String(data.images.length), is_primary: false },
-        ]);
+        setData({ ...data, images: [...data.images, { file: null, preview: null, alt_text: '', sort_order: String(data.images.length), is_primary: data.images.length === 0 }] });
     };
-
-    const updateImage = (idx: number, field: keyof ImageForm, value: string | boolean) => {
+    const updateImage = (idx: number, field: keyof ImageForm, value: string | boolean | File | null) => {
         const next = [...data.images];
         if (field === 'is_primary' && value === true) {
             next.forEach((img, i) => (img.is_primary = i === idx));
+        } else if (field === 'file' && value instanceof File) {
+            const preview = URL.createObjectURL(value);
+            next[idx].file = value;
+            next[idx].preview = preview;
         } else {
             (next[idx] as Record<string, unknown>)[field] = value;
         }
-        setData('images', next);
+        setData({ ...data, images: next });
     };
-
     const removeImage = (idx: number) => {
-        setData(
-            'images',
-            data.images.filter((_, i) => i !== idx),
-        );
+        const img = data.images[idx];
+        if (img.preview) URL.revokeObjectURL(img.preview);
+        setData({ ...data, images: data.images.filter((_, i) => i !== idx) });
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const payload: Record<string, unknown> = {
-            name: data.name,
-            slug: data.slug,
-            category_id: data.category_id ? Number(data.category_id) : null,
-            brand_id: data.brand_id ? Number(data.brand_id) : null,
-            description: data.description,
-            status: data.status,
-            variants: data.variants.map((v) => ({
-                name: v.name,
-                sku: v.sku || null,
-                unit: v.unit || null,
-                quantity: v.quantity ? Number(v.quantity) : 1,
-                public_price: v.public_price || null,
-                is_active: v.is_active,
-            })),
-            images: data.images.map((img, idx) => ({
-                url: img.url,
-                alt_text: img.alt_text || null,
-                sort_order: img.sort_order ? Number(img.sort_order) : idx,
-                is_primary: img.is_primary,
-            })),
-        };
-        post(ProductRoutes.store().url, payload as never);
+        setProcessing(true);
+        setErrors({});
+        const formData = new FormData();
+        formData.append('name', data.name);
+        formData.append('slug', data.slug);
+        formData.append('category_id', data.category_id);
+        if (data.brand_id) formData.append('brand_id', data.brand_id);
+        formData.append('description', data.description);
+        formData.append('status', data.status);
+        data.variants.forEach((v, idx) => {
+            formData.append(`variants[${idx}][name]`, v.name);
+            if (v.sku) formData.append(`variants[${idx}][sku]`, v.sku);
+            if (v.unit) formData.append(`variants[${idx}][unit]`, v.unit);
+            formData.append(`variants[${idx}][quantity]`, v.quantity || '1');
+            if (v.public_price) formData.append(`variants[${idx}][public_price]`, v.public_price);
+            formData.append(`variants[${idx}][is_active]`, v.is_active ? '1' : '0');
+        });
+        data.images.forEach((img, idx) => {
+            if (img.file) formData.append(`images[${idx}][file]`, img.file);
+            formData.append(`images[${idx}][alt_text]`, img.alt_text || '');
+            formData.append(`images[${idx}][sort_order]`, img.sort_order || String(idx));
+            formData.append(`images[${idx}][is_primary]`, img.is_primary ? '1' : '0');
+        });
+        router.post(ProductRoutes.store().url, formData, {
+            forceFormData: true,
+            onError: (err: Record<string, string>) => {
+                setErrors(err as Record<string, string>);
+                setProcessing(false);
+            },
+            onSuccess: () => setProcessing(false),
+            onFinish: () => setProcessing(false),
+        } as never);
     };
 
     return (
@@ -131,19 +133,19 @@ export default function Create({ categories, brands }: Props) {
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
                                     <Label htmlFor="name">Name *</Label>
-                                    <Input id="name" value={data.name} onChange={(e) => setData('name', e.target.value)} required />
+                                    <Input id="name" value={data.name} onChange={(e) => setData({ ...data, name: e.target.value })} required />
                                     <InputError message={errors.name} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="slug">Slug *</Label>
-                                    <Input id="slug" value={data.slug} onChange={(e) => setData('slug', e.target.value)} required placeholder="e.g. vanilla-powder" />
+                                    <Input id="slug" value={data.slug} onChange={(e) => setData({ ...data, slug: e.target.value })} required placeholder="e.g. vanilla-powder" />
                                     <InputError message={errors.slug} />
                                 </div>
                             </div>
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
                                     <Label>Category *</Label>
-                                    <Select value={data.category_id} onValueChange={(v) => setData('category_id', v)}>
+                                    <Select value={data.category_id} onValueChange={(v) => setData({ ...data, category_id: v })}>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select category" />
                                         </SelectTrigger>
@@ -159,10 +161,7 @@ export default function Create({ categories, brands }: Props) {
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Brand</Label>
-                                    <Select
-                                        value={data.brand_id || 'none'}
-                                        onValueChange={(v) => setData('brand_id', v === 'none' ? '' : v)}
-                                    >
+                                    <Select value={data.brand_id || 'none'} onValueChange={(v) => setData({ ...data, brand_id: v === 'none' ? '' : v })}>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select brand" />
                                         </SelectTrigger>
@@ -183,16 +182,16 @@ export default function Create({ categories, brands }: Props) {
                                 <textarea
                                     id="description"
                                     value={data.description}
-                                    onChange={(e) => setData('description', e.target.value)}
+                                    onChange={(e) => setData({ ...data, description: e.target.value })}
                                     required
                                     rows={4}
-                                    className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                    className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                 />
                                 <InputError message={errors.description} />
                             </div>
                             <div className="space-y-2">
                                 <Label>Status</Label>
-                                <Select value={data.status} onValueChange={(v) => setData('status', v)}>
+                                <Select value={data.status} onValueChange={(v) => setData({ ...data, status: v })}>
                                     <SelectTrigger className="w-[200px]">
                                         <SelectValue />
                                     </SelectTrigger>
@@ -228,11 +227,7 @@ export default function Create({ categories, brands }: Props) {
                                         <div className="grid gap-3 md:grid-cols-2">
                                             <div className="space-y-1">
                                                 <Label>Name *</Label>
-                                                <Input
-                                                    value={variant.name}
-                                                    onChange={(e) => updateVariant(idx, 'name', e.target.value)}
-                                                    placeholder="e.g. 1kg"
-                                                />
+                                                <Input value={variant.name} onChange={(e) => updateVariant(idx, 'name', e.target.value)} placeholder="e.g. 1kg" />
                                                 <InputError message={(errors as Record<string, string>)[`variants.${idx}.name`]} />
                                             </div>
                                             <div className="space-y-1">
@@ -253,11 +248,7 @@ export default function Create({ categories, brands }: Props) {
                                                 <Input value={variant.public_price} onChange={(e) => updateVariant(idx, 'public_price', e.target.value)} placeholder="e.g. 12.50" />
                                             </div>
                                             <div className="flex items-center gap-2 pt-6">
-                                                <Checkbox
-                                                    checked={variant.is_active}
-                                                    onCheckedChange={(v) => updateVariant(idx, 'is_active', v === true)}
-                                                    id={`variant-active-${idx}`}
-                                                />
+                                                <input type="checkbox" checked={variant.is_active} onChange={(e) => updateVariant(idx, 'is_active', e.target.checked)} id={`variant-active-${idx}`} />
                                                 <Label htmlFor={`variant-active-${idx}`}>Active</Label>
                                             </div>
                                         </div>
@@ -271,29 +262,43 @@ export default function Create({ categories, brands }: Props) {
                         <CardHeader className="flex flex-row items-center justify-between">
                             <CardTitle>Images</CardTitle>
                             <Button type="button" variant="outline" size="sm" onClick={addImage}>
-                                Add Image
+                                <Upload className="mr-2 h-4 w-4" /> Add Image
                             </Button>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {data.images.length === 0 ? (
-                                <p className="text-sm text-muted-foreground">No images. Add a URL for Supabase Storage or external image.</p>
+                                <p className="text-sm text-muted-foreground">No images. Upload JPG, PNG or WEBP (max 5MB).</p>
                             ) : (
                                 data.images.map((image, idx) => (
                                     <div key={idx} className="rounded-lg border p-4 space-y-3">
                                         <div className="flex justify-between items-center">
-                                            <span className="text-sm font-medium">Image {idx + 1}</span>
+                                            <span className="text-sm font-medium flex items-center gap-2">
+                                                <ImageIcon className="h-4 w-4" /> Image {idx + 1}
+                                            </span>
                                             <Button type="button" variant="ghost" size="sm" onClick={() => removeImage(idx)}>
-                                                Remove
+                                                <X className="h-4 w-4" />
                                             </Button>
                                         </div>
-                                        <div className="space-y-1">
-                                            <Label>URL / Path *</Label>
+                                        {image.preview ? (
+                                            <div className="h-32 w-full overflow-hidden rounded border">
+                                                <img src={image.preview} alt="Preview" className="h-full w-full object-cover" />
+                                            </div>
+                                        ) : (
+                                            <div className="h-32 w-full rounded border border-dashed flex items-center justify-center bg-muted">
+                                                <ImageIcon className="h-8 w-8 opacity-20" />
+                                            </div>
+                                        )}
+                                        <div className="space-y-2">
+                                            <Label>Upload Image *</Label>
                                             <Input
-                                                value={image.url}
-                                                onChange={(e) => updateImage(idx, 'url', e.target.value)}
-                                                placeholder="https://... or /storage/..."
+                                                type="file"
+                                                accept="image/jpeg,image/png,image/webp"
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0] || null;
+                                                    if (file) updateImage(idx, 'file', file);
+                                                }}
                                             />
-                                            <InputError message={(errors as Record<string, string>)[`images.${idx}.url`]} />
+                                            <InputError message={(errors as Record<string, string>)[`images.${idx}.file`]} />
                                         </div>
                                         <div className="grid gap-3 md:grid-cols-3">
                                             <div className="space-y-1">
@@ -305,17 +310,14 @@ export default function Create({ categories, brands }: Props) {
                                                 <Input type="number" value={image.sort_order} onChange={(e) => updateImage(idx, 'sort_order', e.target.value)} />
                                             </div>
                                             <div className="flex items-center gap-2 pt-6">
-                                                <Checkbox
-                                                    checked={image.is_primary}
-                                                    onCheckedChange={(v) => updateImage(idx, 'is_primary', v === true)}
-                                                    id={`image-primary-${idx}`}
-                                                />
+                                                <input type="checkbox" checked={image.is_primary} onChange={(e) => updateImage(idx, 'is_primary', e.target.checked)} id={`image-primary-${idx}`} />
                                                 <Label htmlFor={`image-primary-${idx}`}>Primary</Label>
                                             </div>
                                         </div>
                                     </div>
                                 ))
                             )}
+                            {errors.images && <InputError message={errors.images} />}
                         </CardContent>
                     </Card>
 
