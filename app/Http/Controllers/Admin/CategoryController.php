@@ -11,12 +11,22 @@ class CategoryController extends Controller
 {
     public function index(Request $request)
     {
-        $categories = Category::withCount('products')
-            ->latest()
-            ->paginate(20);
+        $search = $request->input('search');
+
+        $query = Category::withCount('products')->latest();
+
+        if ($search) {
+            $query->where(function ($q) use ($search): void {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('slug', 'like', "%{$search}%");
+            });
+        }
+
+        $categories = $query->paginate(20)->withQueryString();
 
         return Inertia::render('Admin/Categories/Index', [
             'categories' => $categories,
+            'filters' => ['search' => $search],
         ]);
     }
 
@@ -62,6 +72,11 @@ class CategoryController extends Controller
 
     public function destroy(Category $category)
     {
+        if ($category->products()->exists()) {
+            return redirect()->route('admin.categories.index')
+                ->with('error', 'Cannot delete category while products are assigned to it. Please reassign the products first.');
+        }
+
         $category->delete();
 
         return redirect()->route('admin.categories.index');

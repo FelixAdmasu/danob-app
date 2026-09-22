@@ -11,12 +11,22 @@ class BrandController extends Controller
 {
     public function index(Request $request)
     {
-        $brands = Brand::withCount('products')
-            ->latest()
-            ->paginate(20);
+        $search = $request->input('search');
+
+        $query = Brand::withCount('products')->latest();
+
+        if ($search) {
+            $query->where(function ($q) use ($search): void {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('slug', 'like', "%{$search}%");
+            });
+        }
+
+        $brands = $query->paginate(20)->withQueryString();
 
         return Inertia::render('Admin/Brands/Index', [
             'brands' => $brands,
+            'filters' => ['search' => $search],
         ]);
     }
 
@@ -66,6 +76,11 @@ class BrandController extends Controller
 
     public function destroy(Brand $brand)
     {
+        if ($brand->products()->exists()) {
+            return redirect()->route('admin.brands.index')
+                ->with('error', 'Cannot delete brand while products are assigned to it. Please reassign the products first.');
+        }
+
         $brand->delete();
 
         return redirect()->route('admin.brands.index');
