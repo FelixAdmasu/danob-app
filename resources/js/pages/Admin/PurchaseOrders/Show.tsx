@@ -10,6 +10,7 @@ export default function Show({ purchase_order }: { purchase_order: { id: number;
     const canSubmit = purchase_order.status === 'draft';
     const canApprove = purchase_order.status === 'submitted';
     const canCancel = !['received', 'cancelled'].includes(purchase_order.status);
+    const canReceive = ['approved', 'partially_received'].includes(purchase_order.status);
     return (
         <>
             <Head title={purchase_order.po_number} />
@@ -22,6 +23,11 @@ export default function Show({ purchase_order }: { purchase_order: { id: number;
                         )}
                         {canApprove && (
                             <Button onClick={() => router.post(PurchaseOrderRoutes.approve(purchase_order.id).url)}>Approve</Button>
+                        )}
+                        {canReceive && (
+                            <Link href={PurchaseOrderRoutes.receive(purchase_order.id).url}>
+                                <Button>Receive</Button>
+                            </Link>
                         )}
                         {canCancel && (
                             <Button variant="destructive" onClick={() => router.post(PurchaseOrderRoutes.cancel(purchase_order.id).url)}>

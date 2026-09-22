@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\PurchaseOrderController;
+use App\Http\Controllers\Admin\ReceivingController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Public\BranchController;
 use App\Http\Controllers\Public\BrandController;
@@ -62,6 +63,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::post('purchase-orders/{purchaseOrder}/submit', [PurchaseOrderController::class, 'submit'])->name('purchase-orders.submit');
         Route::post('purchase-orders/{purchaseOrder}/approve', [PurchaseOrderController::class, 'approve'])->name('purchase-orders.approve');
         Route::post('purchase-orders/{purchaseOrder}/cancel', [PurchaseOrderController::class, 'cancel'])->name('purchase-orders.cancel');
+        Route::get('purchase-orders/{purchaseOrder}/receive', [ReceivingController::class, 'create'])->name('purchase-orders.receive');
+        Route::post('purchase-orders/{purchaseOrder}/receive', [ReceivingController::class, 'store'])->name('purchase-orders.receive.store');
     });
 
 });
