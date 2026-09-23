@@ -7,9 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AdminQuickNav } from '@/components/admin-quick-nav';
+import { ReportExportButton } from '@/components/report-export-button';
 import { dashboard } from '@/routes';
 import * as ProductRoutes from '@/routes/admin/products';
-import * as ReportRoutes from '@/routes/admin/reports';
+import ReportRoutes from '@/routes/admin/reports';
 
 type VariantRow = {
     id: number;
@@ -135,6 +136,7 @@ export default function LowStockReport({ variants, counts, filters }: Props) {
                                 <Button type="button" variant="outline" onClick={clearFilters}>
                                     Clear
                                 </Button>
+                                <ReportExportButton url={ReportRoutes.lowStock.export().url} filters={filters} />
                             </div>
                         </form>
                     </CardContent>

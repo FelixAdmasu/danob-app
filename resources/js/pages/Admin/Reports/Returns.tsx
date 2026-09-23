@@ -6,9 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AdminQuickNav } from '@/components/admin-quick-nav';
+import { ReportExportButton } from '@/components/report-export-button';
 import { dashboard } from '@/routes';
 import * as OrderRoutes from '@/routes/admin/orders';
-import * as ReportRoutes from '@/routes/admin/reports';
+import ReportRoutes from '@/routes/admin/reports';
 
 type ReturnRow = {
     id: number;
@@ -199,6 +200,7 @@ export default function Returns({ returns, summary, filters, customers, products
                                 <Button type="button" variant="outline" onClick={clearFilters}>
                                     Clear
                                 </Button>
+                                <ReportExportButton url={ReportRoutes.returns.export().url} filters={filters} />
                             </div>
                         </form>
                     </CardContent>

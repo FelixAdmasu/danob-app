@@ -5,9 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AdminQuickNav } from '@/components/admin-quick-nav';
+import { ReportExportButton } from '@/components/report-export-button';
 import { dashboard } from '@/routes';
 import * as CustomerRoutes from '@/routes/admin/customers';
-import * as ReportRoutes from '@/routes/admin/reports';
+import ReportRoutes from '@/routes/admin/reports';
 
 type CustomerRow = {
     id: number;
@@ -118,6 +119,7 @@ export default function CustomersReport({ customers, summary, filters }: Props) 
                                 <Button type="button" variant="outline" onClick={clearFilters}>
                                     Clear
                                 </Button>
+                                <ReportExportButton url={ReportRoutes.customers.export().url} filters={filters} />
                             </div>
                         </form>
                     </CardContent>

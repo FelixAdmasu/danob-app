@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\PurchaseDashboardController;
 use App\Http\Controllers\Admin\PurchaseOrderController;
 use App\Http\Controllers\Admin\ReceivingController;
 use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\ReportExportController;
 use App\Http\Controllers\Admin\SalesDashboardController;
 use App\Http\Controllers\Admin\SalesReturnController;
 use App\Http\Controllers\Admin\SupplierController;
@@ -60,6 +61,12 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::get('reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
         Route::get('reports/returns', [ReportController::class, 'returns'])->name('reports.returns');
         Route::get('reports/customers', [ReportController::class, 'customers'])->name('reports.customers');
+        // CSV exports mirror each report exactly: same filters, every
+        // matching row instead of one page. Sales-facing exports share the
+        // Orders/customers viewing authorization.
+        Route::get('reports/sales/export', [ReportExportController::class, 'sales'])->name('reports.sales.export');
+        Route::get('reports/returns/export', [ReportExportController::class, 'returns'])->name('reports.returns.export');
+        Route::get('reports/customers/export', [ReportExportController::class, 'customers'])->name('reports.customers.export');
     });
 
     Route::middleware('role:admin,manager')->group(function () {
@@ -104,6 +111,12 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::get('reports/purchases', [ReportController::class, 'purchases'])->name('reports.purchases');
         Route::get('reports/low-stock', [ReportController::class, 'lowStock'])->name('reports.low-stock');
         Route::get('reports/suppliers', [ReportController::class, 'suppliers'])->name('reports.suppliers');
+        // Restricted exports: stock history, thresholds, purchase orders and
+        // supplier data never reach staff — enforced here, not in the UI.
+        Route::get('reports/inventory-movements/export', [ReportExportController::class, 'inventoryMovements'])->name('reports.inventory-movements.export');
+        Route::get('reports/purchases/export', [ReportExportController::class, 'purchases'])->name('reports.purchases.export');
+        Route::get('reports/low-stock/export', [ReportExportController::class, 'lowStock'])->name('reports.low-stock.export');
+        Route::get('reports/suppliers/export', [ReportExportController::class, 'suppliers'])->name('reports.suppliers.export');
     });
 
 });
