@@ -41,7 +41,7 @@ export function UserMenuContent({ user }: Props) {
                         onClick={cleanup}
                     >
                         <LayoutDashboard className="mr-2" />
-                        Dashboard
+                        Account Dashboard
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>

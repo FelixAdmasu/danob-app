@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { dashboard } from '@/routes';
 import * as OrderRoutes from '@/routes/admin/orders';
 
 type ReturnItem = {
@@ -219,7 +218,7 @@ export default function Create({ order }: { order: Order }) {
 
 Create.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Orders', href: OrderRoutes.index().url },
         { title: 'Process Return', href: '#' },
     ],

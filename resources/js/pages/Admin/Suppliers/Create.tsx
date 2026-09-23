@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { dashboard } from '@/routes';
 import * as SupplierRoutes from '@/routes/admin/suppliers';
 
 export default function Create() {
@@ -95,7 +94,7 @@ export default function Create() {
 
 Create.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Suppliers', href: SupplierRoutes.index().url },
         { title: 'Create', href: SupplierRoutes.create().url },
     ],

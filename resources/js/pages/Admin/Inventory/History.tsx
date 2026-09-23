@@ -6,7 +6,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { dashboard } from '@/routes';
 import * as InventoryRoutes from '@/routes/admin/inventory';
 
 type Movement = {
@@ -250,7 +249,7 @@ export default function History({ movements, filters, products, variants, users,
 
 History.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Inventory', href: '#' },
         { title: 'History', href: InventoryRoutes.history().url },
     ],

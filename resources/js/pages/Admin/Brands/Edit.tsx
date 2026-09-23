@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { dashboard } from '@/routes';
 import * as BrandRoutes from '@/routes/admin/brands';
 
 type Brand = {
@@ -89,7 +88,7 @@ export default function Edit({ brand }: Props) {
 
 Edit.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Brands', href: BrandRoutes.index().url },
         { title: 'Edit', href: '#' },
     ],

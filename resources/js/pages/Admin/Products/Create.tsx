@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { dashboard } from '@/routes';
 import * as ProductRoutes from '@/routes/admin/products';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
 
@@ -347,7 +346,7 @@ export default function Create({ categories, brands }: Props) {
 
 Create.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Products', href: ProductRoutes.index().url },
         { title: 'Create', href: ProductRoutes.create().url },
     ],

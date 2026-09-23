@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
-import { dashboard } from '@/routes';
 import * as CustomerRoutes from '@/routes/admin/customers';
 
 type Customer = {
@@ -109,7 +108,7 @@ export default function Index({ customers, filters }: Props) {
 
 Index.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Customers', href: CustomerRoutes.index().url },
     ],
 };

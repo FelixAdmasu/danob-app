@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { dashboard } from '@/routes';
 import * as InventoryRoutes from '@/routes/admin/inventory';
 import * as ProductRoutes from '@/routes/admin/products';
 
@@ -204,7 +203,7 @@ export default function LowStock({ variants, counts, filters }: Props) {
 
 LowStock.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Inventory', href: '#' },
         { title: 'Low Stock', href: InventoryRoutes.lowStock().url },
     ],

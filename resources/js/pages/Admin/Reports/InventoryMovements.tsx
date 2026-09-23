@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ReportExportButton } from '@/components/report-export-button';
-import { dashboard } from '@/routes';
 import ReportRoutes from '@/routes/admin/reports';
 
 type Movement = {
@@ -300,7 +299,7 @@ export default function InventoryMovements({ movements, summary, filters, produc
 
 InventoryMovements.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Reports', href: ReportRoutes.index().url },
         { title: 'Inventory Movements', href: '#' },
     ],

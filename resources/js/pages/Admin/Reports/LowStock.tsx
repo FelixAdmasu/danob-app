@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ReportExportButton } from '@/components/report-export-button';
-import { dashboard } from '@/routes';
 import * as ProductRoutes from '@/routes/admin/products';
 import ReportRoutes from '@/routes/admin/reports';
 
@@ -213,7 +212,7 @@ export default function LowStockReport({ variants, counts, filters }: Props) {
 
 LowStockReport.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Reports', href: ReportRoutes.index().url },
         { title: 'Low Stock', href: '#' },
     ],

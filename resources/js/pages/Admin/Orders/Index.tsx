@@ -6,7 +6,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Search } from 'lucide-react';
-import { dashboard } from '@/routes';
 import * as OrderRoutes from '@/routes/admin/orders';
 
 type Order = {
@@ -148,7 +147,7 @@ export default function Index({ orders, filters }: Props) {
 
 Index.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Orders', href: OrderRoutes.index().url },
     ],
 };

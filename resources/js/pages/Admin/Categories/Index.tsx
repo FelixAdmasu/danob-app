@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Search, Plus, Pencil, Trash2 } from 'lucide-react';
-import { dashboard } from '@/routes';
 import * as CategoryRoutes from '@/routes/admin/categories';
 
 type Category = {
@@ -272,7 +271,7 @@ export default function Index({ categories, filters }: Props) {
 
 Index.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Categories', href: CategoryRoutes.index().url },
     ],
 };

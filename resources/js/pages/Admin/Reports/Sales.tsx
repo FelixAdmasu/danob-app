@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ReportExportButton } from '@/components/report-export-button';
-import { dashboard } from '@/routes';
 import * as OrderRoutes from '@/routes/admin/orders';
 import ReportRoutes from '@/routes/admin/reports';
 
@@ -268,7 +267,7 @@ export default function Sales({ orders, summary, filters, customers, order_statu
 
 Sales.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Reports', href: ReportRoutes.index().url },
         { title: 'Sales', href: '#' },
     ],

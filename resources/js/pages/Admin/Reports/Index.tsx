@@ -1,5 +1,4 @@
 import { Head, Link } from '@inertiajs/react';
-import { dashboard } from '@/routes';
 import * as ReportRoutes from '@/routes/admin/reports';
 
 type ReportCard = {
@@ -59,7 +58,7 @@ export default function ReportsIndex({ groups }: { groups: ReportGroup[] }) {
 
 ReportsIndex.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Reports', href: ReportRoutes.index().url },
     ],
 };

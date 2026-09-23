@@ -4,7 +4,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus } from 'lucide-react';
-import { dashboard } from '@/routes';
 import * as InventoryRoutes from '@/routes/admin/inventory';
 import * as PurchaseOrderRoutes from '@/routes/admin/purchase-orders';
 import * as SupplierRoutes from '@/routes/admin/suppliers';
@@ -381,7 +380,7 @@ export default function PurchaseDashboard({ purchases }: { purchases: Purchases 
 
 PurchaseDashboard.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Purchase Orders', href: PurchaseOrderRoutes.index().url },
         { title: 'Purchase Dashboard', href: '#' },
     ],

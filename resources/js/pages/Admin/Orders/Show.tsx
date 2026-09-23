@@ -3,7 +3,6 @@ import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { dashboard } from '@/routes';
 import * as OrderRoutes from '@/routes/admin/orders';
 import type { Auth } from '@/types';
 
@@ -205,7 +204,7 @@ export default function Show({ order }: { order: Order }) {
 
 Show.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Orders', href: OrderRoutes.index().url },
         { title: 'Details', href: '#' },
     ],

@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ReportExportButton } from '@/components/report-export-button';
-import { dashboard } from '@/routes';
 import * as CustomerRoutes from '@/routes/admin/customers';
 import ReportRoutes from '@/routes/admin/reports';
 
@@ -191,7 +190,7 @@ export default function CustomersReport({ customers, summary, filters }: Props) 
 
 CustomersReport.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Reports', href: ReportRoutes.index().url },
         { title: 'Customers', href: '#' },
     ],

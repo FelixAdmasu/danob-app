@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { dashboard } from '@/routes';
 import * as OrderRoutes from '@/routes/admin/orders';
 
 type Customer = { id: number; company_name?: string | null; contact_name?: string | null };
@@ -415,7 +414,7 @@ export default function Create({ search: initialSearch, customers, products }: P
 
 Create.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Orders', href: OrderRoutes.index().url },
         { title: 'New Order', href: OrderRoutes.create().url },
     ],

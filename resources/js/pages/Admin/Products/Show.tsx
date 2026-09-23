@@ -3,7 +3,6 @@ import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { dashboard } from '@/routes';
 import * as ProductRoutes from '@/routes/admin/products';
 
 type Variant = {
@@ -177,7 +176,7 @@ export default function Show({ product }: Props) {
 
 Show.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Products', href: ProductRoutes.index().url },
         { title: 'Details', href: '#' },
     ],

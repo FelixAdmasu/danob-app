@@ -7,7 +7,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Plus } from 'lucide-react';
-import { dashboard } from '@/routes';
 import * as PurchaseOrderRoutes from '@/routes/admin/purchase-orders';
 
 type PO = { id: number; po_number: string; status: string; supplier: { name: string } | null; total: string; ordered_at: string };
@@ -120,7 +119,7 @@ export default function Index({ purchase_orders, filters }: { purchase_orders: P
 
 Index.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Purchase Orders', href: PurchaseOrderRoutes.index().url },
     ],
 };

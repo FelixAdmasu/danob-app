@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Search, Plus, Pencil, Trash2 } from 'lucide-react';
-import { dashboard } from '@/routes';
 import * as BrandRoutes from '@/routes/admin/brands';
 
 type Brand = {
@@ -272,7 +271,7 @@ export default function Index({ brands, filters }: Props) {
 
 Index.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Brands', href: BrandRoutes.index().url },
     ],
 };

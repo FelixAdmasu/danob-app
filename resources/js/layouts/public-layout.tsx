@@ -151,7 +151,7 @@ export default function PublicLayout({ children }: Props) {
                                 </a>
                             ))}
                             {isAuthenticated ? (
-                                <Link href="/dashboard" className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#2D5016] hover:text-[#1A3A0A] transition-colors border border-[#2D5016]/20 px-3 py-1 rounded-full">
+                                <Link href="/admin" className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#2D5016] hover:text-[#1A3A0A] transition-colors border border-[#2D5016]/20 px-3 py-1 rounded-full">
                                     Dashboard →
                                 </Link>
                             ) : null}
@@ -299,7 +299,7 @@ export default function PublicLayout({ children }: Props) {
                         )}
                         {isAuthenticated && (
                             <Link
-                                href="/dashboard"
+                                href="/admin"
                                 className="text-3xl font-serif italic text-[#A5FFA9] hover:text-white transition-colors"
                                 onClick={() => setMobileOpen(false)}
                             >
@@ -360,7 +360,7 @@ export default function PublicLayout({ children }: Props) {
                             <Link href="/terms" className="hover:opacity-100 hover:text-[#A5FFA9] transition-all">Terms</Link>
                             <Link href="/privacy" className="hover:opacity-100 hover:text-[#A5FFA9] transition-all">Privacy</Link>
                             {isAuthenticated ? (
-                                <Link href="/dashboard" className="hover:opacity-100 hover:text-[#A5FFA9] transition-all">Dashboard</Link>
+                                <Link href="/admin" className="hover:opacity-100 hover:text-[#A5FFA9] transition-all">Dashboard</Link>
                             ) : (
                                 <Link href="/login" className="hover:opacity-100 hover:text-[#A5FFA9] transition-all">Staff Login</Link>
                             )}

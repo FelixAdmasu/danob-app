@@ -3,7 +3,6 @@ import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { dashboard } from '@/routes';
 import * as PurchaseOrderRoutes from '@/routes/admin/purchase-orders';
 
 type OrderItem = {
@@ -135,7 +134,7 @@ export default function Show({ purchase_order }: { purchase_order: PurchaseOrder
 
 Show.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Purchase Orders', href: PurchaseOrderRoutes.index().url },
         { title: 'Details', href: '#' },
     ],

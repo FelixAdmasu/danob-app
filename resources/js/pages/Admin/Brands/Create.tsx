@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { dashboard } from '@/routes';
 import * as BrandRoutes from '@/routes/admin/brands';
 
 export default function Create() {
@@ -80,7 +79,7 @@ export default function Create() {
 
 Create.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Brands', href: BrandRoutes.index().url },
         { title: 'Create', href: BrandRoutes.create().url },
     ],

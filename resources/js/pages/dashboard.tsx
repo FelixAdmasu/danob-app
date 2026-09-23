@@ -15,13 +15,13 @@ export default function Dashboard() {
 
     return (
         <>
-            <Head title="Dashboard" />
+            <Head title="Account Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6">
                 {/* Welcome Section */}
                 <div className="space-y-2">
                     <Heading
                         variant="default"
-                        title="Dashboard"
+                        title="Account Dashboard"
                         description={`Welcome back, ${auth.user?.name ?? 'User'}`}
                     />
                 </div>
@@ -117,7 +117,7 @@ export default function Dashboard() {
 Dashboard.layout = {
     breadcrumbs: [
         {
-            title: 'Dashboard',
+            title: 'Account Dashboard',
             href: dashboard(),
         },
     ],

@@ -3,7 +3,6 @@ import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { dashboard } from '@/routes';
 import * as CustomerRoutes from '@/routes/admin/customers';
 import * as InventoryRoutes from '@/routes/admin/inventory';
 import * as OrderRoutes from '@/routes/admin/orders';
@@ -415,7 +414,7 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
 
 SalesDashboard.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Orders', href: OrderRoutes.index().url },
         { title: 'Sales Dashboard', href: '#' },
     ],

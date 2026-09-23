@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { dashboard } from '@/routes';
 import * as SupplierRoutes from '@/routes/admin/suppliers';
 
 type Supplier = { id: number; name: string; contact_person: string | null; phone: string | null; email: string | null; address: string | null; tax_number: string | null; notes: string | null; is_active: boolean };
@@ -110,7 +109,7 @@ export default function Edit({ supplier }: { supplier: Supplier }) {
 
 Edit.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Suppliers', href: SupplierRoutes.index().url },
         { title: 'Edit', href: '#' },
     ],

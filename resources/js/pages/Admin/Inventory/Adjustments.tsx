@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { dashboard } from '@/routes';
 import * as InventoryRoutes from '@/routes/admin/inventory';
 
 type Variant = { id: number; name: string; sku: string | null; quantity: number };
@@ -182,7 +181,7 @@ export default function Adjustments({ products }: Props) {
                                 <Button type="submit" disabled={processing || !productId || !variantId || !quantity || !reason}>
                                     {processing ? 'Saving...' : 'Submit Adjustment'}
                                 </Button>
-                                <Link href={dashboard().url}>
+                                <Link href="/admin">
                                     <Button type="button" variant="outline">
                                         Cancel
                                     </Button>
@@ -198,7 +197,7 @@ export default function Adjustments({ products }: Props) {
 
 Adjustments.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Inventory', href: '#' },
         { title: 'Stock Adjustments', href: InventoryRoutes.adjustments().url },
     ],

@@ -3,7 +3,6 @@ import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { dashboard } from '@/routes';
 import * as SupplierRoutes from '@/routes/admin/suppliers';
 
 type Supplier = { id: number; name: string; contact_person: string | null; phone: string | null; email: string | null; address: string | null; tax_number: string | null; notes: string | null; is_active: boolean; created_at: string; updated_at: string; purchase_orders_count?: number };
@@ -80,7 +79,7 @@ export default function Show({ supplier }: { supplier: Supplier }) {
 
 Show.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Suppliers', href: SupplierRoutes.index().url },
         { title: 'Details', href: '#' },
     ],

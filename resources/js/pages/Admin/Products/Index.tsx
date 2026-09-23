@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Package, Plus, Eye, Pencil, Trash2, Search } from 'lucide-react';
-import { dashboard } from '@/routes';
 import * as ProductRoutes from '@/routes/admin/products';
 
 type ProductImage = {
@@ -189,7 +188,7 @@ export default function Index({ products, filters }: Props) {
 
 Index.layout = {
     breadcrumbs: [
-        { title: 'Dashboard', href: dashboard().url },
+        { title: 'Dashboard', href: '/admin' },
         { title: 'Products', href: ProductRoutes.index().url },
     ],
 };
