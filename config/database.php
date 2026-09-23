@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Str;
 use Pdo\Mysql;
+use Pdo\Pgsql;
 
 return [
 
@@ -97,6 +98,14 @@ return [
             'prefix_indexes' => true,
             'search_path' => 'public',
             'sslmode' => env('DB_SSLMODE', 'prefer'),
+            // Transaction-mode poolers (Supabase PgBouncer on port 6543) may hand
+            // the connection to a different backend between a server-side
+            // prepared statement's parse and execute, orphaning it with
+            // SQLSTATE 26000 "prepared statement ... does not exist". Send each
+            // query and its parameters in a single call instead (PHP >= 8.4).
+            'options' => defined(Pgsql::class.'::ATTR_DISABLE_PREPARES')
+                ? [constant(Pgsql::class.'::ATTR_DISABLE_PREPARES') => true]
+                : [],
         ],
 
         'sqlsrv' => [
