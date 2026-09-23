@@ -31,9 +31,9 @@ type Inventory = {
 
 function StatTile({ label, value, accent }: { label: string; value: number; accent?: string }) {
     return (
-        <div className="rounded border p-4 dark:bg-card">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">{label}</p>
-            <p className={`text-2xl font-bold ${accent ?? ''}`}>{value}</p>
+        <div className="flex flex-col gap-2 rounded-lg border border-border bg-card p-4 transition-colors dark:shadow-none">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{label}</p>
+            <p className={`font-serif text-3xl leading-none font-medium tracking-tight ${accent ?? 'text-foreground'}`}>{value}</p>
         </div>
     );
 }
@@ -84,7 +84,7 @@ export default function Dashboard({
                         <div className="grid gap-6 md:grid-cols-2">
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-sm">Low Stock Variants</CardTitle>
+                                    <CardTitle>Low Stock Variants</CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     {inventory.low_stock.length === 0 ? (
@@ -112,7 +112,7 @@ export default function Dashboard({
 
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-sm">Out of Stock</CardTitle>
+                                    <CardTitle>Out of Stock</CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     {inventory.out_of_stock.length === 0 ? (
@@ -142,7 +142,7 @@ export default function Dashboard({
                         <div className="grid gap-6 md:grid-cols-2">
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-sm">Recent Stock Movements</CardTitle>
+                                    <CardTitle>Recent Stock Movements</CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     {inventory.recent_movements.length === 0 ? (
@@ -174,7 +174,7 @@ export default function Dashboard({
 
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-sm">Recent Purchase Orders</CardTitle>
+                                    <CardTitle>Recent Purchase Orders</CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     {inventory.recent_purchase_orders.length === 0 ? (
@@ -209,7 +209,7 @@ export default function Dashboard({
 
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-sm">Quick Navigation</CardTitle>
+                        <CardTitle>Quick Navigation</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
@@ -242,7 +242,7 @@ export default function Dashboard({
 
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-sm">Recent Orders</CardTitle>
+                        <CardTitle>Recent Orders</CardTitle>
                     </CardHeader>
                     <CardContent>
                         {recent_orders.length === 0 ? (

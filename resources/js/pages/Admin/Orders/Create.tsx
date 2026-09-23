@@ -299,14 +299,14 @@ export default function Create({ search: initialSearch, customers, products }: P
                                 {items.length > 0 ? (
                                     <div className="overflow-x-auto">
                                         <table className="w-full text-sm">
-                                            <thead>
-                                                <tr className="border-b bg-muted/50 text-left">
-                                                    <th className="h-10 px-2 font-medium">Product</th>
-                                                    <th className="h-10 px-2 font-medium">SKU</th>
-                                                    <th className="h-10 px-2 font-medium">Quantity</th>
-                                                    <th className="h-10 px-2 font-medium">Unit Price</th>
-                                                    <th className="h-10 px-2 font-medium">Subtotal</th>
-                                                    <th className="h-10 px-2 font-medium">
+                                            <thead className="border-b bg-muted/50">
+                                                <tr className="text-left">
+                                                    <th className="h-10 px-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Product</th>
+                                                    <th className="h-10 px-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">SKU</th>
+                                                    <th className="h-10 px-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Quantity</th>
+                                                    <th className="h-10 px-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Unit Price</th>
+                                                    <th className="h-10 px-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Subtotal</th>
+                                                    <th className="h-10 px-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                                                         <span className="sr-only">Actions</span>
                                                     </th>
                                                 </tr>
@@ -371,9 +371,9 @@ export default function Create({ search: initialSearch, customers, products }: P
                                     <span>Subtotal</span>
                                     <output>{subtotal.toFixed(2)}</output>
                                 </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="font-medium">Total</span>
-                                    <output className="text-base font-bold" aria-live="polite">{subtotal.toFixed(2)}</output>
+                                <div className="flex items-center justify-between border-t border-border pt-3">
+                                    <span className="text-sm font-medium">Total</span>
+                                    <output className="font-serif text-2xl font-semibold tabular-nums" aria-live="polite">{subtotal.toFixed(2)}</output>
                                 </div>
                             </div>
 
@@ -384,7 +384,7 @@ export default function Create({ search: initialSearch, customers, products }: P
                                     value={notes}
                                     onChange={(e) => setNotes(e.target.value)}
                                     rows={3}
-                                    className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                    className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm dark:border-[#4E4870] dark:bg-[#191B1C]"
                                 />
                                 {errors.notes && (
                                     <p role="alert" className="text-xs text-red-600 dark:text-red-400">{errors.notes}</p>

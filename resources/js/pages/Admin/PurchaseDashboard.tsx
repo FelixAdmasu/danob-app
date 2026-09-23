@@ -79,9 +79,9 @@ type Purchases = {
 
 function StatTile({ label, value, accent }: { label: string; value: React.ReactNode; accent?: string }) {
     return (
-        <div className="rounded border p-4 dark:bg-card">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">{label}</p>
-            <p className={`text-2xl font-bold ${accent ?? ''}`}>{value}</p>
+        <div className="flex flex-col gap-2 rounded-lg border border-border bg-card p-4 transition-colors dark:shadow-none">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{label}</p>
+            <p className={`font-serif text-3xl leading-none font-medium tracking-tight ${accent ?? 'text-foreground'}`}>{value}</p>
         </div>
     );
 }
@@ -106,19 +106,22 @@ export default function PurchaseDashboard({ purchases }: { purchases: Purchases 
         <>
             <Head title="Purchase Dashboard" />
             <div className="p-6 space-y-6">
-                <div className="flex items-center justify-between">
-                    <Heading title="Purchase Dashboard" description="Purchase orders, receiving, and supplier activity" />
-                    <div className="flex gap-2">
-                        <Link href={PurchaseOrderRoutes.index().url}>
-                            <Button variant="outline">View Purchase Orders</Button>
-                        </Link>
-                        <Link href={PurchaseOrderRoutes.create().url}>
-                            <Button>
-                                <Plus className="mr-2 h-4 w-4" /> New PO
-                            </Button>
-                        </Link>
-                    </div>
-                </div>
+                <Heading
+                    title="Purchase Dashboard"
+                    description="Purchase orders, receiving, and supplier activity"
+                    actions={
+                        <div className="flex gap-2">
+                            <Link href={PurchaseOrderRoutes.index().url}>
+                                <Button variant="outline">View Purchase Orders</Button>
+                            </Link>
+                            <Link href={PurchaseOrderRoutes.create().url}>
+                                <Button>
+                                    <Plus className="mr-2 h-4 w-4" /> New PO
+                                </Button>
+                            </Link>
+                        </div>
+                    }
+                />
 
                 <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
                     <StatTile label="Total Purchase Orders" value={m.total_pos} />
@@ -132,7 +135,7 @@ export default function PurchaseDashboard({ purchases }: { purchases: Purchases 
 
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-sm">Outstanding Purchases</CardTitle>
+                        <CardTitle>Outstanding Purchases</CardTitle>
                     </CardHeader>
                     <CardContent className="p-4">
                         {purchases.outstanding.length === 0 ? (
@@ -157,7 +160,7 @@ export default function PurchaseDashboard({ purchases }: { purchases: Purchases 
                                         </thead>
                                         <tbody>
                                             {purchases.outstanding.map((po) => (
-                                                <tr key={po.id} className="border-b hover:bg-muted/20">
+                                                <tr key={po.id} className="border-b transition-colors hover:bg-muted/40">
                                                     <td className="px-4 py-3 font-mono text-sm">
                                                         <Link href={PurchaseOrderRoutes.show(po.id).url} className="hover:underline">
                                                             {po.po_number}
@@ -202,7 +205,7 @@ export default function PurchaseDashboard({ purchases }: { purchases: Purchases 
                 <div className="grid gap-6 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-sm">Recent Receiving Activity</CardTitle>
+                            <CardTitle>Recent Receiving Activity</CardTitle>
                         </CardHeader>
                         <CardContent>
                             {purchases.recent_receipts.length === 0 ? (
@@ -239,7 +242,7 @@ export default function PurchaseDashboard({ purchases }: { purchases: Purchases 
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-sm">Partially Received</CardTitle>
+                            <CardTitle>Partially Received</CardTitle>
                         </CardHeader>
                         <CardContent>
                             {purchases.partial.length === 0 ? (
@@ -277,7 +280,7 @@ export default function PurchaseDashboard({ purchases }: { purchases: Purchases 
                 <div className="grid gap-6 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-sm">Supplier Activity</CardTitle>
+                            <CardTitle>Supplier Activity</CardTitle>
                         </CardHeader>
                         <CardContent className="p-0">
                             <div className="overflow-x-auto">
@@ -299,7 +302,7 @@ export default function PurchaseDashboard({ purchases }: { purchases: Purchases 
                                             </tr>
                                         ) : (
                                             purchases.supplier_activity.map((s) => (
-                                                <tr key={s.id} className="border-b hover:bg-muted/20">
+                                                <tr key={s.id} className="border-b transition-colors hover:bg-muted/40">
                                                     <td className="px-4 py-3 text-sm">{s.name}</td>
                                                     <td className="px-4 py-3 text-sm">{s.purchase_orders_count}</td>
                                                     <td className="px-4 py-3 text-sm">{s.open_purchase_orders_count}</td>
@@ -322,7 +325,7 @@ export default function PurchaseDashboard({ purchases }: { purchases: Purchases 
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-sm">Recent Purchase Orders</CardTitle>
+                            <CardTitle>Recent Purchase Orders</CardTitle>
                         </CardHeader>
                         <CardContent className="p-0">
                             <div className="overflow-x-auto">
@@ -345,7 +348,7 @@ export default function PurchaseDashboard({ purchases }: { purchases: Purchases 
                                             </tr>
                                         ) : (
                                             purchases.recent_purchase_orders.map((po) => (
-                                                <tr key={po.id} className="border-b hover:bg-muted/20">
+                                                <tr key={po.id} className="border-b transition-colors hover:bg-muted/40">
                                                     <td className="px-4 py-3 font-mono text-sm">
                                                         <Link href={PurchaseOrderRoutes.show(po.id).url} className="hover:underline">
                                                             {po.po_number}

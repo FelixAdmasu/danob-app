@@ -112,7 +112,7 @@ export default function Show({ order }: { order: Order }) {
                     <CardContent>
                         <div className="overflow-x-auto">
                             <table className="w-full">
-                                <thead className="border-b">
+                                <thead className="border-b bg-muted/50">
                                     <tr className="text-left text-xs">
                                         <th className="px-3 py-2">Variant</th>
                                         <th className="px-3 py-2">SKU</th>
@@ -166,7 +166,7 @@ export default function Show({ order }: { order: Order }) {
                         <CardContent>
                             <div className="overflow-x-auto">
                                 <table className="w-full">
-                                    <thead className="border-b">
+                                    <thead className="border-b bg-muted/50">
                                         <tr className="text-left text-xs">
                                             <th className="px-3 py-2">Return #</th>
                                             <th className="px-3 py-2">Date</th>

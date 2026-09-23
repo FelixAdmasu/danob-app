@@ -19,7 +19,7 @@ export default function ReportsIndex({ groups }: { groups: ReportGroup[] }) {
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
                 <div className="border-b border-border pb-8">
                     <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground dark:text-primary mb-3">Reporting</p>
-                    <h1 className="font-serif text-3xl md:text-4xl tracking-tight text-foreground">Reports</h1>
+                    <h1 className="font-serif text-[32px] leading-tight font-medium md:text-[40px] tracking-tight text-foreground">Reports</h1>
                     <p className="text-sm text-muted-foreground mt-2 max-w-xl">
                         Operational reports across inventory, purchasing and sales. Every report is read-only and shows
                         the same figures as its source pages.

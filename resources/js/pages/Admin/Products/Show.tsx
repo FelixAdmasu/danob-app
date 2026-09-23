@@ -100,7 +100,7 @@ export default function Show({ product }: Props) {
                         ) : (
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm">
-                                    <thead className="border-b text-xs uppercase tracking-widest text-muted-foreground">
+                                    <thead className="border-b bg-muted/50 text-xs uppercase tracking-widest text-muted-foreground">
                                         <tr>
                                             <th className="px-3 py-2 text-left">Name</th>
                                             <th className="px-3 py-2 text-left">SKU</th>

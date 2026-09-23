@@ -24,14 +24,17 @@ export default function Index({ purchase_orders, filters }: { purchase_orders: P
         <>
             <Head title="Purchase Orders" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <div className="flex items-center justify-between">
-                    <Heading title="Purchase Orders" description="Manage purchasing" />
-                    <Link href={PurchaseOrderRoutes.create().url}>
-                        <Button>
-                            <Plus className="mr-2 h-4 w-4" /> New PO
-                        </Button>
-                    </Link>
-                </div>
+                <Heading
+                    title="Purchase Orders"
+                    description="Manage purchasing"
+                    actions={
+                        <Link href={PurchaseOrderRoutes.create().url}>
+                            <Button>
+                                <Plus className="mr-2 h-4 w-4" /> New PO
+                            </Button>
+                        </Link>
+                    }
+                />
                 <Card>
                     <CardContent className="p-4">
                         <form onSubmit={handleSearch} className="flex gap-2 max-w-2xl">
@@ -68,7 +71,7 @@ export default function Index({ purchase_orders, filters }: { purchase_orders: P
                                         <th className="px-4 py-3">PO Number</th>
                                         <th className="px-4 py-3">Supplier</th>
                                         <th className="px-4 py-3">Status</th>
-                                        <th className="px-4 py-3">Total</th>
+                                        <th className="px-4 py-3 text-right">Total</th>
                                         <th className="px-4 py-3">Date</th>
                                     </tr>
                                 </thead>
@@ -81,7 +84,7 @@ export default function Index({ purchase_orders, filters }: { purchase_orders: P
                                         </tr>
                                     ) : (
                                         purchase_orders.data.map((po) => (
-                                            <tr key={po.id} className="border-b hover:bg-muted/20">
+                                            <tr key={po.id} className="border-b transition-colors hover:bg-muted/40">
                                                 <td className="px-4 py-3 font-mono text-sm">
                                                     <Link href={PurchaseOrderRoutes.show(po.id).url} className="hover:underline">
                                                         {po.po_number}
@@ -91,7 +94,7 @@ export default function Index({ purchase_orders, filters }: { purchase_orders: P
                                                 <td className="px-4 py-3">
                                                     <Badge variant={po.status === 'received' ? 'success' : po.status === 'cancelled' ? 'cancelled' : 'warning'}>{po.status}</Badge>
                                                 </td>
-                                                <td className="px-4 py-3 text-sm">{po.total}</td>
+                                                <td className="px-4 py-3 text-right font-mono text-sm tabular-nums">{po.total}</td>
                                                 <td className="px-4 py-3 text-xs">{po.ordered_at ? new Date(po.ordered_at).toLocaleDateString() : '—'}</td>
                                             </tr>
                                         ))
@@ -102,12 +105,12 @@ export default function Index({ purchase_orders, filters }: { purchase_orders: P
                     </CardContent>
                 </Card>
                 {purchase_orders.last_page > 1 && (
-                    <div className="flex gap-2 justify-center">
+                    <div className="flex flex-wrap items-center justify-center gap-1.5">
                         {purchase_orders.links.map((link, i) =>
                             link.url ? (
-                                <Link key={i} href={link.url} className={`px-3 py-1 text-xs border rounded ${link.active ? 'bg-black text-white dark:bg-primary dark:text-primary-foreground' : 'bg-white dark:bg-secondary dark:text-secondary-foreground'}`} dangerouslySetInnerHTML={{ __html: link.label }} />
+                                <Link key={i} href={link.url} className={`inline-flex min-w-8 justify-center rounded-md border px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${link.active ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-transparent text-muted-foreground hover:bg-accent hover:text-foreground'}`} dangerouslySetInnerHTML={{ __html: link.label }} />
                             ) : (
-                                <span key={i} className="px-3 py-1 text-xs opacity-30" dangerouslySetInnerHTML={{ __html: link.label }} />
+                                <span key={i} className="inline-flex min-w-8 justify-center px-3 py-1.5 text-xs opacity-40" dangerouslySetInnerHTML={{ __html: link.label }} />
                             ),
                         )}
                     </div>

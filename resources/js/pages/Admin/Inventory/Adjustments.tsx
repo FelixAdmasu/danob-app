@@ -75,7 +75,7 @@ export default function Adjustments({ products }: Props) {
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
                 <div className="border-b border-border pb-8">
                     <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground dark:text-primary mb-3">Inventory — Stock Adjustments</p>
-                    <h1 className="font-serif text-3xl md:text-4xl tracking-tight text-foreground">Stock Adjustments</h1>
+                    <h1 className="font-serif text-[32px] leading-tight font-medium md:text-[40px] tracking-tight text-foreground">Stock Adjustments</h1>
                     <p className="text-sm text-muted-foreground mt-2 max-w-xl">Correct inventory with Adjustment In/Out. Creates an immutable ledger entry.</p>
                 </div>
 

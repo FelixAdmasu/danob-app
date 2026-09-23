@@ -74,9 +74,9 @@ type Sales = {
 
 function StatTile({ label, value, accent }: { label: string; value: React.ReactNode; accent?: string }) {
     return (
-        <div className="rounded border p-4 dark:bg-card">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">{label}</p>
-            <p className={`text-2xl font-bold ${accent ?? ''}`}>{value}</p>
+        <div className="flex flex-col gap-2 rounded-lg border border-border bg-card p-4 transition-colors dark:shadow-none">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{label}</p>
+            <p className={`font-serif text-3xl leading-none font-medium tracking-tight ${accent ?? 'text-foreground'}`}>{value}</p>
         </div>
     );
 }
@@ -105,17 +105,20 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
         <>
             <Head title="Sales Dashboard" />
             <div className="p-6 space-y-6">
-                <div className="flex items-center justify-between">
-                    <Heading title="Sales Dashboard" description="Orders, deliveries, returns, and customer activity" />
-                    <div className="flex gap-2">
-                        <Link href={OrderRoutes.index().url}>
-                            <Button variant="outline">View Orders</Button>
-                        </Link>
-                        <Link href={CustomerRoutes.index().url}>
-                            <Button>View Customers</Button>
-                        </Link>
-                    </div>
-                </div>
+                <Heading
+                    title="Sales Dashboard"
+                    description="Orders, deliveries, returns, and customer activity"
+                    actions={
+                        <div className="flex gap-2">
+                            <Link href={OrderRoutes.index().url}>
+                                <Button variant="outline">View Orders</Button>
+                            </Link>
+                            <Link href={CustomerRoutes.index().url}>
+                                <Button>View Customers</Button>
+                            </Link>
+                        </div>
+                    }
+                />
 
                 <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
                     <StatTile label="Total Orders" value={m.total_orders} />
@@ -128,7 +131,7 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-sm">Order Pipeline</CardTitle>
+                        <CardTitle>Order Pipeline</CardTitle>
                     </CardHeader>
                     <CardContent className="p-0">
                         <p className="px-4 pt-2 text-xs text-muted-foreground">
@@ -146,7 +149,7 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
                                 </thead>
                                 <tbody>
                                     {sales.pipeline.map((row) => (
-                                        <tr key={row.status} className="border-b hover:bg-muted/20">
+                                        <tr key={row.status} className="border-b transition-colors hover:bg-muted/40">
                                             <td className="px-4 py-3">
                                                 <StatusBadge status={row.status} />
                                             </td>
@@ -163,7 +166,7 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
                 <div className="grid gap-6 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-sm">Recent Orders</CardTitle>
+                            <CardTitle>Recent Orders</CardTitle>
                         </CardHeader>
                         <CardContent className="p-0">
                             <div className="overflow-x-auto">
@@ -187,7 +190,7 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
                                             </tr>
                                         ) : (
                                             sales.recent_orders.map((o) => (
-                                                <tr key={o.id} className="border-b hover:bg-muted/20">
+                                                <tr key={o.id} className="border-b transition-colors hover:bg-muted/40">
                                                     <td className="px-4 py-3 font-mono text-sm">
                                                         <Link href={OrderRoutes.show(o.id).url} className="hover:underline">
                                                             {o.reference_number}
@@ -220,7 +223,7 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-sm">Sales Returns</CardTitle>
+                            <CardTitle>Sales Returns</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-3 gap-3">
@@ -251,7 +254,7 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
                 <div className="grid gap-6 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-sm">Top Customers</CardTitle>
+                            <CardTitle>Top Customers</CardTitle>
                         </CardHeader>
                         <CardContent className="p-0">
                             <div className="overflow-x-auto">
@@ -273,7 +276,7 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
                                             </tr>
                                         ) : (
                                             sales.top_customers.map((c) => (
-                                                <tr key={c.id} className="border-b hover:bg-muted/20">
+                                                <tr key={c.id} className="border-b transition-colors hover:bg-muted/40">
                                                     <td className="px-4 py-3 text-sm">{c.name}</td>
                                                     <td className="px-4 py-3 text-sm">{c.orders_count}</td>
                                                     <td className="px-4 py-3 text-sm">{c.delivered_orders_count}</td>
@@ -295,7 +298,7 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-sm">Top Selling Variants</CardTitle>
+                            <CardTitle>Top Selling Variants</CardTitle>
                         </CardHeader>
                         <CardContent className="p-0">
                             <div className="overflow-x-auto">
@@ -318,7 +321,7 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
                                             </tr>
                                         ) : (
                                             sales.top_products.map((p) => (
-                                                <tr key={p.variant_id} className="border-b hover:bg-muted/20">
+                                                <tr key={p.variant_id} className="border-b transition-colors hover:bg-muted/40">
                                                     <td className="px-4 py-3 text-sm">{p.product_name}</td>
                                                     <td className="px-4 py-3 text-sm">{p.variant_name}</td>
                                                     <td className="px-4 py-3 text-sm">{p.sold_quantity}</td>
@@ -342,7 +345,7 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
                         <div className="grid gap-6 md:grid-cols-2">
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-sm">Recent Sales Movements</CardTitle>
+                                    <CardTitle>Recent Sales Movements</CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     {sales.movements.length === 0 ? (
@@ -379,7 +382,7 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
 
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-sm">Related Dashboards</CardTitle>
+                                    <CardTitle>Related Dashboards</CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">

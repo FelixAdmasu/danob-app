@@ -61,7 +61,7 @@ export default function SuppliersReport({ suppliers, summary, filters }: Props) 
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
                 <div className="border-b border-border pb-8">
                     <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground dark:text-primary mb-3">Reports — Suppliers</p>
-                    <h1 className="font-serif text-3xl md:text-4xl tracking-tight text-foreground">Suppliers</h1>
+                    <h1 className="font-serif text-[32px] leading-tight font-medium md:text-[40px] tracking-tight text-foreground">Suppliers</h1>
                     <p className="text-sm text-muted-foreground mt-2 max-w-xl">Supplier activity: purchase counts, open orders and purchase value.</p>
                 </div>
 
@@ -159,7 +159,7 @@ export default function SuppliersReport({ suppliers, summary, filters }: Props) 
                                         </tr>
                                     ) : (
                                         suppliers.data.map((supplier) => (
-                                            <tr key={supplier.id} className="border-b hover:bg-muted/20">
+                                            <tr key={supplier.id} className="border-b transition-colors hover:bg-muted/40">
                                                 <td className="px-4 py-3 text-sm">
                                                     <div className="font-medium">{supplier.name}</div>
                                                     {supplier.contact_person && (
@@ -187,17 +187,17 @@ export default function SuppliersReport({ suppliers, summary, filters }: Props) 
                 </Card>
 
                 {suppliers.last_page > 1 && (
-                    <div className="flex gap-2 justify-center">
+                    <div className="flex flex-wrap items-center justify-center gap-1.5">
                         {suppliers.links.map((link, i) =>
                             link.url ? (
                                 <Link
                                     key={i}
                                     href={link.url}
-                                    className={`px-3 py-1 text-xs border rounded ${link.active ? 'bg-black text-white dark:bg-primary dark:text-primary-foreground' : 'bg-white dark:bg-secondary dark:text-secondary-foreground'}`}
+                                    className={`inline-flex min-w-8 justify-center rounded-md border px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${link.active ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-transparent text-muted-foreground hover:bg-accent hover:text-foreground'}`}
                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                 />
                             ) : (
-                                <span key={i} className="px-3 py-1 text-xs opacity-30" dangerouslySetInnerHTML={{ __html: link.label }} />
+                                <span key={i} className="inline-flex min-w-8 justify-center px-3 py-1.5 text-xs opacity-40" dangerouslySetInnerHTML={{ __html: link.label }} />
                             ),
                         )}
                     </div>

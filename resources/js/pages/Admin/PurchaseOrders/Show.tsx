@@ -78,7 +78,7 @@ export default function Show({ purchase_order }: { purchase_order: PurchaseOrder
                     <CardContent>
                         <div className="overflow-x-auto">
                             <table className="w-full">
-                                <thead className="border-b">
+                                <thead className="border-b bg-muted/50">
                                     <tr className="text-left text-xs">
                                         <th className="px-3 py-2">Product</th>
                                         <th className="px-3 py-2">Variant</th>

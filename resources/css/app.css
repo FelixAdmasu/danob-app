@@ -130,7 +130,7 @@
     /* Core surfaces */
     --background: #0E0D19;
     --foreground: #EDEFF0;
-    --card: #2C2942;
+    --card: #191B1C;
     --card-foreground: #EDEFF0;
     --popover: #2C2942;
     --popover-foreground: #EDEFF0;
@@ -139,12 +139,12 @@
     --primary: #A16AE8;
     --primary-foreground: #100320;
 
-    /* Secondary — elevated violet neutral (spec: #2C2942 + #C2C9CC) */
+    /* Secondary — elevated neutral (spec: #2C2942 + #C2C9CC) */
     --secondary: #2C2942;
     --secondary-foreground: #C2C9CC;
 
-    /* Muted/accent — deep purple interactive surfaces (selected/hover) */
-    --muted: #341257;
+    /* Muted — elevated surface (#2C2942); accent — selected/hover (#341257) */
+    --muted: #2C2942;
     --muted-foreground: #9BA3A8;
     --accent: #341257;
     --accent-foreground: #EDEFF0;
@@ -153,13 +153,13 @@
     --color-danob: #2D5016;
     --color-danob-foreground: oklch(0.145 0 0);
 
-    /* Destructive — existing semantic red preserved (no red scale in palette) */
+    /* Destructive — existing semantic red preserved (destructive/errors only) */
     --destructive: oklch(0.396 0.141 25.723);
     --destructive-foreground: oklch(0.637 0.237 25.331);
 
-    /* Borders — #4E4870 primary, #908CAF subtle, controlled opacity */
-    --border: rgba(78, 72, 112, 0.7);
-    --input: rgba(144, 140, 175, 0.35);
+    /* Borders — neutral #383B3D, strong/input #4E4870 */
+    --border: #383B3D;
+    --input: #4E4870;
     --ring: #A16AE8;
 
     /* Charts */
@@ -171,12 +171,12 @@
 
     /* Sidebar — deep violet-black */
     --sidebar: #100320;
-    --sidebar-foreground: #EDEFF0;
+    --sidebar-foreground: #C2C9CC;
     --sidebar-primary: #A16AE8;
     --sidebar-primary-foreground: #100320;
     --sidebar-accent: #2C2942;
     --sidebar-accent-foreground: #EDEFF0;
-    --sidebar-border: rgba(78, 72, 112, 0.6);
+    --sidebar-border: #2C2942;
     --sidebar-ring: #A16AE8;
 }
 
@@ -280,4 +280,16 @@
 .login-passkey-wrap [data-orientation="horizontal"] {
     background: rgba(7, 14, 1, 0.06) !important;
     height: 1px !important;
+}
+
+/* Respect reduced-motion preferences (motion budget: 150–250ms otherwise) */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }

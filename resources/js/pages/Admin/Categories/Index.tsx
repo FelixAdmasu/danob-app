@@ -105,10 +105,10 @@ export default function Index({ categories, filters }: Props) {
                 <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between border-b border-border pb-8">
                     <div>
                         <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground dark:text-primary mb-3">Catalog — Categories</p>
-                        <h1 className="font-serif text-3xl md:text-4xl tracking-tight text-foreground">Categories</h1>
+                        <h1 className="font-serif text-[32px] leading-tight font-medium md:text-[40px] tracking-tight text-foreground">Categories</h1>
                         <p className="text-sm text-muted-foreground mt-2">Organize your catalog with clear category groups.</p>
                     </div>
-                    <Button onClick={openCreate} className="bg-[#070E01] hover:bg-[#1A3A0A] text-[#ECF3E5] dark:bg-primary dark:text-primary-foreground dark:hover:bg-[#8539D3]">
+                    <Button onClick={openCreate} className="bg-[#A16AE8] text-white hover:bg-[#8539D3]">
                         <Plus className="mr-2 h-4 w-4" /> Add Category
                     </Button>
                 </div>
@@ -164,7 +164,7 @@ export default function Index({ categories, filters }: Props) {
                                         </tr>
                                     ) : (
                                         categories.data.map((category) => (
-                                            <tr key={category.id} className="border-b hover:bg-muted/20">
+                                            <tr key={category.id} className="border-b transition-colors hover:bg-muted/40">
                                                 <td className="px-4 py-3 font-medium">{category.name}</td>
                                                 <td className="px-4 py-3 font-mono text-xs">{category.slug}</td>
                                                 <td className="px-4 py-3">
@@ -196,17 +196,17 @@ export default function Index({ categories, filters }: Props) {
                 </Card>
 
                 {categories.last_page > 1 && (
-                    <div className="flex gap-2 justify-center">
+                    <div className="flex flex-wrap items-center justify-center gap-1.5">
                         {categories.links.map((link, i) =>
                             link.url ? (
                                 <Link
                                     key={i}
                                     href={link.url}
-                                    className={`px-3 py-1 text-xs border rounded ${link.active ? 'bg-black text-white dark:bg-primary dark:text-primary-foreground' : 'bg-white dark:bg-secondary dark:text-secondary-foreground'}`}
+                                    className={`inline-flex min-w-8 justify-center rounded-md border px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${link.active ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-transparent text-muted-foreground hover:bg-accent hover:text-foreground'}`}
                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                 />
                             ) : (
-                                <span key={i} className="px-3 py-1 text-xs opacity-30" dangerouslySetInnerHTML={{ __html: link.label }} />
+                                <span key={i} className="inline-flex min-w-8 justify-center px-3 py-1.5 text-xs opacity-40" dangerouslySetInnerHTML={{ __html: link.label }} />
                             ),
                         )}
                     </div>
