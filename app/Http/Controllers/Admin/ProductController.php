@@ -8,10 +8,12 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -121,7 +123,7 @@ class ProductController extends Controller
                     $file = $request->file("images.$index.file");
 
                     if ($file) {
-                        $path = $file->store('products/'.$product->id, $disk);
+                        $path = $this->storeImageOrFail($file, 'products/'.$product->id, $disk, $index);
                         $uploadedPaths[] = ['disk' => $disk, 'path' => $path];
                         $url = $this->storageUrl($disk, $path);
                     }
@@ -317,7 +319,7 @@ class ProductController extends Controller
                         $url = $imageData['url'] ?? null;
 
                         if ($file) {
-                            $path = $file->store('products/'.$product->id, $disk);
+                            $path = $this->storeImageOrFail($file, 'products/'.$product->id, $disk, $index);
                             $uploadedPaths[] = ['disk' => $disk, 'path' => $path];
                             $url = $this->storageUrl($disk, $path);
                         } elseif ($id) {
@@ -450,6 +452,31 @@ class ProductController extends Controller
         $relative = parse_url($url, PHP_URL_PATH);
 
         return is_string($relative) && $relative !== '' ? $relative : $url;
+    }
+
+    /**
+     * Persist an uploaded image or fail the whole request with a field error.
+     *
+     * Storage can reject a write (missing bucket, bad keys, unwritable disk).
+     * We must never persist a product_images row for a file that was not saved —
+     * a silent false here is how "uploaded" images vanish on the next deploy.
+     */
+    private function storeImageOrFail(UploadedFile $file, string $directory, string $disk, string|int $index): string
+    {
+        try {
+            $path = $file->store($directory, $disk);
+        } catch (\Throwable $e) {
+            report($e);
+            $path = false;
+        }
+
+        if (! is_string($path) || $path === '') {
+            throw ValidationException::withMessages([
+                "images.{$index}.file" => 'Image upload failed — the file could not be saved to storage. Please try again.',
+            ]);
+        }
+
+        return $path;
     }
 
     private function isOwnedStorageUrl(string $url): bool

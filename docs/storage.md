@@ -1,49 +1,87 @@
 # Product Images Storage
 
+## Why Supabase Storage in production
+
+Render's container filesystem is **ephemeral**: every push to `main` triggers a
+redeploy that replaces the container, wiping `storage/app/public`. Image *rows*
+live in Postgres (Supabase) and survive, but files written to the local disk do
+not. The classic symptom is "product images 404 after every deploy" — it
+happened here because `FILESYSTEM_DISK_PRODUCT_IMAGES` was never set in
+`render.yaml`, so uploads silently landed on the container disk.
+
+Rule: **anything durable must not live on the container disk.**
+
 ## Architecture
 
-- **Local dev:** `FILESYSTEM_DISK_PRODUCT_IMAGES=public` → `storage/app/public/product-images` via `public` disk (`Storage::fake('public')` in tests)
-- **Production:** `FILESYSTEM_DISK_PRODUCT_IMAGES=supabase` → Supabase Storage S3-compatible bucket `product-images`
+- **Local dev:** `FILESYSTEM_DISK_PRODUCT_IMAGES=public` → `storage/app/public/products` via the `public` disk (`Storage::fake('public')` in tests)
+- **Production:** `FILESYSTEM_DISK_PRODUCT_IMAGES=supabase` → Supabase Storage, bucket `product-images`
 
-## Supabase S3 Configuration
+Uploaded path: `products/{product_id}/{random}.{ext}` via
+`$file->store('products/'.$id, $disk)`. URLs are persisted **absolutely** for
+Supabase (`https://<project-ref>.supabase.co/storage/v1/object/public/product-images/...`)
+and **root-relative** for the local disk (`/storage/products/...`).
 
-Laravel `config/filesystems.php` `supabase` disk:
+Uploads fail with a validation error (and persist no `product_images` row) if
+storage rejects the write — a failed upload must never look successful.
 
-```php
-'supabase' => [
-  'driver' => 's3',
-  'key' => env('SUPABASE_ACCESS_KEY_ID'),
-  'secret' => env('SUPABASE_SECRET_ACCESS_KEY'),
-  'region' => env('SUPABASE_DEFAULT_REGION', 'us-east-1'),
-  'bucket' => env('SUPABASE_BUCKET', 'product-images'),
-  'endpoint' => env('SUPABASE_ENDPOINT', 'https://your-project.storage.supabase.co/storage/v1/s3'),
-  'use_path_style_endpoint' => env('SUPABASE_USE_PATH_STYLE_ENDPOINT', true),
-  'visibility' => 'public',
-]
+## Render environment (`render.yaml`)
+
+Set by the blueprint (non-secret):
+
+```yaml
+FILESYSTEM_DISK_PRODUCT_IMAGES: supabase
+SUPABASE_BUCKET: product-images
+SUPABASE_DEFAULT_REGION: us-east-1
+SUPABASE_USE_PATH_STYLE_ENDPOINT: "true"
 ```
 
-## Env (Render / Production)
-
-Set on Render dashboard:
+Must be set on the Render dashboard (declared `sync: false`):
 
 ```
-FILESYSTEM_DISK_PRODUCT_IMAGES=supabase
-SUPABASE_BUCKET=product-images
-SUPABASE_ACCESS_KEY_ID=<from Supabase Storage S3 keys>
-SUPABASE_SECRET_ACCESS_KEY=<from Supabase Storage S3 keys>
-SUPABASE_ENDPOINT=https://<project-ref>.storage.supabase.co/storage/v1/s3
-SUPABASE_DEFAULT_REGION=us-east-1
-SUPABASE_USE_PATH_STYLE_ENDPOINT=true
 SUPABASE_URL=https://<project-ref>.supabase.co
+SUPABASE_ACCESS_KEY_ID=<S3 access key>
+SUPABASE_SECRET_ACCESS_KEY=<S3 secret key>
 ```
 
-Never expose `SUPABASE_ACCESS_KEY_ID` / `SECRET` to Vite/React.
+`SUPABASE_ENDPOINT` is derived from `SUPABASE_URL`
+(`https://<project-ref>.storage.supabase.co/storage/v1/s3`) unless set
+explicitly. If the service is **not** blueprint-managed, also add the four
+value vars above manually.
 
-## Bucket Setup
+Never expose `SUPABASE_ACCESS_KEY_ID` / `SUPABASE_SECRET_ACCESS_KEY` to
+Vite/React — they are server-side only.
 
-1. Supabase Dashboard → Storage → Create bucket `product-images` (public)
-2. Policy: allow public read `storage.objects` where `bucket_id = 'product-images'`
-3. No code auto-creates bucket.
+The container entrypoint prints a loud warning at boot when `APP_ENV=production`
+but the product-image disk is not `supabase`, or when the `SUPABASE_URL`/key
+pair is incomplete.
+
+## Supabase setup (one-time)
+
+1. Supabase Dashboard → your project → **Storage → New bucket** → name
+   `product-images` → enable **Public bucket** → Save.
+   (No code auto-creates the bucket; a private bucket makes every image URL 403.)
+2. **Project Settings → Storage → S3-compatible API keys** → create/copy the
+   access key + secret key.
+3. **Project Settings → API** → copy the **Project URL**.
+4. Paste the three values into Render → **Environment** → Save
+   (Render redeploys automatically).
+
+### Verify
+
+Upload a product image and open it: the URL must be
+`https://<project-ref>.supabase.co/storage/v1/object/public/product-images/products/...`.
+Then push/deploy again — the image must still load.
+
+## Migrating away from the wiped container disk
+
+Rows created before this fix point at `/storage/products/...` files that no
+longer exist — the containers that held them are gone, so **the files are not
+recoverable**. Re-upload those images. To drop the dead rows in bulk (Supabase
+SQL editor, only after confirming the files 404):
+
+```sql
+delete from product_images where url like '%/storage/products/%';
+```
 
 ## Local
 
@@ -51,4 +89,5 @@ Never expose `SUPABASE_ACCESS_KEY_ID` / `SECRET` to Vite/React.
 php artisan storage:link
 ```
 
-Uploaded files: `products/{product_id}/{uuid}.{ext}` via `$file->store('products/'.$product->id, $disk)`.
+`FILESYSTEM_DISK_PRODUCT_IMAGES` defaults to `public`; `.env.example` documents
+the full Supabase variable set.

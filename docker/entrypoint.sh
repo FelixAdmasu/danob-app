@@ -3,6 +3,18 @@ set -e
 
 echo "Danob Trading PLC — Starting..."
 
+# Storage safety net: Render's container disk is wiped on every deploy, so
+# product images MUST live on Supabase Storage. Warn loudly if misconfigured
+# (silent loss on the next push is exactly the bug we fixed — docs/storage.md).
+if [ "${APP_ENV:-}" = "production" ] && [ "${FILESYSTEM_DISK_PRODUCT_IMAGES:-public}" != "supabase" ]; then
+    echo "WARN: FILESYSTEM_DISK_PRODUCT_IMAGES is '${FILESYSTEM_DISK_PRODUCT_IMAGES:-public}' — uploaded images will be LOST on the next deploy. Set it to 'supabase' (docs/storage.md)."
+fi
+if [ "${FILESYSTEM_DISK_PRODUCT_IMAGES:-public}" = "supabase" ]; then
+    if [ -z "${SUPABASE_URL:-}" ] || [ -z "${SUPABASE_ACCESS_KEY_ID:-}" ] || [ -z "${SUPABASE_SECRET_ACCESS_KEY:-}" ]; then
+        echo "WARN: Supabase image storage selected but SUPABASE_URL / SUPABASE_ACCESS_KEY_ID / SUPABASE_SECRET_ACCESS_KEY is incomplete — uploads will fail (docs/storage.md)."
+    fi
+fi
+
 # Ensure storage and cache directories exist and are writable
 mkdir -p storage/framework/{sessions,views,cache} storage/logs bootstrap/cache
 chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true

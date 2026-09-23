@@ -1,5 +1,13 @@
 <?php
 
+// Supabase Storage: the S3 endpoint can be derived from the project URL
+// (https://<project-ref>.supabase.co → https://<project-ref>.storage.supabase.co),
+// so production only needs SUPABASE_URL + the S3 access keys (docs/storage.md).
+$supabaseUrl = rtrim((string) env('SUPABASE_URL', ''), '/');
+$supabaseHost = $supabaseUrl !== '' ? (string) parse_url($supabaseUrl, PHP_URL_HOST) : '';
+$supabaseProjectRef = (string) (env('SUPABASE_PROJECT_REF')
+    ?: ($supabaseHost !== '' ? preg_replace('/\.supabase\.co$/', '', $supabaseHost) : ''));
+
 return [
 
     /*
@@ -69,11 +77,15 @@ return [
             'region' => env('SUPABASE_DEFAULT_REGION', env('AWS_DEFAULT_REGION', 'us-east-1')),
             'bucket' => env('SUPABASE_BUCKET', env('SUPABASE_STORAGE_BUCKET', env('AWS_BUCKET', 'product-images'))),
             'url' => env('SUPABASE_URL') ? rtrim((string) env('SUPABASE_URL'), '/').'/storage/v1/object/public/'.env('SUPABASE_BUCKET', env('SUPABASE_STORAGE_BUCKET', 'product-images')) : env('AWS_URL'),
-            'endpoint' => env('SUPABASE_ENDPOINT', env('SUPABASE_S3_ENDPOINT', env('AWS_ENDPOINT', 'https://'.env('SUPABASE_PROJECT_REF', 'your-project').'.storage.supabase.co/storage/v1/s3'))),
+            'endpoint' => env('SUPABASE_ENDPOINT')
+                ?: env('SUPABASE_S3_ENDPOINT')
+                ?: ($supabaseProjectRef !== '' ? 'https://'.$supabaseProjectRef.'.storage.supabase.co/storage/v1/s3' : null)
+                ?: env('AWS_ENDPOINT')
+                ?: 'https://your-project.storage.supabase.co/storage/v1/s3',
             'use_path_style_endpoint' => env('SUPABASE_USE_PATH_STYLE_ENDPOINT', env('AWS_USE_PATH_STYLE_ENDPOINT', true)),
             'visibility' => 'public',
             'throw' => false,
-            'report' => false,
+            'report' => true,
         ],
 
         'product-images' => [

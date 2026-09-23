@@ -60,6 +60,25 @@ services:
       - key: FILESYSTEM_DISK
         value: local
 
+      # Product images MUST live on Supabase Storage: Render's container disk is
+      # ephemeral and is wiped on every deploy/push (see docs/storage.md).
+      - key: FILESYSTEM_DISK_PRODUCT_IMAGES
+        value: supabase
+      - key: SUPABASE_BUCKET
+        value: product-images
+      - key: SUPABASE_DEFAULT_REGION
+        value: us-east-1
+      - key: SUPABASE_USE_PATH_STYLE_ENDPOINT
+        value: "true"
+      # Secrets / project-specific values — set these on the Render dashboard
+      # (Environment tab); the blueprint does not manage them.
+      - key: SUPABASE_URL
+        sync: false  # https://<project-ref>.supabase.co — Supabase → Settings → API → Project URL
+      - key: SUPABASE_ACCESS_KEY_ID
+        sync: false  # Supabase → Project Settings → Storage → S3-compatible keys
+      - key: SUPABASE_SECRET_ACCESS_KEY
+        sync: false  # Supabase → Project Settings → Storage → S3-compatible keys
+
       # Mail — default to log until SMTP is configured
       - key: MAIL_MAILER
         value: log

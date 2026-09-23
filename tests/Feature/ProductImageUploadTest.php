@@ -484,4 +484,133 @@ class ProductImageUploadTest extends TestCase
         $supabase = $product->images()->create(['url' => 'https://proj.supabase.co/storage/v1/object/public/product-images/products/'.$product->id.'/b.jpg', 'sort_order' => 2]);
         $this->assertSame('https://proj.supabase.co/storage/v1/object/public/product-images/products/'.$product->id.'/b.jpg', $supabase->url);
     }
+
+    public function test_upload_goes_to_supabase_disk_and_persists_absolute_url(): void
+    {
+        // Production stores product images on Supabase Storage; uploads must
+        // route to that disk and persist an absolute, publicly-hosted URL.
+        $base = 'https://abcdefghijkl.supabase.co/storage/v1/object/public/product-images';
+        Storage::fake('public');
+        Storage::fake('supabase', ['url' => $base]);
+        config(['filesystems.product_images_disk' => 'supabase']);
+
+        $admin = $this->admin();
+        $cat = $this->category();
+        $file = $this->fakeImage('test.jpg', 'image/jpeg');
+
+        $response = $this->actingAs($admin)->post(route('admin.products.store'), [
+            'name' => 'P-sup',
+            'slug' => 'p-sup',
+            'category_id' => $cat->id,
+            'description' => 'D',
+            'status' => 'active',
+            'images' => [['file' => $file, 'is_primary' => true]],
+        ]);
+
+        $response->assertRedirect(route('admin.products.index'));
+        $product = Product::where('slug', 'p-sup')->first();
+        $this->assertNotNull($product);
+        $image = $product->images->first();
+
+        $this->assertStringStartsWith($base.'/products/'.$product->id.'/', $image->url);
+        Storage::disk('supabase')->assertExists(str_replace($base.'/', '', $image->url));
+        Storage::disk('public')->assertEmpty();
+    }
+
+    public function test_supabase_image_removal_deletes_file_and_row(): void
+    {
+        Storage::fake('public');
+        Storage::fake('supabase', ['url' => 'https://abcdefghijkl.supabase.co/storage/v1/object/public/product-images']);
+        config(['filesystems.product_images_disk' => 'supabase']);
+        $admin = $this->admin();
+        $cat = $this->category();
+        $product = Product::create(['category_id' => $cat->id, 'name' => 'P', 'slug' => 'p-sup-del', 'description' => 'D', 'status' => 'active']);
+        $path = 'products/'.$product->id.'/old.jpg';
+        Storage::disk('supabase')->put($path, 'x');
+        $image = $product->images()->create([
+            'url' => 'https://abcdefghijkl.supabase.co/storage/v1/object/public/product-images/'.$path,
+            'sort_order' => 0,
+            'is_primary' => true,
+        ]);
+
+        $this->actingAs($admin)->put(route('admin.products.update', $product), [
+            'name' => 'P',
+            'slug' => 'p-sup-del',
+            'category_id' => $cat->id,
+            'description' => 'D',
+            'status' => 'active',
+            'images' => [],
+        ])->assertRedirect(route('admin.products.index'));
+
+        Storage::disk('supabase')->assertMissing($path);
+        $this->assertDatabaseMissing('product_images', ['id' => $image->id]);
+    }
+
+    public function test_storage_failure_returns_validation_error_and_saves_nothing(): void
+    {
+        // When storage rejects a write (missing bucket, bad keys, unwritable
+        // disk) the request must fail loudly and persist no phantom rows.
+        config([
+            'filesystems.product_images_disk' => 'broken',
+            'filesystems.disks.broken' => [
+                'driver' => 'local',
+                // A file as the disk root: the directory can never be created,
+                // so every write fails deterministically on any platform.
+                'root' => __FILE__.DIRECTORY_SEPARATOR.'not-a-directory',
+                'throw' => false,
+                'report' => false,
+            ],
+        ]);
+
+        $admin = $this->admin();
+        $cat = $this->category();
+        $file = $this->fakeImage('test.jpg', 'image/jpeg');
+
+        $response = $this->actingAs($admin)->post(route('admin.products.store'), [
+            'name' => 'P-fail',
+            'slug' => 'p-fail',
+            'category_id' => $cat->id,
+            'description' => 'D',
+            'status' => 'active',
+            'images' => [['file' => $file, 'is_primary' => true]],
+        ]);
+
+        $response->assertSessionHasErrors('images.0.file');
+        $this->assertDatabaseMissing('products', ['slug' => 'p-fail']);
+        $this->assertDatabaseCount('product_images', 0);
+    }
+
+    public function test_supabase_endpoint_and_url_derive_from_project_url(): void
+    {
+        // Setting only SUPABASE_URL must be enough to get a correct S3
+        // endpoint and public object URL (fewer dashboard knobs to misconfigure).
+        $keys = ['SUPABASE_URL', 'SUPABASE_ENDPOINT', 'SUPABASE_S3_ENDPOINT', 'SUPABASE_PROJECT_REF'];
+        $backup = [];
+        foreach ($keys as $key) {
+            $backup[$key] = $_ENV[$key] ?? null;
+            unset($_ENV[$key]);
+        }
+
+        try {
+            $_ENV['SUPABASE_URL'] = 'https://abcdefghijkl.supabase.co';
+            $config = require base_path('config/filesystems.php');
+
+            $this->assertSame(
+                'https://abcdefghijkl.storage.supabase.co/storage/v1/s3',
+                $config['disks']['supabase']['endpoint']
+            );
+            $this->assertSame(
+                'https://abcdefghijkl.supabase.co/storage/v1/object/public/product-images',
+                $config['disks']['supabase']['url']
+            );
+        } finally {
+            foreach ($keys as $key) {
+                if ($backup[$key] === null) {
+                    unset($_ENV[$key]);
+                } else {
+                    $_ENV[$key] = $backup[$key];
+                }
+            }
+        }
+    }
 }
