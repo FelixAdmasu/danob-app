@@ -14,7 +14,7 @@ import { Upload, X, Image as ImageIcon } from 'lucide-react';
 
 type Category = { id: number; name: string; slug: string };
 type Brand = { id: number; name: string; slug: string };
-type Variant = { id: number; name: string; sku: string | null; unit: string | null; quantity: number; public_price: string | null; is_active: boolean };
+type Variant = { id: number; name: string; sku: string | null; unit: string | null; quantity: number; low_stock_threshold: number | null; public_price: string | null; is_active: boolean };
 type Image = { id: number; url: string; sort_order: number; is_primary: boolean; alt_text: string | null };
 type Product = {
     id: number;
@@ -30,7 +30,7 @@ type Product = {
 
 type Props = { product: Product; categories: Category[]; brands: Brand[] };
 
-type VariantForm = { id?: number; name: string; sku: string; unit: string; quantity: string; public_price: string; is_active: boolean };
+type VariantForm = { id?: number; name: string; sku: string; unit: string; quantity: string; low_stock_threshold: string; public_price: string; is_active: boolean };
 type ImageForm = { id?: number; url: string; file: File | null; preview: string | null; alt_text: string; sort_order: string; is_primary: boolean };
 
 export default function Edit({ product, categories, brands }: Props) {
@@ -47,6 +47,7 @@ export default function Edit({ product, categories, brands }: Props) {
             sku: v.sku || '',
             unit: v.unit || '',
             quantity: String(v.quantity),
+            low_stock_threshold: v.low_stock_threshold == null ? '' : String(v.low_stock_threshold),
             public_price: v.public_price || '',
             is_active: v.is_active,
         })) as VariantForm[],
@@ -63,7 +64,7 @@ export default function Edit({ product, categories, brands }: Props) {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [processing, setProcessing] = useState(false);
 
-    const addVariant = () => setData({ ...data, variants: [...data.variants, { name: '', sku: '', unit: '', quantity: '1', public_price: '', is_active: true }] });
+    const addVariant = () => setData({ ...data, variants: [...data.variants, { name: '', sku: '', unit: '', quantity: '1', low_stock_threshold: '', public_price: '', is_active: true }] });
     const updateVariant = (idx: number, field: keyof VariantForm, value: string | boolean) => {
         const next = [...data.variants];
         (next[idx] as Record<string, unknown>)[field] = value;
@@ -111,6 +112,7 @@ export default function Edit({ product, categories, brands }: Props) {
             if (v.sku) formData.append(`variants[${idx}][sku]`, v.sku);
             if (v.unit) formData.append(`variants[${idx}][unit]`, v.unit);
             formData.append(`variants[${idx}][quantity]`, v.quantity || '1');
+            if (v.low_stock_threshold !== '') formData.append(`variants[${idx}][low_stock_threshold]`, v.low_stock_threshold);
             if (v.public_price) formData.append(`variants[${idx}][public_price]`, v.public_price);
             formData.append(`variants[${idx}][is_active]`, v.is_active ? '1' : '0');
         });
@@ -259,6 +261,12 @@ export default function Edit({ product, categories, brands }: Props) {
                                             <div className="space-y-1">
                                                 <Label>Quantity</Label>
                                                 <Input type="number" value={variant.quantity} onChange={(e) => updateVariant(idx, 'quantity', e.target.value)} />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <Label>Low Stock Threshold</Label>
+                                                <Input type="number" min={0} value={variant.low_stock_threshold} onChange={(e) => updateVariant(idx, 'low_stock_threshold', e.target.value)} placeholder="Empty = monitoring off" />
+                                                <InputError message={(errors as Record<string, string>)[`variants.${idx}.low_stock_threshold`]} />
+                                                <p className="text-[10px] text-muted-foreground">Flag as low stock when quantity is at or below this value.</p>
                                             </div>
                                             <div className="space-y-1">
                                                 <Label>Public Price</Label>

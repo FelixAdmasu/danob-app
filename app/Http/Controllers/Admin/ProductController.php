@@ -22,7 +22,12 @@ class ProductController extends Controller
 
         $query = Product::with(['category', 'brand'])
             ->withCount('variants')
-            ->withCount(['variants as low_stock_variants_count' => fn ($q) => $q->where('quantity', '<=', 5)->where('is_active', true)])
+            // Variants needing attention per the authoritative stock status:
+            // out of stock, or monitored and at/below threshold.
+            ->withCount(['variants as low_stock_variants_count' => fn ($q) => $q->where('is_active', true)
+                ->where(fn ($v) => $v->where('quantity', '<=', 0)
+                    ->orWhere(fn ($v2) => $v2->whereNotNull('low_stock_threshold')
+                        ->whereColumn('quantity', '<=', 'low_stock_threshold')))])
             ->with(['images' => fn ($q) => $q->orderBy('sort_order')->orderBy('id')]);
 
         if ($search) {
@@ -63,6 +68,7 @@ class ProductController extends Controller
             'variants.*.sku' => 'nullable|string|max:255|unique:product_variants,sku',
             'variants.*.unit' => 'nullable|string|max:50',
             'variants.*.quantity' => 'nullable|integer|min:0',
+            'variants.*.low_stock_threshold' => 'nullable|integer|min:0|max:1000000',
             'variants.*.public_price' => 'nullable|numeric|min:0|max:999999.99',
             'variants.*.is_active' => 'nullable|boolean',
             'images' => 'nullable|array',
@@ -101,6 +107,7 @@ class ProductController extends Controller
                         'sku' => $variantData['sku'] ?? null,
                         'unit' => $variantData['unit'] ?? null,
                         'quantity' => $variantData['quantity'] ?? 1,
+                        'low_stock_threshold' => $variantData['low_stock_threshold'] ?? null,
                         'public_price' => $variantData['public_price'] ?? null,
                         'is_active' => $variantData['is_active'] ?? true,
                     ]);
@@ -208,6 +215,7 @@ class ProductController extends Controller
             'variants.*.sku' => 'nullable|string|max:255',
             'variants.*.unit' => 'nullable|string|max:50',
             'variants.*.quantity' => 'nullable|integer|min:0',
+            'variants.*.low_stock_threshold' => 'nullable|integer|min:0|max:1000000',
             'variants.*.public_price' => 'nullable|numeric|min:0|max:999999.99',
             'variants.*.is_active' => 'nullable|boolean',
             'images' => 'nullable|array',
@@ -271,6 +279,7 @@ class ProductController extends Controller
                             'sku' => $variantData['sku'] ?? null,
                             'unit' => $variantData['unit'] ?? null,
                             'quantity' => $variantData['quantity'] ?? 1,
+                            'low_stock_threshold' => $variantData['low_stock_threshold'] ?? null,
                             'public_price' => $variantData['public_price'] ?? null,
                             'is_active' => $variantData['is_active'] ?? true,
                         ];

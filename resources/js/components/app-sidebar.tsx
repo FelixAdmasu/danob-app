@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Github, BookOpen, LayoutGrid, Package, Tag, Building2, ShoppingCart, Users, Layers, Store, Archive, ArrowUpDown, History, Truck, FileText } from 'lucide-react';
+import { Github, BookOpen, LayoutGrid, Package, Tag, Building2, ShoppingCart, Users, Layers, Store, Archive, ArrowUpDown, History, Truck, FileText, AlertTriangle } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -63,6 +63,7 @@ export function AppSidebar() {
               { title: 'Opening Stock', href: inventoryRoutes.openingStock().url, icon: Archive },
               { title: 'Stock Adjustments', href: inventoryRoutes.adjustments().url, icon: ArrowUpDown },
               { title: 'Inventory History', href: inventoryRoutes.history().url, icon: History },
+              { title: 'Low Stock', href: inventoryRoutes.lowStock().url, icon: AlertTriangle },
           ]
         : [];
 

@@ -57,6 +57,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::get('inventory/adjustments', [InventoryController::class, 'adjustments'])->name('inventory.adjustments');
         Route::post('inventory/adjustments', [InventoryController::class, 'storeAdjustment'])->name('inventory.adjustments.store');
         Route::get('inventory/history', [InventoryController::class, 'history'])->name('inventory.history');
+        // Low-stock monitoring view: derived status only, never mutates stock.
+        Route::get('inventory/low-stock', [InventoryController::class, 'lowStock'])->name('inventory.low-stock');
         Route::resource('suppliers', SupplierController::class);
         Route::post('suppliers/{supplier}/deactivate', [SupplierController::class, 'deactivate'])->name('suppliers.deactivate');
         Route::post('suppliers/{supplier}/activate', [SupplierController::class, 'activate'])->name('suppliers.activate');

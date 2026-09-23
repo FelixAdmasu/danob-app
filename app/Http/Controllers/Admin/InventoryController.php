@@ -97,6 +97,63 @@ class InventoryController extends Controller
         return redirect()->route('admin.inventory.adjustments')->with('success', 'Stock adjustment completed successfully.');
     }
 
+    public function lowStock(Request $request)
+    {
+        $validated = $request->validate([
+            'status' => 'nullable|in:attention,low,out,monitored',
+            'search' => 'nullable|string|max:255',
+        ]);
+
+        $status = $validated['status'] ?? 'attention';
+        $search = $validated['search'] ?? null;
+
+        // SQL mirror of ProductVariant::stockStatus() — backend stays
+        // authoritative and the page only reads the derived status.
+        $query = ProductVariant::with(['product:id,name'])
+            ->where('is_active', true);
+
+        if ($status === 'low') {
+            $query->whereNotNull('low_stock_threshold')
+                ->where('quantity', '>', 0)
+                ->whereColumn('quantity', '<=', 'low_stock_threshold');
+        } elseif ($status === 'out') {
+            $query->where('quantity', '<=', 0);
+        } elseif ($status === 'monitored') {
+            $query->whereNotNull('low_stock_threshold');
+        } else {
+            $query->where(fn ($q) => $q
+                ->where('quantity', '<=', 0)
+                ->orWhere(fn ($q2) => $q2->whereNotNull('low_stock_threshold')
+                    ->whereColumn('quantity', '<=', 'low_stock_threshold')));
+        }
+
+        if ($search !== null && $search !== '') {
+            $query->where(fn ($q) => $q
+                ->where('name', 'like', "%{$search}%")
+                ->orWhere('sku', 'like', "%{$search}%")
+                ->orWhereHas('product', fn ($p) => $p->where('name', 'like', "%{$search}%")));
+        }
+
+        $variants = $query->orderBy('quantity')->orderBy('name')->paginate(20)->withQueryString();
+
+        $activeVariants = fn () => ProductVariant::where('is_active', true);
+
+        return Inertia::render('Admin/Inventory/LowStock', [
+            'variants' => $variants,
+            'counts' => [
+                'low' => $activeVariants()->whereNotNull('low_stock_threshold')
+                    ->where('quantity', '>', 0)
+                    ->whereColumn('quantity', '<=', 'low_stock_threshold')->count(),
+                'out' => $activeVariants()->where('quantity', '<=', 0)->count(),
+                'monitored' => $activeVariants()->whereNotNull('low_stock_threshold')->count(),
+            ],
+            'filters' => [
+                'status' => $status,
+                'search' => $search,
+            ],
+        ]);
+    }
+
     public function history(Request $request)
     {
         $validated = $request->validate([

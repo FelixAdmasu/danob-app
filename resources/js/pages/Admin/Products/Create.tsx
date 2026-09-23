@@ -25,6 +25,7 @@ type VariantForm = {
     sku: string;
     unit: string;
     quantity: string;
+    low_stock_threshold: string;
     public_price: string;
     is_active: boolean;
 };
@@ -52,7 +53,7 @@ export default function Create({ categories, brands }: Props) {
     const [processing, setProcessing] = useState(false);
 
     const addVariant = () => {
-        setData({ ...data, variants: [...data.variants, { name: '', sku: '', unit: '', quantity: '1', public_price: '', is_active: true }] });
+        setData({ ...data, variants: [...data.variants, { name: '', sku: '', unit: '', quantity: '1', low_stock_threshold: '', public_price: '', is_active: true }] });
     };
     const updateVariant = (idx: number, field: keyof VariantForm, value: string | boolean) => {
         const next = [...data.variants];
@@ -99,6 +100,7 @@ export default function Create({ categories, brands }: Props) {
             if (v.sku) formData.append(`variants[${idx}][sku]`, v.sku);
             if (v.unit) formData.append(`variants[${idx}][unit]`, v.unit);
             formData.append(`variants[${idx}][quantity]`, v.quantity || '1');
+            if (v.low_stock_threshold !== '') formData.append(`variants[${idx}][low_stock_threshold]`, v.low_stock_threshold);
             if (v.public_price) formData.append(`variants[${idx}][public_price]`, v.public_price);
             formData.append(`variants[${idx}][is_active]`, v.is_active ? '1' : '0');
         });
@@ -242,6 +244,12 @@ export default function Create({ categories, brands }: Props) {
                                             <div className="space-y-1">
                                                 <Label>Quantity</Label>
                                                 <Input type="number" value={variant.quantity} onChange={(e) => updateVariant(idx, 'quantity', e.target.value)} />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <Label>Low Stock Threshold</Label>
+                                                <Input type="number" min={0} value={variant.low_stock_threshold} onChange={(e) => updateVariant(idx, 'low_stock_threshold', e.target.value)} placeholder="Empty = monitoring off" />
+                                                <InputError message={(errors as Record<string, string>)[`variants.${idx}.low_stock_threshold`]} />
+                                                <p className="text-[10px] text-muted-foreground">Flag as low stock when quantity is at or below this value.</p>
                                             </div>
                                             <div className="space-y-1">
                                                 <Label>Public Price</Label>
