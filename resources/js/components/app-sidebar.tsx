@@ -72,6 +72,7 @@ export function AppSidebar() {
         ? [
               { title: 'Orders', href: orderRoutes.index().url, icon: ShoppingCart },
               { title: 'Customers', href: customerRoutes.index().url, icon: Users },
+              { title: 'Sales Dashboard', href: '/admin/sales/dashboard', icon: LayoutDashboard },
           ]
         : [];
 

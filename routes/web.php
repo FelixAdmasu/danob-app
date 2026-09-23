@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\PurchaseDashboardController;
 use App\Http\Controllers\Admin\PurchaseOrderController;
 use App\Http\Controllers\Admin\ReceivingController;
+use App\Http\Controllers\Admin\SalesDashboardController;
 use App\Http\Controllers\Admin\SalesReturnController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Public\BranchController;
@@ -46,6 +47,9 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::middleware('role:admin,manager,staff')->group(function () {
         Route::resource('orders', OrderController::class)->only(['index', 'show']);
         Route::resource('customers', CustomerController::class);
+        // Read-only sales dashboard: same authorization as viewing orders and
+        // customers; stock-level data inside it is gated to admin/manager.
+        Route::get('sales/dashboard', SalesDashboardController::class)->name('sales.dashboard');
     });
 
     Route::middleware('role:admin,manager')->group(function () {
