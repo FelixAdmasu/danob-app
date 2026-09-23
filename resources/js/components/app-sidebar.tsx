@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Github, BookOpen, LayoutGrid, LayoutDashboard, Package, Tag, Building2, ShoppingCart, Users, Layers, Store, Archive, ArrowUpDown, History, Truck, FileText, AlertTriangle } from 'lucide-react';
+import { Github, BookOpen, LayoutGrid, LayoutDashboard, Package, Tag, Building2, ShoppingCart, Users, Layers, Store, Archive, ArrowUpDown, History, Truck, FileText, AlertTriangle, BarChart3 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -73,6 +73,7 @@ export function AppSidebar() {
               { title: 'Orders', href: orderRoutes.index().url, icon: ShoppingCart },
               { title: 'Customers', href: customerRoutes.index().url, icon: Users },
               { title: 'Sales Dashboard', href: '/admin/sales/dashboard', icon: LayoutDashboard },
+              { title: 'Reports', href: '/admin/reports', icon: BarChart3 },
           ]
         : [];
 

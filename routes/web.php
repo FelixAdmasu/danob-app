@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\PurchaseDashboardController;
 use App\Http\Controllers\Admin\PurchaseOrderController;
 use App\Http\Controllers\Admin\ReceivingController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SalesDashboardController;
 use App\Http\Controllers\Admin\SalesReturnController;
 use App\Http\Controllers\Admin\SupplierController;
@@ -50,6 +51,15 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         // Read-only sales dashboard: same authorization as viewing orders and
         // customers; stock-level data inside it is gated to admin/manager.
         Route::get('sales/dashboard', SalesDashboardController::class)->name('sales.dashboard');
+
+        // Operational reporting: read-only report pages. Sales-facing reports
+        // share the Orders/customers viewing authorization; the inventory and
+        // purchasing reports live with their stricter groups below so stock
+        // levels, thresholds, costs and supplier data never reach staff.
+        Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
+        Route::get('reports/returns', [ReportController::class, 'returns'])->name('reports.returns');
+        Route::get('reports/customers', [ReportController::class, 'customers'])->name('reports.customers');
     });
 
     Route::middleware('role:admin,manager')->group(function () {
@@ -87,6 +97,13 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         // InventoryService — inventory-affecting (admin, manager only).
         Route::get('orders/{order}/process-return', [SalesReturnController::class, 'create'])->name('orders.process-return');
         Route::post('orders/{order}/process-return', [SalesReturnController::class, 'store'])->name('orders.process-return.store');
+
+        // Inventory/purchasing reports: read-only, same authorization as the
+        // source areas (history, low stock, suppliers, purchase orders).
+        Route::get('reports/inventory-movements', [ReportController::class, 'inventoryMovements'])->name('reports.inventory-movements');
+        Route::get('reports/purchases', [ReportController::class, 'purchases'])->name('reports.purchases');
+        Route::get('reports/low-stock', [ReportController::class, 'lowStock'])->name('reports.low-stock');
+        Route::get('reports/suppliers', [ReportController::class, 'suppliers'])->name('reports.suppliers');
     });
 
 });
