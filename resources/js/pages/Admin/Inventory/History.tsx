@@ -1,11 +1,14 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
+import Heading from '@/components/heading';
+import { Pagination } from '@/components/pagination';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import * as InventoryRoutes from '@/routes/admin/inventory';
 
 type Movement = {
@@ -80,11 +83,11 @@ export default function History({ movements, filters, products, variants, users,
         <>
             <Head title="Inventory History" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <div className="border-b border-border pb-8">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground dark:text-primary mb-3">Inventory — History</p>
-                    <h1 className="font-serif text-[32px] leading-tight font-medium md:text-[40px] tracking-tight text-foreground">Inventory History</h1>
-                    <p className="text-sm text-muted-foreground mt-2 max-w-xl">Searchable, filterable, paginated stock movement ledger.</p>
-                </div>
+                <Heading
+                    eyebrow="Inventory"
+                    title="Inventory History"
+                    description="Searchable, filterable, paginated stock movement ledger."
+                />
 
                 <Card>
                     <CardContent className="p-4">
@@ -174,74 +177,52 @@ export default function History({ movements, filters, products, variants, users,
                 </Card>
 
                 <Card>
-                    <CardContent className="p-0">
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="border-b bg-muted/50">
-                                    <tr className="text-left text-xs uppercase tracking-widest text-muted-foreground">
-                                        <th className="px-4 py-3">Date</th>
-                                        <th className="px-4 py-3">Product / Variant</th>
-                                        <th className="px-4 py-3">Type</th>
-                                        <th className="px-4 py-3">Qty</th>
-                                        <th className="px-4 py-3">Before → After</th>
-                                        <th className="px-4 py-3">Reason</th>
-                                        <th className="px-4 py-3">User</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {movements.data.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={7} className="px-4 py-12 text-center text-sm text-muted-foreground">
-                                                No movements found. Try adjusting filters.
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        movements.data.map((m) => (
-                                            <tr key={m.id} className="border-b transition-colors hover:bg-muted/40">
-                                                <td className="px-4 py-3 text-xs">{new Date(m.created_at).toLocaleString()}</td>
-                                                <td className="px-4 py-3 text-sm">
-                                                    <div className="font-medium">{m.variant.product.name}</div>
-                                                    <div className="text-xs text-muted-foreground">{m.variant.name}{m.variant.id ? ` — ${m.variant.id}` : ''}</div>
-                                                </td>
-                                                <td className="px-4 py-3">
-                                                    <Badge variant={m.movement_type.includes('in') || m.movement_type === 'purchase' || m.movement_type === 'opening_balance' ? 'success' : 'secondary'}>
-                                                        {m.movement_type}
-                                                    </Badge>
-                                                </td>
-                                                <td className="px-4 py-3 text-sm font-mono">{m.quantity}</td>
-                                                <td className="px-4 py-3 text-xs font-mono">
-                                                    {m.quantity_before} → {m.quantity_after}
-                                                </td>
-                                                <td className="px-4 py-3 text-xs max-w-[200px] truncate" title={m.reason || ''}>
-                                                    {m.reason || '—'}
-                                                    {m.notes && <div className="text-[10px] text-muted-foreground">{m.notes}</div>}
-                                                </td>
-                                                <td className="px-4 py-3 text-xs">{m.user?.name || '—'}</td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                    <CardContent className="px-0">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Date</TableHead>
+                                    <TableHead>Product / Variant</TableHead>
+                                    <TableHead>Type</TableHead>
+                                    <TableHead className="text-right">Qty</TableHead>
+                                    <TableHead>Before → After</TableHead>
+                                    <TableHead>Reason</TableHead>
+                                    <TableHead>User</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {movements.data.length === 0 ? (
+                                    <TableEmpty colSpan={7}>No movements found. Try adjusting filters.</TableEmpty>
+                                ) : (
+                                    movements.data.map((m) => (
+                                        <TableRow key={m.id}>
+                                            <TableCell className="text-xs">{new Date(m.created_at).toLocaleString()}</TableCell>
+                                            <TableCell className="text-sm">
+                                                <div className="font-medium">{m.variant.product.name}</div>
+                                                <div className="text-xs text-muted-foreground">{m.variant.name}{m.variant.id ? ` — ${m.variant.id}` : ''}</div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge variant={m.movement_type.includes('in') || m.movement_type === 'purchase' || m.movement_type === 'opening_balance' ? 'success' : 'secondary'}>
+                                                    {m.movement_type}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="text-right text-sm font-mono">{m.quantity}</TableCell>
+                                            <TableCell className="text-xs font-mono">
+                                                {m.quantity_before} → {m.quantity_after}
+                                            </TableCell>
+                                            <TableCell className="max-w-[200px] truncate text-xs" title={m.reason || ''}>
+                                                {m.reason || '—'}
+                                                {m.notes && <div className="text-[10px] text-muted-foreground">{m.notes}</div>}
+                                            </TableCell>
+                                            <TableCell className="text-xs">{m.user?.name || '—'}</TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                        {movements.last_page > 1 && <Pagination links={movements.links} className="px-4 pt-4 pb-2" />}
                     </CardContent>
                 </Card>
-
-                {movements.last_page > 1 && (
-                    <div className="flex flex-wrap items-center justify-center gap-1.5">
-                        {movements.links.map((link, i) =>
-                            link.url ? (
-                                <Link
-                                    key={i}
-                                    href={link.url}
-                                    className={`inline-flex min-w-8 justify-center rounded-md border px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${link.active ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-transparent text-muted-foreground hover:bg-accent hover:text-foreground'}`}
-                                    dangerouslySetInnerHTML={{ __html: link.label }}
-                                />
-                            ) : (
-                                <span key={i} className="inline-flex min-w-8 justify-center px-3 py-1.5 text-xs opacity-40" dangerouslySetInnerHTML={{ __html: link.label }} />
-                            ),
-                        )}
-                    </div>
-                )}
             </div>
         </>
     );

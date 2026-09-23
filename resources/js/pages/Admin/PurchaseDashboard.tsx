@@ -1,12 +1,16 @@
 import { Head, Link } from '@inertiajs/react';
+import { BarList, DonutChart } from '@/components/charts';
 import Heading from '@/components/heading';
+import { ProgressBar } from '@/components/progress-bar';
+import { StatCard } from '@/components/stat-card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus } from 'lucide-react';
+import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import * as InventoryRoutes from '@/routes/admin/inventory';
 import * as PurchaseOrderRoutes from '@/routes/admin/purchase-orders';
 import * as SupplierRoutes from '@/routes/admin/suppliers';
+import { Ban, CheckCircle2, Hourglass, Layers, PackageCheck, Plus, Truck, Users } from 'lucide-react';
 
 type Metrics = {
     total_pos: number;
@@ -77,19 +81,18 @@ type Purchases = {
     recent_purchase_orders: RecentPurchaseOrderRow[];
 };
 
-function StatTile({ label, value, accent }: { label: string; value: React.ReactNode; accent?: string }) {
-    return (
-        <div className="flex flex-col gap-2 rounded-lg border border-border bg-card p-4 transition-colors dark:shadow-none">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{label}</p>
-            <p className={`font-serif text-3xl leading-none font-medium tracking-tight ${accent ?? 'text-foreground'}`}>{value}</p>
-        </div>
-    );
-}
-
 // Textual status labels stay readable without relying on colour.
 function StatusBadge({ status }: { status: string }) {
     return <Badge variant={status === 'received' ? 'success' : status === 'cancelled' ? 'cancelled' : 'warning'}>{status}</Badge>;
 }
+
+const STATUS_COLOR: Record<string, string> = {
+    approved: 'var(--viz-warning)',
+    partially_received: 'var(--chart-3)',
+    open: 'var(--viz-warning)',
+    received: 'var(--viz-success)',
+    cancelled: 'var(--viz-danger)',
+};
 
 function formatDate(value: string | null): string {
     return value ? new Date(value).toLocaleDateString() : '—';
@@ -102,11 +105,19 @@ function canReceive(status: string): boolean {
 
 export default function PurchaseDashboard({ purchases }: { purchases: Purchases }) {
     const m = purchases.metrics;
+    const statusMix = [
+        { label: 'Open', value: m.open, color: STATUS_COLOR.open },
+        { label: 'Partially received', value: m.partially_received, color: STATUS_COLOR.partially_received },
+        { label: 'Received', value: m.received, color: STATUS_COLOR.received },
+        { label: 'Cancelled', value: m.cancelled, color: STATUS_COLOR.cancelled },
+    ].filter((d) => d.value > 0);
+
     return (
         <>
             <Head title="Purchase Dashboard" />
-            <div className="p-6 space-y-6">
+            <div className="flex flex-col gap-6 p-4 md:p-6">
                 <Heading
+                    eyebrow="Purchasing"
                     title="Purchase Dashboard"
                     description="Purchase orders, receiving, and supplier activity"
                     actions={
@@ -123,77 +134,75 @@ export default function PurchaseDashboard({ purchases }: { purchases: Purchases 
                     }
                 />
 
-                <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
-                    <StatTile label="Total Purchase Orders" value={m.total_pos} />
-                    <StatTile label="Open Purchase Orders" value={m.open} accent="text-amber-600 dark:text-[#BF9FEF]" />
-                    <StatTile label="Partially Received" value={m.partially_received} accent="text-amber-600 dark:text-[#BF9FEF]" />
-                    <StatTile label="Fully Received" value={m.received} />
-                    <StatTile label="Cancelled" value={m.cancelled} />
-                    <StatTile label="Purchase Value" value={m.purchase_value} />
-                    <StatTile label="Active Suppliers With Purchases" value={m.suppliers_with_purchases} />
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
+                    <StatCard label="Purchase Orders" value={m.total_pos} icon={Layers} />
+                    <StatCard label="Open" value={m.open} icon={Hourglass} tone="warning" />
+                    <StatCard label="Partial" value={m.partially_received} icon={Truck} tone="warning" />
+                    <StatCard label="Received" value={m.received} icon={CheckCircle2} tone="success" />
+                    <StatCard label="Cancelled" value={m.cancelled} icon={Ban} tone="danger" />
+                    <StatCard label="Purchase Value" value={m.purchase_value} icon={PackageCheck} />
+                    <StatCard label="Active Suppliers" value={m.suppliers_with_purchases} icon={Users} />
                 </div>
 
                 <Card>
                     <CardHeader>
                         <CardTitle>Outstanding Purchases</CardTitle>
                     </CardHeader>
-                    <CardContent className="p-4">
+                    <CardContent className="px-0">
                         {purchases.outstanding.length === 0 ? (
-                            <p className="text-sm text-muted-foreground">No outstanding purchase orders.</p>
+                            <p className="px-6 text-sm text-muted-foreground">No outstanding purchase orders.</p>
                         ) : (
                             <>
-                                <div className="overflow-x-auto">
-                                    <table className="w-full">
-                                        <thead className="border-b bg-muted/50">
-                                            <tr className="text-left text-xs uppercase tracking-widest text-muted-foreground">
-                                                <th className="px-4 py-3">PO Number</th>
-                                                <th className="px-4 py-3">Supplier</th>
-                                                <th className="px-4 py-3">Ordered</th>
-                                                <th className="px-4 py-3">Expected</th>
-                                                <th className="px-4 py-3">Ordered Qty</th>
-                                                <th className="px-4 py-3">Received</th>
-                                                <th className="px-4 py-3">Remaining</th>
-                                                <th className="px-4 py-3">Total</th>
-                                                <th className="px-4 py-3">Status</th>
-                                                <th className="px-4 py-3">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {purchases.outstanding.map((po) => (
-                                                <tr key={po.id} className="border-b transition-colors hover:bg-muted/40">
-                                                    <td className="px-4 py-3 font-mono text-sm">
-                                                        <Link href={PurchaseOrderRoutes.show(po.id).url} className="hover:underline">
-                                                            {po.po_number}
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>PO Number</TableHead>
+                                            <TableHead>Supplier</TableHead>
+                                            <TableHead>Ordered</TableHead>
+                                            <TableHead>Expected</TableHead>
+                                            <TableHead className="text-right">Ordered Qty</TableHead>
+                                            <TableHead className="text-right">Received</TableHead>
+                                            <TableHead className="text-right">Remaining</TableHead>
+                                            <TableHead className="text-right">Total</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead>Action</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {purchases.outstanding.map((po) => (
+                                            <TableRow key={po.id}>
+                                                <TableCell className="font-mono text-sm">
+                                                    <Link href={PurchaseOrderRoutes.show(po.id).url} className="hover:underline">
+                                                        {po.po_number}
+                                                    </Link>
+                                                </TableCell>
+                                                <TableCell className="text-sm">{po.supplier?.name || '—'}</TableCell>
+                                                <TableCell className="text-xs">{formatDate(po.ordered_at)}</TableCell>
+                                                <TableCell className="text-xs">{formatDate(po.expected_at)}</TableCell>
+                                                <TableCell className="text-right text-sm">{po.ordered_quantity}</TableCell>
+                                                <TableCell className="text-right text-sm">{po.received_quantity}</TableCell>
+                                                <TableCell className="text-right text-sm">{po.remaining_quantity}</TableCell>
+                                                <TableCell className="text-right font-mono text-sm">{po.total}</TableCell>
+                                                <TableCell>
+                                                    <StatusBadge status={po.status} />
+                                                </TableCell>
+                                                <TableCell className="text-xs">
+                                                    {canReceive(po.status) ? (
+                                                        <Link href={PurchaseOrderRoutes.receive(po.id).url} className="font-medium text-primary hover:underline">
+                                                            Receive
                                                         </Link>
-                                                    </td>
-                                                    <td className="px-4 py-3 text-sm">{po.supplier?.name || '—'}</td>
-                                                    <td className="px-4 py-3 text-xs">{formatDate(po.ordered_at)}</td>
-                                                    <td className="px-4 py-3 text-xs">{formatDate(po.expected_at)}</td>
-                                                    <td className="px-4 py-3 text-sm">{po.ordered_quantity}</td>
-                                                    <td className="px-4 py-3 text-sm">{po.received_quantity}</td>
-                                                    <td className="px-4 py-3 text-sm">{po.remaining_quantity}</td>
-                                                    <td className="px-4 py-3 text-sm">{po.total}</td>
-                                                    <td className="px-4 py-3">
-                                                        <StatusBadge status={po.status} />
-                                                    </td>
-                                                    <td className="px-4 py-3 text-xs">
-                                                        {canReceive(po.status) ? (
-                                                            <Link href={PurchaseOrderRoutes.receive(po.id).url} className="text-primary hover:underline">
-                                                                Receive
-                                                            </Link>
-                                                        ) : (
-                                                            <Link href={PurchaseOrderRoutes.show(po.id).url} className="text-primary hover:underline">
-                                                                View
-                                                            </Link>
-                                                        )}
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div className="mt-3">
-                                    <Link href={PurchaseOrderRoutes.index().url} className="text-xs text-primary hover:underline">
+                                                    ) : (
+                                                        <Link href={PurchaseOrderRoutes.show(po.id).url} className="font-medium text-primary hover:underline">
+                                                            View
+                                                        </Link>
+                                                    )}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                                <div className="px-4 pt-4">
+                                    <Link href={PurchaseOrderRoutes.index().url} className="text-xs font-medium text-primary hover:underline">
                                         View all purchase orders →
                                     </Link>
                                 </div>
@@ -202,7 +211,65 @@ export default function PurchaseDashboard({ purchases }: { purchases: Purchases 
                     </CardContent>
                 </Card>
 
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 lg:grid-cols-3">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>PO Status Mix</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <DonutChart
+                                data={statusMix}
+                                size={150}
+                                centerValue={m.total_pos}
+                                centerLabel="POs"
+                                emptyText="No purchase orders yet."
+                            />
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Partially Received</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            {purchases.partial.length === 0 ? (
+                                <p className="text-sm text-muted-foreground">No partially received purchase orders.</p>
+                            ) : (
+                                <ul className="flex flex-col gap-4">
+                                    {purchases.partial.map((po) => (
+                                        <li key={po.id} className="flex flex-col gap-1.5">
+                                            <div className="flex items-baseline justify-between gap-3 text-xs">
+                                                <Link
+                                                    href={PurchaseOrderRoutes.show(po.id).url}
+                                                    className="min-w-0 truncate font-medium hover:underline"
+                                                >
+                                                    {po.po_number}
+                                                    <span className="ml-2 font-normal text-muted-foreground">
+                                                        {po.supplier?.name || 'Unknown supplier'}
+                                                    </span>
+                                                </Link>
+                                                <span className="shrink-0 font-mono tabular-nums text-muted-foreground">
+                                                    {po.received_quantity} / {po.ordered_quantity}
+                                                </span>
+                                            </div>
+                                            <ProgressBar
+                                                value={po.received_quantity}
+                                                max={po.ordered_quantity > 0 ? po.ordered_quantity : 1}
+                                                showValue
+                                                valueLabel={`${po.remaining_quantity} left`}
+                                            />
+                                        </li>
+                                    ))}
+                                    <li>
+                                        <Link href={PurchaseOrderRoutes.index().url} className="text-xs font-medium text-primary hover:underline">
+                                            View all purchase orders →
+                                        </Link>
+                                    </li>
+                                </ul>
+                            )}
+                        </CardContent>
+                    </Card>
+
                     <Card>
                         <CardHeader>
                             <CardTitle>Recent Receiving Activity</CardTitle>
@@ -211,12 +278,12 @@ export default function PurchaseDashboard({ purchases }: { purchases: Purchases 
                             {purchases.recent_receipts.length === 0 ? (
                                 <p className="text-sm text-muted-foreground">No receiving activity yet.</p>
                             ) : (
-                                <div className="space-y-3">
+                                <ul className="flex flex-col divide-y divide-border/70">
                                     {purchases.recent_receipts.map((r) => (
-                                        <div key={r.id} className="flex items-center justify-between gap-3 border-b pb-2">
+                                        <li key={r.id} className="flex items-center justify-between gap-3 py-2.5 first:pt-0">
                                             <div className="min-w-0">
                                                 <p className="font-mono text-sm">{r.receipt_number}</p>
-                                                <p className="text-xs text-muted-foreground truncate">
+                                                <p className="truncate text-xs text-muted-foreground">
                                                     {r.purchase_order ? (
                                                         <Link href={PurchaseOrderRoutes.show(r.purchase_order.id).url} className="hover:underline">
                                                             {r.purchase_order.po_number}
@@ -229,96 +296,39 @@ export default function PurchaseDashboard({ purchases }: { purchases: Purchases 
                                                     {r.receiver ? ` · by ${r.receiver.name}` : ''}
                                                 </p>
                                             </div>
-                                            <span className="font-mono text-sm shrink-0">{r.units_received ?? 0} units</span>
-                                        </div>
+                                            <span className="shrink-0 font-mono text-sm">{r.units_received ?? 0} units</span>
+                                        </li>
                                     ))}
-                                    <Link href={InventoryRoutes.history().url} className="text-xs text-primary hover:underline">
-                                        View inventory history →
-                                    </Link>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Partially Received</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            {purchases.partial.length === 0 ? (
-                                <p className="text-sm text-muted-foreground">No partially received purchase orders.</p>
-                            ) : (
-                                <div className="space-y-3">
-                                    {purchases.partial.map((po) => (
-                                        <div key={po.id} className="flex items-center justify-between gap-3 border-b pb-2">
-                                            <div className="min-w-0">
-                                                <Link href={PurchaseOrderRoutes.show(po.id).url} className="font-mono text-sm hover:underline truncate block">
-                                                    {po.po_number}
-                                                </Link>
-                                                <p className="text-xs text-muted-foreground truncate">
-                                                    {po.supplier?.name || 'Unknown supplier'} · Received {po.received_quantity} of {po.ordered_quantity} · Remaining{' '}
-                                                    {po.remaining_quantity}
-                                                </p>
-                                            </div>
-                                            <div className="flex shrink-0 items-center gap-2">
-                                                <StatusBadge status={po.status} />
-                                                <Link href={PurchaseOrderRoutes.receive(po.id).url} className="text-xs text-primary hover:underline">
-                                                    Receive
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    ))}
-                                    <Link href={PurchaseOrderRoutes.index().url} className="text-xs text-primary hover:underline">
-                                        View all purchase orders →
-                                    </Link>
-                                </div>
+                                    <li className="pt-2.5">
+                                        <Link href={InventoryRoutes.history().url} className="text-xs font-medium text-primary hover:underline">
+                                            View inventory history →
+                                        </Link>
+                                    </li>
+                                </ul>
                             )}
                         </CardContent>
                     </Card>
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 lg:grid-cols-2">
                     <Card>
                         <CardHeader>
                             <CardTitle>Supplier Activity</CardTitle>
                         </CardHeader>
-                        <CardContent className="p-0">
-                            <div className="overflow-x-auto">
-                                <table className="w-full">
-                                    <thead className="border-b bg-muted/50">
-                                        <tr className="text-left text-xs uppercase tracking-widest text-muted-foreground">
-                                            <th className="px-4 py-3">Supplier</th>
-                                            <th className="px-4 py-3">Purchase Orders</th>
-                                            <th className="px-4 py-3">Open</th>
-                                            <th className="px-4 py-3">Purchase Value</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {purchases.supplier_activity.length === 0 ? (
-                                            <tr>
-                                                <td colSpan={4} className="px-4 py-12 text-center text-sm text-muted-foreground">
-                                                    No supplier purchase activity yet.
-                                                </td>
-                                            </tr>
-                                        ) : (
-                                            purchases.supplier_activity.map((s) => (
-                                                <tr key={s.id} className="border-b transition-colors hover:bg-muted/40">
-                                                    <td className="px-4 py-3 text-sm">{s.name}</td>
-                                                    <td className="px-4 py-3 text-sm">{s.purchase_orders_count}</td>
-                                                    <td className="px-4 py-3 text-sm">{s.open_purchase_orders_count}</td>
-                                                    <td className="px-4 py-3 text-sm">{s.purchase_value}</td>
-                                                </tr>
-                                            ))
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
+                        <CardContent className="space-y-4">
+                            <BarList
+                                data={purchases.supplier_activity.map((s) => ({
+                                    label: s.name,
+                                    value: s.purchase_orders_count,
+                                    meta: `${s.open_purchase_orders_count} open`,
+                                    displayValue: s.purchase_value,
+                                }))}
+                                emptyText="No supplier purchase activity yet."
+                            />
                             {purchases.supplier_activity.length > 0 && (
-                                <div className="p-4">
-                                    <Link href={SupplierRoutes.index().url} className="text-xs text-primary hover:underline">
-                                        View all suppliers →
-                                    </Link>
-                                </div>
+                                <Link href={SupplierRoutes.index().url} className="text-xs font-medium text-primary hover:underline">
+                                    View all suppliers →
+                                </Link>
                             )}
                         </CardContent>
                     </Card>
@@ -327,48 +337,42 @@ export default function PurchaseDashboard({ purchases }: { purchases: Purchases 
                         <CardHeader>
                             <CardTitle>Recent Purchase Orders</CardTitle>
                         </CardHeader>
-                        <CardContent className="p-0">
-                            <div className="overflow-x-auto">
-                                <table className="w-full">
-                                    <thead className="border-b bg-muted/50">
-                                        <tr className="text-left text-xs uppercase tracking-widest text-muted-foreground">
-                                            <th className="px-4 py-3">PO Number</th>
-                                            <th className="px-4 py-3">Supplier</th>
-                                            <th className="px-4 py-3">Date</th>
-                                            <th className="px-4 py-3">Total</th>
-                                            <th className="px-4 py-3">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {purchases.recent_purchase_orders.length === 0 ? (
-                                            <tr>
-                                                <td colSpan={5} className="px-4 py-12 text-center text-sm text-muted-foreground">
-                                                    No purchase orders yet.
-                                                </td>
-                                            </tr>
-                                        ) : (
-                                            purchases.recent_purchase_orders.map((po) => (
-                                                <tr key={po.id} className="border-b transition-colors hover:bg-muted/40">
-                                                    <td className="px-4 py-3 font-mono text-sm">
-                                                        <Link href={PurchaseOrderRoutes.show(po.id).url} className="hover:underline">
-                                                            {po.po_number}
-                                                        </Link>
-                                                    </td>
-                                                    <td className="px-4 py-3 text-sm">{po.supplier?.name || '—'}</td>
-                                                    <td className="px-4 py-3 text-xs">{formatDate(po.ordered_at)}</td>
-                                                    <td className="px-4 py-3 text-sm">{po.total}</td>
-                                                    <td className="px-4 py-3">
-                                                        <StatusBadge status={po.status} />
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
+                        <CardContent className="px-0">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>PO Number</TableHead>
+                                        <TableHead>Supplier</TableHead>
+                                        <TableHead>Date</TableHead>
+                                        <TableHead className="text-right">Total</TableHead>
+                                        <TableHead>Status</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {purchases.recent_purchase_orders.length === 0 ? (
+                                        <TableEmpty colSpan={5}>No purchase orders yet.</TableEmpty>
+                                    ) : (
+                                        purchases.recent_purchase_orders.map((po) => (
+                                            <TableRow key={po.id}>
+                                                <TableCell className="font-mono text-sm">
+                                                    <Link href={PurchaseOrderRoutes.show(po.id).url} className="hover:underline">
+                                                        {po.po_number}
+                                                    </Link>
+                                                </TableCell>
+                                                <TableCell className="text-sm">{po.supplier?.name || '—'}</TableCell>
+                                                <TableCell className="text-xs">{formatDate(po.ordered_at)}</TableCell>
+                                                <TableCell className="text-right font-mono text-sm">{po.total}</TableCell>
+                                                <TableCell>
+                                                    <StatusBadge status={po.status} />
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    )}
+                                </TableBody>
+                            </Table>
                             {purchases.recent_purchase_orders.length > 0 && (
-                                <div className="p-4">
-                                    <Link href={PurchaseOrderRoutes.index().url} className="text-xs text-primary hover:underline">
+                                <div className="px-4 pt-4">
+                                    <Link href={PurchaseOrderRoutes.index().url} className="text-xs font-medium text-primary hover:underline">
                                         View all purchase orders →
                                     </Link>
                                 </div>

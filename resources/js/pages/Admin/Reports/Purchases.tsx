@@ -1,14 +1,19 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
+import Heading from '@/components/heading';
+import { Pagination } from '@/components/pagination';
+import { StatCard } from '@/components/stat-card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ReportExportButton } from '@/components/report-export-button';
 import * as PurchaseOrderRoutes from '@/routes/admin/purchase-orders';
 import ReportRoutes from '@/routes/admin/reports';
+import { Clock, FileText, Package, PackageCheck, Receipt, Truck } from 'lucide-react';
 
 type PurchaseOrderRow = {
     id: number;
@@ -80,61 +85,19 @@ export default function Purchases({ purchase_orders, summary, filters, suppliers
         <>
             <Head title="Purchases Report" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <div className="border-b border-border pb-8">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground dark:text-primary mb-3">Reports — Purchases</p>
-                    <h1 className="font-serif text-[32px] leading-tight font-medium md:text-[40px] tracking-tight text-foreground">Purchases</h1>
-                    <p className="text-sm text-muted-foreground mt-2 max-w-xl">Purchase order activity by supplier, status and order date.</p>
-                </div>
+                <Heading
+                    eyebrow="Reports — Purchases"
+                    title="Purchases"
+                    description="Purchase order activity by supplier, status and order date."
+                />
 
-                <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Purchase Orders</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{summary.purchase_orders}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Open Orders</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{summary.open_orders}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Ordered Units</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{summary.ordered_units}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Received Units</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{summary.received_units}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Outstanding Units</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{summary.outstanding_units}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Purchase Value</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{summary.purchase_value}</p>
-                        </CardContent>
-                    </Card>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <StatCard label="Purchase Orders" value={summary.purchase_orders} icon={FileText} />
+                    <StatCard label="Open Orders" value={summary.open_orders} icon={Clock} tone="warning" />
+                    <StatCard label="Ordered Units" value={summary.ordered_units} icon={Package} />
+                    <StatCard label="Received Units" value={summary.received_units} icon={PackageCheck} tone="success" />
+                    <StatCard label="Outstanding Units" value={summary.outstanding_units} icon={Truck} tone="warning" />
+                    <StatCard label="Purchase Value" value={summary.purchase_value} icon={Receipt} />
                 </div>
 
                 <Card>
@@ -201,72 +164,53 @@ export default function Purchases({ purchase_orders, summary, filters, suppliers
                 </Card>
 
                 <Card>
-                    <CardContent className="p-0">
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="border-b bg-muted/50">
-                                    <tr className="text-left text-xs uppercase tracking-widest text-muted-foreground">
-                                        <th className="px-4 py-3">PO Number</th>
-                                        <th className="px-4 py-3">Supplier</th>
-                                        <th className="px-4 py-3">Ordered At</th>
-                                        <th className="px-4 py-3">Status</th>
-                                        <th className="px-4 py-3">Ordered</th>
-                                        <th className="px-4 py-3">Received</th>
-                                        <th className="px-4 py-3">Outstanding</th>
-                                        <th className="px-4 py-3">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {purchase_orders.data.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={8} className="px-4 py-12 text-center text-sm text-muted-foreground">
-                                                No purchase orders match these filters.
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        purchase_orders.data.map((po) => (
-                                            <tr key={po.id} className="border-b transition-colors hover:bg-muted/40">
-                                                <td className="px-4 py-3 text-sm font-medium">
-                                                    <Link href={PurchaseOrderRoutes.show(po.id).url} className="hover:underline">
-                                                        {po.po_number}
-                                                    </Link>
-                                                </td>
-                                                <td className="px-4 py-3 text-sm">{po.supplier?.name || '—'}</td>
-                                                <td className="px-4 py-3 text-xs">
-                                                    {po.ordered_at ? new Date(po.ordered_at).toLocaleDateString() : '—'}
-                                                </td>
-                                                <td className="px-4 py-3">
-                                                    <Badge variant="secondary">{po.status}</Badge>
-                                                </td>
-                                                <td className="px-4 py-3 text-sm font-mono">{po.ordered_quantity}</td>
-                                                <td className="px-4 py-3 text-sm font-mono">{po.received_quantity}</td>
-                                                <td className="px-4 py-3 text-sm font-mono">{po.remaining_quantity}</td>
-                                                <td className="px-4 py-3 text-sm font-mono">{po.total}</td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                    <CardHeader>
+                        <CardTitle>Purchases</CardTitle>
+                    </CardHeader>
+                    <CardContent className="px-0">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>PO Number</TableHead>
+                                    <TableHead>Supplier</TableHead>
+                                    <TableHead>Ordered At</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead className="text-right">Ordered</TableHead>
+                                    <TableHead className="text-right">Received</TableHead>
+                                    <TableHead className="text-right">Outstanding</TableHead>
+                                    <TableHead className="text-right">Total</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {purchase_orders.data.length === 0 ? (
+                                    <TableEmpty colSpan={8}>No purchase orders match these filters.</TableEmpty>
+                                ) : (
+                                    purchase_orders.data.map((po) => (
+                                        <TableRow key={po.id}>
+                                            <TableCell className="text-sm font-medium">
+                                                <Link href={PurchaseOrderRoutes.show(po.id).url} className="hover:underline">
+                                                    {po.po_number}
+                                                </Link>
+                                            </TableCell>
+                                            <TableCell className="text-sm">{po.supplier?.name || '—'}</TableCell>
+                                            <TableCell className="text-xs">
+                                                {po.ordered_at ? new Date(po.ordered_at).toLocaleDateString() : '—'}
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge variant="secondary">{po.status}</Badge>
+                                            </TableCell>
+                                            <TableCell className="text-right text-sm font-mono">{po.ordered_quantity}</TableCell>
+                                            <TableCell className="text-right text-sm font-mono">{po.received_quantity}</TableCell>
+                                            <TableCell className="text-right text-sm font-mono">{po.remaining_quantity}</TableCell>
+                                            <TableCell className="text-right text-sm font-mono">{po.total}</TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                        {purchase_orders.last_page > 1 && <Pagination links={purchase_orders.links} className="px-4 pt-4 pb-2" />}
                     </CardContent>
                 </Card>
-
-                {purchase_orders.last_page > 1 && (
-                    <div className="flex flex-wrap items-center justify-center gap-1.5">
-                        {purchase_orders.links.map((link, i) =>
-                            link.url ? (
-                                <Link
-                                    key={i}
-                                    href={link.url}
-                                    className={`inline-flex min-w-8 justify-center rounded-md border px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${link.active ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-transparent text-muted-foreground hover:bg-accent hover:text-foreground'}`}
-                                    dangerouslySetInnerHTML={{ __html: link.label }}
-                                />
-                            ) : (
-                                <span key={i} className="inline-flex min-w-8 justify-center px-3 py-1.5 text-xs opacity-40" dangerouslySetInnerHTML={{ __html: link.label }} />
-                            ),
-                        )}
-                    </div>
-                )}
             </div>
         </>
     );

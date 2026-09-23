@@ -1,13 +1,18 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
+import Heading from '@/components/heading';
+import { Pagination } from '@/components/pagination';
+import { StatCard } from '@/components/stat-card';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ReportExportButton } from '@/components/report-export-button';
 import * as OrderRoutes from '@/routes/admin/orders';
 import ReportRoutes from '@/routes/admin/reports';
+import { Package, Receipt, Undo2 } from 'lucide-react';
 
 type ReturnRow = {
     id: number;
@@ -88,37 +93,16 @@ export default function Returns({ returns, summary, filters, customers, products
         <>
             <Head title="Sales Returns Report" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <div className="border-b border-border pb-8">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground dark:text-primary mb-3">Reports — Returns</p>
-                    <h1 className="font-serif text-[32px] leading-tight font-medium md:text-[40px] tracking-tight text-foreground">Sales Returns</h1>
-                    <p className="text-sm text-muted-foreground mt-2 max-w-xl">Processed sales returns with quantities, values and original orders.</p>
-                </div>
+                <Heading
+                    eyebrow="Reports — Returns"
+                    title="Sales Returns"
+                    description="Processed sales returns with quantities, values and original orders."
+                />
 
-                <div className="grid gap-4 md:grid-cols-3">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Returns</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{summary.return_count}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Returned Units</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{summary.returned_units}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Return Value</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{summary.return_value}</p>
-                        </CardContent>
-                    </Card>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <StatCard label="Returns" value={summary.return_count} icon={Undo2} />
+                    <StatCard label="Returned Units" value={summary.returned_units} icon={Package} tone="warning" />
+                    <StatCard label="Return Value" value={summary.return_value} icon={Receipt} tone="warning" />
                 </div>
 
                 <Card>
@@ -203,75 +187,56 @@ export default function Returns({ returns, summary, filters, customers, products
                 </Card>
 
                 <Card>
-                    <CardContent className="p-0">
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="border-b bg-muted/50">
-                                    <tr className="text-left text-xs uppercase tracking-widest text-muted-foreground">
-                                        <th className="px-4 py-3">Return #</th>
-                                        <th className="px-4 py-3">Order / Customer</th>
-                                        <th className="px-4 py-3">Returned At</th>
-                                        <th className="px-4 py-3">Returned By</th>
-                                        <th className="px-4 py-3">Units</th>
-                                        <th className="px-4 py-3">Return Value</th>
-                                        <th className="px-4 py-3">Notes</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {returns.data.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={7} className="px-4 py-12 text-center text-sm text-muted-foreground">
-                                                No returns found.
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        returns.data.map((row) => (
-                                            <tr key={row.id} className="border-b transition-colors hover:bg-muted/40">
-                                                <td className="px-4 py-3 text-sm font-medium">{row.return_number}</td>
-                                                <td className="px-4 py-3 text-sm">
-                                                    {row.order ? (
-                                                        <>
-                                                            <Link href={OrderRoutes.show(row.order.id).url} className="font-medium hover:underline">
-                                                                {row.order.reference_number}
-                                                            </Link>
-                                                            <div className="text-xs text-muted-foreground">{orderCustomerName(row)}</div>
-                                                        </>
-                                                    ) : (
-                                                        '—'
-                                                    )}
-                                                </td>
-                                                <td className="px-4 py-3 text-xs">{new Date(row.returned_at).toLocaleDateString()}</td>
-                                                <td className="px-4 py-3 text-xs">{row.returned_by?.name || '—'}</td>
-                                                <td className="px-4 py-3 text-sm font-mono">{row.returned_quantity}</td>
-                                                <td className="px-4 py-3 text-sm font-mono">{row.total}</td>
-                                                <td className="px-4 py-3 text-xs max-w-[200px] truncate" title={row.notes || ''}>
-                                                    {row.notes || '—'}
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                    <CardHeader>
+                        <CardTitle>Returns</CardTitle>
+                    </CardHeader>
+                    <CardContent className="px-0">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Return #</TableHead>
+                                    <TableHead>Order / Customer</TableHead>
+                                    <TableHead>Returned At</TableHead>
+                                    <TableHead>Returned By</TableHead>
+                                    <TableHead className="text-right">Units</TableHead>
+                                    <TableHead className="text-right">Return Value</TableHead>
+                                    <TableHead>Notes</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {returns.data.length === 0 ? (
+                                    <TableEmpty colSpan={7}>No returns found.</TableEmpty>
+                                ) : (
+                                    returns.data.map((row) => (
+                                        <TableRow key={row.id}>
+                                            <TableCell className="text-sm font-medium">{row.return_number}</TableCell>
+                                            <TableCell className="text-sm">
+                                                {row.order ? (
+                                                    <>
+                                                        <Link href={OrderRoutes.show(row.order.id).url} className="font-medium hover:underline">
+                                                            {row.order.reference_number}
+                                                        </Link>
+                                                        <div className="text-xs text-muted-foreground">{orderCustomerName(row)}</div>
+                                                    </>
+                                                ) : (
+                                                    '—'
+                                                )}
+                                            </TableCell>
+                                            <TableCell className="text-xs">{new Date(row.returned_at).toLocaleDateString()}</TableCell>
+                                            <TableCell className="text-xs">{row.returned_by?.name || '—'}</TableCell>
+                                            <TableCell className="text-right text-sm font-mono">{row.returned_quantity}</TableCell>
+                                            <TableCell className="text-right text-sm font-mono">{row.total}</TableCell>
+                                            <TableCell className="max-w-[200px] truncate text-xs" title={row.notes || ''}>
+                                                {row.notes || '—'}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                        {returns.last_page > 1 && <Pagination links={returns.links} className="px-4 pt-4 pb-2" />}
                     </CardContent>
                 </Card>
-
-                {returns.last_page > 1 && (
-                    <div className="flex flex-wrap items-center justify-center gap-1.5">
-                        {returns.links.map((link, i) =>
-                            link.url ? (
-                                <Link
-                                    key={i}
-                                    href={link.url}
-                                    className={`inline-flex min-w-8 justify-center rounded-md border px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${link.active ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-transparent text-muted-foreground hover:bg-accent hover:text-foreground'}`}
-                                    dangerouslySetInnerHTML={{ __html: link.label }}
-                                />
-                            ) : (
-                                <span key={i} className="inline-flex min-w-8 justify-center px-3 py-1.5 text-xs opacity-40" dangerouslySetInnerHTML={{ __html: link.label }} />
-                            ),
-                        )}
-                    </div>
-                )}
             </div>
         </>
     );

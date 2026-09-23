@@ -1,14 +1,19 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
+import Heading from '@/components/heading';
+import { Pagination } from '@/components/pagination';
+import { StatCard } from '@/components/stat-card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ReportExportButton } from '@/components/report-export-button';
 import * as OrderRoutes from '@/routes/admin/orders';
 import ReportRoutes from '@/routes/admin/reports';
+import { PackageCheck, Receipt, ShoppingBag, Truck, Undo2 } from 'lucide-react';
 
 type OrderRow = {
     id: number;
@@ -85,53 +90,18 @@ export default function Sales({ orders, summary, filters, customers, order_statu
         <>
             <Head title="Sales Report" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <div className="border-b border-border pb-8">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground dark:text-primary mb-3">Reports — Sales</p>
-                    <h1 className="font-serif text-[32px] leading-tight font-medium md:text-[40px] tracking-tight text-foreground">Sales</h1>
-                    <p className="text-sm text-muted-foreground mt-2 max-w-xl">Orders by status, date and customer with returned quantities.</p>
-                </div>
+                <Heading
+                    eyebrow="Reports — Sales"
+                    title="Sales"
+                    description="Orders by status, date and customer with returned quantities."
+                />
 
-                <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Orders</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{summary.orders}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Delivered Orders</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{summary.delivered_orders}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Delivered Sales Value</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{summary.delivered_sales_value}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Returned Units</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{summary.returned_units}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Return Value</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{summary.return_value}</p>
-                        </CardContent>
-                    </Card>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+                    <StatCard label="Orders" value={summary.orders} icon={ShoppingBag} />
+                    <StatCard label="Delivered Orders" value={summary.delivered_orders} icon={PackageCheck} tone="success" />
+                    <StatCard label="Delivered Sales Value" value={summary.delivered_sales_value} icon={Truck} />
+                    <StatCard label="Returned Units" value={summary.returned_units} icon={Undo2} tone="warning" />
+                    <StatCard label="Return Value" value={summary.return_value} icon={Receipt} tone="warning" />
                 </div>
 
                 <Card>
@@ -198,68 +168,49 @@ export default function Sales({ orders, summary, filters, customers, order_statu
                 </Card>
 
                 <Card>
-                    <CardContent className="p-0">
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="border-b bg-muted/50">
-                                    <tr className="text-left text-xs uppercase tracking-widest text-muted-foreground">
-                                        <th className="px-4 py-3">Reference</th>
-                                        <th className="px-4 py-3">Customer</th>
-                                        <th className="px-4 py-3">Ordered At</th>
-                                        <th className="px-4 py-3">Status</th>
-                                        <th className="px-4 py-3">Total</th>
-                                        <th className="px-4 py-3">Returned Qty</th>
-                                        <th className="px-4 py-3">Return Value</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {orders.data.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={7} className="px-4 py-12 text-center text-sm text-muted-foreground">
-                                                No sales found for the selected period.
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        orders.data.map((order) => (
-                                            <tr key={order.id} className="border-b transition-colors hover:bg-muted/40">
-                                                <td className="px-4 py-3 text-sm font-medium">
-                                                    <Link href={OrderRoutes.show(order.id).url} className="hover:underline">
-                                                        {order.reference_number}
-                                                    </Link>
-                                                </td>
-                                                <td className="px-4 py-3 text-sm">{customerName(order)}</td>
-                                                <td className="px-4 py-3 text-xs">{new Date(order.ordered_at).toLocaleDateString()}</td>
-                                                <td className="px-4 py-3">
-                                                    <Badge variant="secondary">{order.status}</Badge>
-                                                </td>
-                                                <td className="px-4 py-3 text-sm font-mono">{order.total}</td>
-                                                <td className="px-4 py-3 text-sm font-mono">{order.returned_quantity}</td>
-                                                <td className="px-4 py-3 text-sm font-mono">{order.return_value}</td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                    <CardHeader>
+                        <CardTitle>Sales</CardTitle>
+                    </CardHeader>
+                    <CardContent className="px-0">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Reference</TableHead>
+                                    <TableHead>Customer</TableHead>
+                                    <TableHead>Ordered At</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead className="text-right">Total</TableHead>
+                                    <TableHead className="text-right">Returned Qty</TableHead>
+                                    <TableHead className="text-right">Return Value</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {orders.data.length === 0 ? (
+                                    <TableEmpty colSpan={7}>No sales found for the selected period.</TableEmpty>
+                                ) : (
+                                    orders.data.map((order) => (
+                                        <TableRow key={order.id}>
+                                            <TableCell className="text-sm font-medium">
+                                                <Link href={OrderRoutes.show(order.id).url} className="hover:underline">
+                                                    {order.reference_number}
+                                                </Link>
+                                            </TableCell>
+                                            <TableCell className="text-sm">{customerName(order)}</TableCell>
+                                            <TableCell className="text-xs">{new Date(order.ordered_at).toLocaleDateString()}</TableCell>
+                                            <TableCell>
+                                                <Badge variant="secondary">{order.status}</Badge>
+                                            </TableCell>
+                                            <TableCell className="text-right text-sm font-mono">{order.total}</TableCell>
+                                            <TableCell className="text-right text-sm font-mono">{order.returned_quantity}</TableCell>
+                                            <TableCell className="text-right text-sm font-mono">{order.return_value}</TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                        {orders.last_page > 1 && <Pagination links={orders.links} className="px-4 pt-4 pb-2" />}
                     </CardContent>
                 </Card>
-
-                {orders.last_page > 1 && (
-                    <div className="flex flex-wrap items-center justify-center gap-1.5">
-                        {orders.links.map((link, i) =>
-                            link.url ? (
-                                <Link
-                                    key={i}
-                                    href={link.url}
-                                    className={`inline-flex min-w-8 justify-center rounded-md border px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${link.active ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-transparent text-muted-foreground hover:bg-accent hover:text-foreground'}`}
-                                    dangerouslySetInnerHTML={{ __html: link.label }}
-                                />
-                            ) : (
-                                <span key={i} className="inline-flex min-w-8 justify-center px-3 py-1.5 text-xs opacity-40" dangerouslySetInnerHTML={{ __html: link.label }} />
-                            ),
-                        )}
-                    </div>
-                )}
             </div>
         </>
     );

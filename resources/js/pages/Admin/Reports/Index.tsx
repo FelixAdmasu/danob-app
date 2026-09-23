@@ -1,4 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
+import Heading from '@/components/heading';
 import * as ReportRoutes from '@/routes/admin/reports';
 
 type ReportCard = {
@@ -17,14 +18,11 @@ export default function ReportsIndex({ groups }: { groups: ReportGroup[] }) {
         <>
             <Head title="Reports" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <div className="border-b border-border pb-8">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground dark:text-primary mb-3">Reporting</p>
-                    <h1 className="font-serif text-[32px] leading-tight font-medium md:text-[40px] tracking-tight text-foreground">Reports</h1>
-                    <p className="text-sm text-muted-foreground mt-2 max-w-xl">
-                        Operational reports across inventory, purchasing and sales. Every report is read-only and shows
-                        the same figures as its source pages.
-                    </p>
-                </div>
+                <Heading
+                    eyebrow="Reporting"
+                    title="Reports"
+                    description="Operational reports across inventory, purchasing and sales. Every report is read-only and shows the same figures as its source pages."
+                />
 
                 {groups.length === 0 ? (
                     <p className="text-sm text-muted-foreground">No reports are available for your role.</p>
@@ -32,7 +30,7 @@ export default function ReportsIndex({ groups }: { groups: ReportGroup[] }) {
                     <div className="flex flex-col gap-8">
                         {groups.map((group) => (
                             <section key={group.name} className="flex flex-col gap-3">
-                                <h2 className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground dark:text-primary">
+                                <h2 className="text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground dark:text-primary">
                                     {group.name}
                                 </h2>
                                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -40,7 +38,7 @@ export default function ReportsIndex({ groups }: { groups: ReportGroup[] }) {
                                         <Link
                                             key={report.title}
                                             href={report.href}
-                                            className="group flex flex-col gap-2 rounded-lg border p-4 dark:bg-card hover:bg-accent hover:text-accent-foreground transition-colors"
+                                            className="group flex flex-col gap-2 rounded-xl border border-border bg-card p-4 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-sm dark:shadow-none"
                                         >
                                             <span className="text-sm font-medium">{report.title}</span>
                                             <span className="text-xs text-muted-foreground">{report.description}</span>

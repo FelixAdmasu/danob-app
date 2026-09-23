@@ -1,11 +1,29 @@
 import { Head, Link } from '@inertiajs/react';
+import { DonutChart } from '@/components/charts';
 import Heading from '@/components/heading';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ProgressBar } from '@/components/progress-bar';
+import { StatCard } from '@/components/stat-card';
 import { Badge } from '@/components/ui/badge';
-import { Package, Tag, Layers, Building2, Archive, ArrowUpDown, ShoppingCart, Users, History, AlertTriangle, FileText } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import * as InventoryRoutes from '@/routes/admin/inventory';
 import * as ProductRoutes from '@/routes/admin/products';
 import * as PurchaseOrderRoutes from '@/routes/admin/purchase-orders';
+import {
+    AlertTriangle,
+    Archive,
+    ArrowUpDown,
+    Building2,
+    CheckCircle2,
+    FileText,
+    History,
+    Layers,
+    Package,
+    ScrollText,
+    ShoppingCart,
+    Tag,
+    Users,
+} from 'lucide-react';
 
 type Order = { id: number; reference_number: string; status: string; total: string; ordered_at: string; customer: { name: string } | null };
 type VariantRow = { id: number; name: string; sku: string | null; quantity: number; low_stock_threshold: number | null; stock_status: string; product: { id: number; name: string } };
@@ -29,13 +47,12 @@ type Inventory = {
     recent_purchase_orders: PurchaseOrderRow[];
 };
 
-function StatTile({ label, value, accent }: { label: string; value: number; accent?: string }) {
-    return (
-        <div className="flex flex-col gap-2 rounded-lg border border-border bg-card p-4 transition-colors dark:shadow-none">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{label}</p>
-            <p className={`font-serif text-3xl leading-none font-medium tracking-tight ${accent ?? 'text-foreground'}`}>{value}</p>
-        </div>
-    );
+function orderBadgeVariant(status: string) {
+    return status === 'delivered' ? 'success' : status === 'cancelled' ? 'cancelled' : 'warning';
+}
+
+function poBadgeVariant(status: string) {
+    return status === 'received' ? 'success' : status === 'cancelled' ? 'cancelled' : 'warning';
 }
 
 // Display-only signed quantity derived from the stored before/after ledger values.
@@ -44,6 +61,20 @@ function movementLabel(m: Movement): string {
     if (delta > 0) return `+${m.quantity}`;
     if (delta < 0) return `-${m.quantity}`;
     return `${m.quantity}`;
+}
+
+function listCard(title: string, children: React.ReactNode, action?: React.ReactNode) {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>{title}</CardTitle>
+            </CardHeader>
+            <CardContent>
+                {children}
+                {action && <div className="mt-4">{action}</div>}
+            </CardContent>
+        </Card>
+    );
 }
 
 export default function Dashboard({
@@ -55,164 +86,271 @@ export default function Dashboard({
     recent_orders: Order[];
     inventory: Inventory | null;
 }) {
+    const statusMix = ['pending', 'confirmed', 'delivered', 'cancelled']
+        .map((status, i) => ({
+            label: status,
+            value: recent_orders.filter((o) => o.status === status).length,
+            color: ['var(--viz-warning)', 'var(--chart-3)', 'var(--viz-success)', 'var(--viz-danger)'][i],
+        }))
+        .filter((d) => d.value > 0);
+
+    const m = inventory?.metrics;
+
     return (
         <>
             <Head title="Admin Dashboard" />
-            <div className="p-6 space-y-6">
-                <Heading title="Admin Dashboard" description="Overview" />
+            <div className="flex flex-col gap-6 p-4 md:p-6">
+                <Heading
+                    eyebrow="Overview"
+                    title="Admin Dashboard"
+                    description="Catalog, orders, inventory and purchasing at a glance."
+                />
 
-                <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
-                    <StatTile label="Products" value={stats.products} />
-                    <StatTile label="Categories" value={stats.categories} />
-                    <StatTile label="Orders" value={stats.orders} />
-                    <StatTile label="Pending" value={stats.pending_orders} accent="text-amber-600 dark:text-[#BF9FEF]" />
-                    <StatTile label="Customers" value={stats.customers} />
-                    <StatTile label="Branches" value={stats.branches} />
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+                    <StatCard label="Products" value={stats.products} icon={Package} />
+                    <StatCard label="Categories" value={stats.categories} icon={Tag} />
+                    <StatCard label="Orders" value={stats.orders} icon={ShoppingCart} />
+                    <StatCard label="Pending" value={stats.pending_orders} icon={ScrollText} tone="warning" />
+                    <StatCard label="Customers" value={stats.customers} icon={Users} />
+                    <StatCard label="Branches" value={stats.branches} icon={Building2} />
                 </div>
 
-                {inventory && (
+                {m && (
                     <>
-                        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
-                            <StatTile label="Active Variants" value={inventory.metrics.total_active} />
-                            <StatTile label="Total Units in Stock" value={inventory.metrics.total_units} />
-                            <StatTile label="In Stock" value={inventory.metrics.in_stock} />
-                            <StatTile label="Low Stock" value={inventory.metrics.low_stock} accent="text-amber-600 dark:text-[#BF9FEF]" />
-                            <StatTile label="Out of Stock" value={inventory.metrics.out_of_stock} accent="text-red-600 dark:text-red-400" />
-                            <StatTile label="Monitored Variants" value={inventory.metrics.monitored} />
+                        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+                            <StatCard label="Active Variants" value={m.total_active} icon={Layers} />
+                            <StatCard label="Total Units" value={m.total_units} icon={Archive} />
+                            <StatCard label="In Stock" value={m.in_stock} icon={CheckCircle2} tone="success" />
+                            <StatCard label="Low Stock" value={m.low_stock} icon={AlertTriangle} tone="warning" />
+                            <StatCard label="Out of Stock" value={m.out_of_stock} icon={Package} tone="danger" />
+                            <StatCard label="Monitored" value={m.monitored} icon={ScrollText} />
                         </div>
 
-                        <div className="grid gap-6 md:grid-cols-2">
-                            <Card>
+                        <div className="grid gap-6 lg:grid-cols-3">
+                            <Card className="lg:col-span-1">
                                 <CardHeader>
-                                    <CardTitle>Low Stock Variants</CardTitle>
+                                    <CardTitle>Stock Health</CardTitle>
                                 </CardHeader>
-                                <CardContent>
-                                    {inventory.low_stock.length === 0 ? (
-                                        <p className="text-sm text-muted-foreground">No variants below their low-stock threshold.</p>
-                                    ) : (
-                                        <div className="space-y-3">
-                                            {inventory.low_stock.map((v) => (
-                                                <div key={v.id} className="flex items-center justify-between gap-3 border-b pb-2">
-                                                    <div className="min-w-0">
-                                                        <p className="text-sm font-medium truncate">{v.product.name} — {v.name}</p>
-                                                        <p className="text-xs text-muted-foreground font-mono">
-                                                            {v.sku || 'No SKU'} · Qty {v.quantity} · Threshold {v.low_stock_threshold ?? '—'}
-                                                        </p>
-                                                    </div>
-                                                    <Badge variant="destructive" className="shrink-0">Low Stock</Badge>
-                                                </div>
-                                            ))}
-                                            <Link href={InventoryRoutes.lowStock().url} className="text-xs text-primary hover:underline">
-                                                View all low stock →
-                                            </Link>
-                                        </div>
-                                    )}
+                                <CardContent className="flex flex-col gap-6">
+                                    <DonutChart
+                                        size={150}
+                                        centerValue={m.total_active}
+                                        centerLabel="Variants"
+                                        data={[
+                                            { label: 'In stock', value: m.in_stock, color: 'var(--viz-success)' },
+                                            { label: 'Low stock', value: m.low_stock, color: 'var(--viz-warning)' },
+                                            { label: 'Out of stock', value: m.out_of_stock, color: 'var(--viz-danger)' },
+                                        ]}
+                                        emptyText="No tracked variants."
+                                    />
+                                    <ProgressBar
+                                        label="Stock availability"
+                                        value={m.total_active > 0 ? m.in_stock : 0}
+                                        max={m.total_active || 1}
+                                        valueLabel={m.total_active > 0 ? `${Math.round((m.in_stock / m.total_active) * 100)}%` : '0%'}
+                                        tone="success"
+                                        showValue
+                                    />
                                 </CardContent>
                             </Card>
 
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Out of Stock</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    {inventory.out_of_stock.length === 0 ? (
-                                        <p className="text-sm text-muted-foreground">Nothing is out of stock.</p>
+                            <div className="grid gap-6 lg:col-span-2">
+                                {listCard(
+                                    'Low Stock Variants',
+                                    inventory!.low_stock.length === 0 ? (
+                                        <p className="text-sm text-muted-foreground">Nothing needs restocking right now.</p>
                                     ) : (
-                                        <div className="space-y-3">
-                                            {inventory.out_of_stock.map((v) => (
-                                                <div key={v.id} className="flex items-center justify-between gap-3 border-b pb-2">
+                                        <ul className="flex flex-col gap-4">
+                                            {inventory!.low_stock.map((v) => {
+                                                const threshold = v.low_stock_threshold ?? 0;
+                                                return (
+                                                    <li key={v.id} className="flex flex-col gap-1.5">
+                                                        <div className="flex items-baseline justify-between gap-3 text-xs">
+                                                            <span className="min-w-0 truncate font-medium text-foreground">
+                                                                {v.product.name} — {v.name}
+                                                                <span className="ml-2 font-normal text-muted-foreground">
+                                                                    {v.sku || 'No SKU'}
+                                                                </span>
+                                                            </span>
+                                                            <span className="shrink-0 font-mono tabular-nums text-muted-foreground">
+                                                                {v.quantity} / {threshold}
+                                                            </span>
+                                                        </div>
+                                                        <ProgressBar
+                                                            value={v.quantity}
+                                                            max={threshold > 0 ? threshold : 1}
+                                                            tone="warning"
+                                                            barClassName={v.quantity === 0 ? 'bg-red-500 dark:bg-red-400' : undefined}
+                                                        />
+                                                    </li>
+                                                );
+                                            })}
+                                        </ul>
+                                    ),
+                                    <Link href={InventoryRoutes.lowStock().url} className="text-xs font-medium text-primary hover:underline">
+                                        View all low stock →
+                                    </Link>,
+                                )}
+
+                                {listCard(
+                                    'Out of Stock',
+                                    inventory!.out_of_stock.length === 0 ? (
+                                        <p className="text-sm text-muted-foreground">Everything on the shelf.</p>
+                                    ) : (
+                                        <ul className="flex flex-col divide-y divide-border/70">
+                                            {inventory!.out_of_stock.map((v) => (
+                                                <li key={v.id} className="flex items-center justify-between gap-3 py-2.5 first:pt-0">
                                                     <div className="min-w-0">
-                                                        <Link href={ProductRoutes.show(v.product.id).url} className="text-sm font-medium hover:underline truncate block">
+                                                        <Link
+                                                            href={ProductRoutes.show(v.product.id).url}
+                                                            className="block truncate text-sm font-medium hover:underline"
+                                                        >
                                                             {v.product.name} — {v.name}
                                                         </Link>
-                                                        <p className="text-xs text-muted-foreground font-mono">{v.sku || 'No SKU'} · Qty {v.quantity}</p>
+                                                        <p className="font-mono text-xs text-muted-foreground">{v.sku || 'No SKU'}</p>
                                                     </div>
-                                                    <Badge variant="destructive" className="shrink-0">Out of Stock</Badge>
-                                                </div>
+                                                    <Badge variant="destructive" className="shrink-0">
+                                                        Out of Stock
+                                                    </Badge>
+                                                </li>
                                             ))}
-                                            <Link href={InventoryRoutes.lowStock({ status: 'out' }).url} className="text-xs text-primary hover:underline">
-                                                View all out of stock →
-                                            </Link>
-                                        </div>
-                                    )}
-                                </CardContent>
-                            </Card>
+                                        </ul>
+                                    ),
+                                    <Link href={InventoryRoutes.lowStock({ status: 'out' }).url} className="text-xs font-medium text-primary hover:underline">
+                                        View all out of stock →
+                                    </Link>,
+                                )}
+                            </div>
                         </div>
 
-                        <div className="grid gap-6 md:grid-cols-2">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Recent Stock Movements</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    {inventory.recent_movements.length === 0 ? (
-                                        <p className="text-sm text-muted-foreground">No stock movements yet.</p>
-                                    ) : (
-                                        <div className="space-y-3">
-                                            {inventory.recent_movements.map((m) => (
-                                                <div key={m.id} className="flex items-start justify-between gap-3 border-b pb-2">
-                                                    <div className="min-w-0">
-                                                        <p className="text-sm font-medium truncate">{m.variant.product.name} — {m.variant.name}</p>
-                                                        <p className="text-xs text-muted-foreground">
-                                                            {new Date(m.created_at).toLocaleString()} · {m.quantity_before} → {m.quantity_after}
-                                                            {m.reason ? ` · ${m.reason}` : ''}
-                                                        </p>
-                                                    </div>
-                                                    <div className="flex shrink-0 items-center gap-2">
-                                                        <Badge variant={m.quantity_after >= m.quantity_before ? 'success' : 'secondary'}>{m.movement_type}</Badge>
-                                                        <span className="font-mono text-sm font-semibold">{movementLabel(m)}</span>
-                                                    </div>
+                        <div className="grid gap-6 lg:grid-cols-2">
+                            {listCard(
+                                'Recent Stock Movements',
+                                inventory!.recent_movements.length === 0 ? (
+                                    <p className="text-sm text-muted-foreground">The ledger is empty.</p>
+                                ) : (
+                                    <ul className="flex flex-col divide-y divide-border/70">
+                                        {inventory!.recent_movements.map((mv) => (
+                                            <li key={mv.id} className="flex items-start justify-between gap-3 py-2.5 first:pt-0">
+                                                <div className="min-w-0">
+                                                    <p className="truncate text-sm font-medium">
+                                                        {mv.variant.product.name} — {mv.variant.name}
+                                                    </p>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        {new Date(mv.created_at).toLocaleString()} · {mv.quantity_before} → {mv.quantity_after}
+                                                        {mv.reason ? ` · ${mv.reason}` : ''}
+                                                    </p>
                                                 </div>
-                                            ))}
-                                            <Link href={InventoryRoutes.history().url} className="text-xs text-primary hover:underline">
-                                                View inventory history →
-                                            </Link>
-                                        </div>
-                                    )}
-                                </CardContent>
-                            </Card>
+                                                <div className="flex shrink-0 items-center gap-2">
+                                                    <Badge variant={mv.quantity_after >= mv.quantity_before ? 'success' : 'secondary'}>
+                                                        {mv.movement_type}
+                                                    </Badge>
+                                                    <span className="font-mono text-sm font-semibold">{movementLabel(mv)}</span>
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ),
+                                <Link href={InventoryRoutes.history().url} className="text-xs font-medium text-primary hover:underline">
+                                    View inventory history →
+                                </Link>,
+                            )}
 
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Recent Purchase Orders</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    {inventory.recent_purchase_orders.length === 0 ? (
-                                        <p className="text-sm text-muted-foreground">No purchase orders yet.</p>
-                                    ) : (
-                                        <div className="space-y-3">
-                                            {inventory.recent_purchase_orders.map((po) => (
-                                                <div key={po.id} className="flex items-center justify-between gap-3 border-b pb-2">
-                                                    <div className="min-w-0">
-                                                        <p className="font-mono text-sm">{po.po_number}</p>
-                                                        <p className="text-xs text-muted-foreground truncate">
-                                                            {po.supplier?.name || 'Unknown supplier'}
-                                                            {po.ordered_at ? ` · ${new Date(po.ordered_at).toLocaleDateString()}` : ''}
-                                                        </p>
-                                                    </div>
-                                                    <div className="flex shrink-0 items-center gap-2">
-                                                        <span className="font-mono text-sm">{po.total}</span>
-                                                        <Badge variant={po.status === 'received' ? 'success' : po.status === 'cancelled' ? 'cancelled' : 'warning'}>{po.status}</Badge>
-                                                    </div>
+                            {listCard(
+                                'Recent Purchase Orders',
+                                inventory!.recent_purchase_orders.length === 0 ? (
+                                    <p className="text-sm text-muted-foreground">Nothing has been ordered yet.</p>
+                                ) : (
+                                    <ul className="flex flex-col divide-y divide-border/70">
+                                        {inventory!.recent_purchase_orders.map((po) => (
+                                            <li key={po.id} className="flex items-center justify-between gap-3 py-2.5 first:pt-0">
+                                                <div className="min-w-0">
+                                                    <p className="font-mono text-sm">{po.po_number}</p>
+                                                    <p className="truncate text-xs text-muted-foreground">
+                                                        {po.supplier?.name || 'Unknown supplier'}
+                                                        {po.ordered_at ? ` · ${new Date(po.ordered_at).toLocaleDateString()}` : ''}
+                                                    </p>
                                                 </div>
-                                            ))}
-                                            <Link href={PurchaseOrderRoutes.index().url} className="text-xs text-primary hover:underline">
-                                                View all purchase orders →
-                                            </Link>
-                                        </div>
-                                    )}
-                                </CardContent>
-                            </Card>
+                                                <div className="flex shrink-0 items-center gap-2">
+                                                    <span className="font-mono text-sm">{po.total}</span>
+                                                    <Badge variant={poBadgeVariant(po.status)}>{po.status}</Badge>
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ),
+                                <Link href={PurchaseOrderRoutes.index().url} className="text-xs font-medium text-primary hover:underline">
+                                    View all purchase orders →
+                                </Link>,
+                            )}
                         </div>
                     </>
                 )}
+
+                <div className="grid gap-6 lg:grid-cols-3">
+                    <Card className="lg:col-span-2">
+                        <CardHeader>
+                            <CardTitle>Recent Orders</CardTitle>
+                        </CardHeader>
+                        <CardContent className="px-0">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Order</TableHead>
+                                        <TableHead>Customer</TableHead>
+                                        <TableHead className="text-right">Total</TableHead>
+                                        <TableHead>Status</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {recent_orders.length === 0 ? (
+                                        <TableEmpty colSpan={4}>No orders yet.</TableEmpty>
+                                    ) : (
+                                        recent_orders.map((o) => (
+                                            <TableRow key={o.id}>
+                                                <TableCell className="font-mono text-sm">{o.reference_number}</TableCell>
+                                                <TableCell className="text-sm">{o.customer?.name || 'Guest'}</TableCell>
+                                                <TableCell className="text-right font-mono text-sm">{o.total}</TableCell>
+                                                <TableCell>
+                                                    <Badge variant={orderBadgeVariant(o.status)}>{o.status}</Badge>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    )}
+                                </TableBody>
+                            </Table>
+                            {recent_orders.length > 0 && (
+                                <div className="px-4 pt-4">
+                                    <Link href="/admin/orders" className="text-xs font-medium text-primary hover:underline">
+                                        View all orders →
+                                    </Link>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Order Status Mix</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <DonutChart
+                                size={150}
+                                centerValue={recent_orders.length}
+                                centerLabel="Recent"
+                                data={statusMix}
+                                emptyText="No recent orders."
+                            />
+                        </CardContent>
+                    </Card>
+                </div>
 
                 <Card>
                     <CardHeader>
                         <CardTitle>Quick Navigation</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
+                        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
                             {[
                                 { title: 'Products', href: '/admin/products', icon: Package, desc: 'Catalog' },
                                 { title: 'Categories', href: '/admin/categories', icon: Tag, desc: 'Groups' },
@@ -230,39 +368,21 @@ export default function Dashboard({
                                       ]
                                     : []),
                             ].map((item) => (
-                                <Link key={item.title} href={item.href} className="group flex flex-col gap-2 rounded-lg border p-4 dark:bg-card hover:bg-accent hover:text-accent-foreground transition-colors">
-                                    <item.icon className="h-5 w-5 text-muted-foreground group-hover:text-foreground" />
-                                    <span className="text-sm font-medium">{item.title}</span>
-                                    <span className="text-xs text-muted-foreground">{item.desc}</span>
+                                <Link
+                                    key={item.title}
+                                    href={item.href}
+                                    className="group flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-sm dark:shadow-none"
+                                >
+                                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-secondary-foreground transition-colors duration-200 group-hover:bg-primary group-hover:text-primary-foreground">
+                                        <item.icon className="size-4.5" aria-hidden="true" />
+                                    </span>
+                                    <span className="min-w-0">
+                                        <span className="block truncate text-sm font-medium">{item.title}</span>
+                                        <span className="block truncate text-xs text-muted-foreground">{item.desc}</span>
+                                    </span>
                                 </Link>
                             ))}
                         </div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Recent Orders</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        {recent_orders.length === 0 ? (
-                            <p className="text-sm text-muted-foreground">No orders.</p>
-                        ) : (
-                            <div className="space-y-3">
-                                {recent_orders.map((o) => (
-                                    <div key={o.id} className="flex items-center justify-between border-b pb-2">
-                                        <div>
-                                            <p className="font-mono text-sm">{o.reference_number}</p>
-                                            <p className="text-xs text-muted-foreground">{o.customer?.name || 'Guest'}</p>
-                                        </div>
-                                        <Badge variant={o.status === 'delivered' ? 'success' : o.status === 'cancelled' ? 'cancelled' : 'warning'}>{o.status}</Badge>
-                                    </div>
-                                ))}
-                                <Link href="/admin/orders" className="text-xs text-primary hover:underline">
-                                    View all →
-                                </Link>
-                            </div>
-                        )}
                     </CardContent>
                 </Card>
             </div>

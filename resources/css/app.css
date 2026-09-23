@@ -105,11 +105,19 @@
     --border: rgba(7, 14, 1, 0.1);
     --input: rgba(7, 14, 1, 0.1);
     --ring: #2D5016;
-    --chart-1: oklch(0.646 0.222 41.116);
-    --chart-2: oklch(0.6 0.118 184.704);
-    --chart-3: oklch(0.398 0.07 227.392);
-    --chart-4: oklch(0.828 0.189 84.429);
-    --chart-5: oklch(0.769 0.188 70.08);
+    /* Chart series — foundation greens (unused before; themed to match the site) */
+    --chart-1: #2d5016;
+    --chart-2: #4a8c2a;
+    --chart-3: #7fb069;
+    --chart-4: #b7d9a0;
+    --chart-5: #d4e8c8;
+
+    /* Semantic viz colors for charts/progress (additive — used by new charts only) */
+    --viz-success: #4a8c2a;
+    --viz-warning: #d97706;
+    --viz-danger: #dc2626;
+    --viz-info: #2d5016;
+
     --radius: 8px;
     --sidebar: #ECF3E5;
     --sidebar-foreground: #070E01;
@@ -168,6 +176,12 @@
     --chart-3: #BF9FEF;
     --chart-4: #619777;
     --chart-5: #6F6998;
+
+    /* Semantic viz colors — dark palette counterparts */
+    --viz-success: #95e6b6;
+    --viz-warning: #bf9fef;
+    --viz-danger: #f87171;
+    --viz-info: #a16ae8;
 
     /* Sidebar — deep violet-black */
     --sidebar: #100320;
@@ -280,6 +294,63 @@
 .login-passkey-wrap [data-orientation="horizontal"] {
     background: rgba(7, 14, 1, 0.06) !important;
     height: 1px !important;
+}
+
+/* Shared grow-in for progress bars and chart bars (see components/progress-bar.tsx, components/charts.tsx) */
+@keyframes bar-grow {
+    from {
+        transform: scaleX(0);
+    }
+    to {
+        transform: scaleX(1);
+    }
+}
+
+.bar-grow {
+    transform-origin: left;
+    animation: bar-grow 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/*
+ * Admin sidebar — white card floating on the sage canvas (public-site
+ * foundation: sage background + white cards). Dark keeps the approved
+ * deep violet-black surface with a delineating border.
+ * Unlayered, so it intentionally wins over the `bg-sidebar` utility.
+ */
+[data-sidebar="sidebar"] {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgb(7 14 1 / 0.04);
+}
+
+.dark [data-sidebar="sidebar"] {
+    background-color: var(--sidebar);
+    border-color: var(--sidebar-border);
+    box-shadow: none;
+}
+
+/*
+ * Inertia top loading bar (nprogress) — restyled to the foundation:
+ * slim 3px gradient bar in danob greens, no corner spinner.
+ * `!important` beats the style element Inertia injects at runtime.
+ */
+#nprogress {
+    pointer-events: none;
+}
+
+#nprogress .bar {
+    background: linear-gradient(90deg, var(--primary), var(--chart-2)) !important;
+    height: 3px !important;
+    box-shadow: 0 0 8px color-mix(in srgb, var(--primary) 55%, transparent);
+}
+
+#nprogress .peg {
+    display: none !important;
+}
+
+#nprogress .spinner {
+    display: none !important;
 }
 
 /* Respect reduced-motion preferences (motion budget: 150–250ms otherwise) */

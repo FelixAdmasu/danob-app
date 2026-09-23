@@ -1,10 +1,15 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
+import Heading from '@/components/heading';
+import { Pagination } from '@/components/pagination';
+import { StatCard } from '@/components/stat-card';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ReportExportButton } from '@/components/report-export-button';
+import { CheckCircle2, DollarSign, ShoppingBag, Users } from 'lucide-react';
 import * as CustomerRoutes from '@/routes/admin/customers';
 import ReportRoutes from '@/routes/admin/reports';
 
@@ -57,45 +62,17 @@ export default function CustomersReport({ customers, summary, filters }: Props) 
         <>
             <Head title="Customers Report" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <div className="border-b border-border pb-8">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground dark:text-primary mb-3">Reports — Customers</p>
-                    <h1 className="font-serif text-[32px] leading-tight font-medium md:text-[40px] tracking-tight text-foreground">Customers</h1>
-                    <p className="text-sm text-muted-foreground mt-2 max-w-xl">Customer order activity and delivered sales value.</p>
-                </div>
+                <Heading
+                    eyebrow="Reports — Customers"
+                    title="Customers"
+                    description="Customer order activity and delivered sales value."
+                />
 
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Customers</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{summary.customers}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Customers With Orders</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{summary.customers_with_orders}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Delivered Orders</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{summary.delivered_orders}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Delivered Sales Value</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{summary.delivered_sales_value}</p>
-                        </CardContent>
-                    </Card>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <StatCard label="Customers" value={summary.customers} icon={Users} />
+                    <StatCard label="Customers With Orders" value={summary.customers_with_orders} icon={ShoppingBag} />
+                    <StatCard label="Delivered Orders" value={summary.delivered_orders} icon={CheckCircle2} tone="success" />
+                    <StatCard label="Delivered Sales Value" value={summary.delivered_sales_value} icon={DollarSign} />
                 </div>
 
                 <Card>
@@ -122,67 +99,48 @@ export default function CustomersReport({ customers, summary, filters }: Props) 
                 </Card>
 
                 <Card>
-                    <CardContent className="p-0">
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="border-b bg-muted/50">
-                                    <tr className="text-left text-xs uppercase tracking-widest text-muted-foreground">
-                                        <th className="px-4 py-3">Customer</th>
-                                        <th className="px-4 py-3">Orders</th>
-                                        <th className="px-4 py-3">Delivered Orders</th>
-                                        <th className="px-4 py-3">Delivered Sales Value</th>
-                                        <th className="px-4 py-3">Returned Units</th>
-                                        <th className="px-4 py-3">Return Value</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {customers.data.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={6} className="px-4 py-12 text-center text-sm text-muted-foreground">
-                                                No customers found.
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        customers.data.map((customer) => (
-                                            <tr key={customer.id} className="border-b transition-colors hover:bg-muted/40">
-                                                <td className="px-4 py-3 text-sm">
-                                                    <Link href={CustomerRoutes.edit(customer.id).url} className="font-medium hover:underline">
-                                                        {customer.name}
-                                                    </Link>
-                                                    {customer.email && (
-                                                        <div className="text-xs text-muted-foreground">{customer.email}</div>
-                                                    )}
-                                                </td>
-                                                <td className="px-4 py-3 text-sm font-mono">{customer.orders_count}</td>
-                                                <td className="px-4 py-3 text-sm font-mono">{customer.delivered_orders_count}</td>
-                                                <td className="px-4 py-3 text-sm font-mono">{customer.delivered_sales_value}</td>
-                                                <td className="px-4 py-3 text-sm font-mono">{customer.returned_units}</td>
-                                                <td className="px-4 py-3 text-sm font-mono">{customer.return_value}</td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                    <CardHeader>
+                        <CardTitle>All Customers</CardTitle>
+                    </CardHeader>
+                    <CardContent className="px-0">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Customer</TableHead>
+                                    <TableHead className="text-right">Orders</TableHead>
+                                    <TableHead className="text-right">Delivered Orders</TableHead>
+                                    <TableHead className="text-right">Delivered Sales Value</TableHead>
+                                    <TableHead className="text-right">Returned Units</TableHead>
+                                    <TableHead className="text-right">Return Value</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {customers.data.length === 0 ? (
+                                    <TableEmpty colSpan={6}>No customers found.</TableEmpty>
+                                ) : (
+                                    customers.data.map((customer) => (
+                                        <TableRow key={customer.id}>
+                                            <TableCell className="text-sm">
+                                                <Link href={CustomerRoutes.edit(customer.id).url} className="font-medium hover:underline">
+                                                    {customer.name}
+                                                </Link>
+                                                {customer.email && (
+                                                    <div className="text-xs text-muted-foreground">{customer.email}</div>
+                                                )}
+                                            </TableCell>
+                                            <TableCell className="text-right text-sm font-mono">{customer.orders_count}</TableCell>
+                                            <TableCell className="text-right text-sm font-mono">{customer.delivered_orders_count}</TableCell>
+                                            <TableCell className="text-right text-sm font-mono">{customer.delivered_sales_value}</TableCell>
+                                            <TableCell className="text-right text-sm font-mono">{customer.returned_units}</TableCell>
+                                            <TableCell className="text-right text-sm font-mono">{customer.return_value}</TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                        {customers.last_page > 1 && <Pagination links={customers.links} className="px-4 pt-4 pb-2" />}
                     </CardContent>
                 </Card>
-
-                {customers.last_page > 1 && (
-                    <div className="flex flex-wrap items-center justify-center gap-1.5">
-                        {customers.links.map((link, i) =>
-                            link.url ? (
-                                <Link
-                                    key={i}
-                                    href={link.url}
-                                    className={`inline-flex min-w-8 justify-center rounded-md border px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${link.active ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-transparent text-muted-foreground hover:bg-accent hover:text-foreground'}`}
-                                    dangerouslySetInnerHTML={{ __html: link.label }}
-                                />
-                            ) : (
-                                <span key={i} className="inline-flex min-w-8 justify-center px-3 py-1.5 text-xs opacity-40" dangerouslySetInnerHTML={{ __html: link.label }} />
-                            ),
-                        )}
-                    </div>
-                )}
             </div>
         </>
     );

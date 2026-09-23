@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Github, BookOpen, LayoutGrid, LayoutDashboard, Package, Tag, Building2, ShoppingCart, Users, Layers, Store, Archive, ArrowUpDown, History, Truck, FileText, AlertTriangle, BarChart3 } from 'lucide-react';
+import { ArrowUpRight, Github, BookOpen, LayoutGrid, LayoutDashboard, Package, Tag, Building2, ShoppingCart, Users, Layers, Store, Archive, ArrowUpDown, History, Truck, FileText, AlertTriangle, BarChart3 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -12,6 +12,7 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import * as productRoutes from '@/routes/admin/products';
@@ -82,10 +83,14 @@ export function AppSidebar() {
 
     return (
         <Sidebar collapsible="icon" variant="inset">
-            <SidebarHeader>
+            <SidebarHeader className="border-b border-sidebar-border/70 pb-3">
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
+                        <SidebarMenuButton
+                            size="lg"
+                            asChild
+                            className="hover:bg-transparent data-[state=open]:bg-transparent"
+                        >
                             <Link href={dashboard()} prefetch>
                                 <AppLogo />
                             </Link>
@@ -96,20 +101,29 @@ export function AppSidebar() {
 
             <SidebarContent>
                 <NavMain items={mainNavItems} label="Home" />
-                {platformItems.length > 0 && <NavMain items={platformItems} label="Platform" />}
+                {platformItems.length > 0 && (
+                    <>
+                        <SidebarSeparator className="mx-3 my-1 opacity-70" />
+                        <NavMain items={platformItems} label="Platform" />
+                    </>
+                )}
             </SidebarContent>
 
-            <SidebarFooter>
+            <SidebarFooter className="border-t border-sidebar-border/70 pt-3">
                 {isStaffPlus && (
                     <div className="px-2 pb-2">
                         <a
                             href="/products"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-2 rounded-md px-2 py-2 text-xs font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+                            className="group flex items-center gap-2.5 rounded-lg border border-sidebar-border bg-secondary/60 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground transition-colors duration-200 hover:border-primary/40 hover:bg-primary hover:text-primary-foreground"
                         >
-                            <Store className="h-4 w-4" />
-                            View Store ↗
+                            <Store className="h-4 w-4 shrink-0 transition-colors" />
+                            <span className="flex-1 text-left">View Store</span>
+                            <ArrowUpRight
+                                aria-hidden="true"
+                                className="h-3.5 w-3.5 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                            />
                         </a>
                     </div>
                 )}

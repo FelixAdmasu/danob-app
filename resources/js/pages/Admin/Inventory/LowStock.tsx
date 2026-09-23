@@ -1,13 +1,19 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
+import Heading from '@/components/heading';
+import { Pagination } from '@/components/pagination';
+import { ProgressBar } from '@/components/progress-bar';
+import { StatCard } from '@/components/stat-card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import * as InventoryRoutes from '@/routes/admin/inventory';
 import * as ProductRoutes from '@/routes/admin/products';
+import { AlertTriangle, Layers, Package } from 'lucide-react';
 
 type VariantRow = {
     id: number;
@@ -64,37 +70,16 @@ export default function LowStock({ variants, counts, filters }: Props) {
         <>
             <Head title="Low Stock" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <div className="border-b border-border pb-8">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground dark:text-primary mb-3">Inventory — Low Stock</p>
-                    <h1 className="font-serif text-[32px] leading-tight font-medium md:text-[40px] tracking-tight text-foreground">Low Stock</h1>
-                    <p className="text-sm text-muted-foreground mt-2 max-w-xl">Variants that are out of stock or at/below their low-stock threshold.</p>
-                </div>
+                <Heading
+                    eyebrow="Inventory"
+                    title="Low Stock"
+                    description="Variants that are out of stock or at/below their low-stock threshold."
+                />
 
-                <div className="grid gap-4 md:grid-cols-3">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Low Stock</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{counts.low}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Out of Stock</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{counts.out}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Monitored Variants</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{counts.monitored}</p>
-                        </CardContent>
-                    </Card>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <StatCard label="Low Stock" value={counts.low} icon={AlertTriangle} tone="warning" />
+                    <StatCard label="Out of Stock" value={counts.out} icon={Package} tone="danger" />
+                    <StatCard label="Monitored Variants" value={counts.monitored} icon={Layers} />
                 </div>
 
                 <Card>
@@ -134,68 +119,56 @@ export default function LowStock({ variants, counts, filters }: Props) {
                 </Card>
 
                 <Card>
-                    <CardContent className="p-0">
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="border-b bg-muted/50">
-                                    <tr className="text-left text-xs uppercase tracking-widest text-muted-foreground">
-                                        <th className="px-4 py-3">Product</th>
-                                        <th className="px-4 py-3">Variant</th>
-                                        <th className="px-4 py-3">SKU</th>
-                                        <th className="px-4 py-3">Quantity</th>
-                                        <th className="px-4 py-3">Threshold</th>
-                                        <th className="px-4 py-3">Status</th>
-                                        <th className="px-4 py-3">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {variants.data.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={7} className="px-4 py-12 text-center text-sm text-muted-foreground">
-                                                No variants found. Try adjusting filters.
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        variants.data.map((v) => (
-                                            <tr key={v.id} className="border-b transition-colors hover:bg-muted/40">
-                                                <td className="px-4 py-3 text-sm font-medium">{v.product.name}</td>
-                                                <td className="px-4 py-3 text-sm">{v.name}</td>
-                                                <td className="px-4 py-3 font-mono text-xs">{v.sku || '—'}</td>
-                                                <td className="px-4 py-3 text-sm font-mono">{v.quantity}</td>
-                                                <td className="px-4 py-3 text-sm font-mono">{v.low_stock_threshold ?? '—'}</td>
-                                                <td className="px-4 py-3">
-                                                    <StatusBadge status={v.stock_status} />
-                                                </td>
-                                                <td className="px-4 py-3">
-                                                    <Link href={ProductRoutes.show(v.product.id).url}>
-                                                        <Button variant="ghost" size="sm">View Product</Button>
-                                                    </Link>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                    <CardContent className="px-0">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Product</TableHead>
+                                    <TableHead>Variant</TableHead>
+                                    <TableHead>SKU</TableHead>
+                                    <TableHead className="text-right">Quantity</TableHead>
+                                    <TableHead className="text-right">Threshold</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead className="text-right">Action</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {variants.data.length === 0 ? (
+                                    <TableEmpty colSpan={7}>No variants found. Try adjusting filters.</TableEmpty>
+                                ) : (
+                                    variants.data.map((v) => (
+                                        <TableRow key={v.id}>
+                                            <TableCell className="text-sm font-medium">{v.product.name}</TableCell>
+                                            <TableCell className="text-sm">{v.name}</TableCell>
+                                            <TableCell className="font-mono text-xs">{v.sku || '—'}</TableCell>
+                                            <TableCell className="text-right text-sm font-mono">
+                                                {v.quantity}
+                                                {(v.low_stock_threshold ?? 0) > 0 && (
+                                                    <ProgressBar
+                                                        value={v.quantity}
+                                                        max={v.low_stock_threshold ?? 0}
+                                                        tone="warning"
+                                                        className="mt-1.5 ml-auto w-28"
+                                                    />
+                                                )}
+                                            </TableCell>
+                                            <TableCell className="text-right text-sm font-mono">{v.low_stock_threshold ?? '—'}</TableCell>
+                                            <TableCell>
+                                                <StatusBadge status={v.stock_status} />
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <Link href={ProductRoutes.show(v.product.id).url}>
+                                                    <Button variant="ghost" size="sm">View Product</Button>
+                                                </Link>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                        {variants.last_page > 1 && <Pagination links={variants.links} className="px-4 pt-4 pb-2" />}
                     </CardContent>
                 </Card>
-
-                {variants.last_page > 1 && (
-                    <div className="flex flex-wrap items-center justify-center gap-1.5">
-                        {variants.links.map((link, i) =>
-                            link.url ? (
-                                <Link
-                                    key={i}
-                                    href={link.url}
-                                    className={`inline-flex min-w-8 justify-center rounded-md border px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${link.active ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-transparent text-muted-foreground hover:bg-accent hover:text-foreground'}`}
-                                    dangerouslySetInnerHTML={{ __html: link.label }}
-                                />
-                            ) : (
-                                <span key={i} className="inline-flex min-w-8 justify-center px-3 py-1.5 text-xs opacity-40" dangerouslySetInnerHTML={{ __html: link.label }} />
-                            ),
-                        )}
-                    </div>
-                )}
             </div>
         </>
     );

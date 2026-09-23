@@ -1,11 +1,13 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import Heading from '@/components/heading';
+import { Pagination } from '@/components/pagination';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Search, Plus } from 'lucide-react';
 import * as PurchaseOrderRoutes from '@/routes/admin/purchase-orders';
 
@@ -25,6 +27,7 @@ export default function Index({ purchase_orders, filters }: { purchase_orders: P
             <Head title="Purchase Orders" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
                 <Heading
+                    eyebrow="Purchasing"
                     title="Purchase Orders"
                     description="Manage purchasing"
                     actions={
@@ -63,58 +66,45 @@ export default function Index({ purchase_orders, filters }: { purchase_orders: P
                     </CardContent>
                 </Card>
                 <Card>
-                    <CardContent className="p-0">
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="border-b bg-muted/50">
-                                    <tr className="text-left text-xs uppercase tracking-widest text-muted-foreground">
-                                        <th className="px-4 py-3">PO Number</th>
-                                        <th className="px-4 py-3">Supplier</th>
-                                        <th className="px-4 py-3">Status</th>
-                                        <th className="px-4 py-3 text-right">Total</th>
-                                        <th className="px-4 py-3">Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {purchase_orders.data.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={5} className="px-4 py-12 text-center text-sm text-muted-foreground">
-                                                No purchase orders.
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        purchase_orders.data.map((po) => (
-                                            <tr key={po.id} className="border-b transition-colors hover:bg-muted/40">
-                                                <td className="px-4 py-3 font-mono text-sm">
-                                                    <Link href={PurchaseOrderRoutes.show(po.id).url} className="hover:underline">
-                                                        {po.po_number}
-                                                    </Link>
-                                                </td>
-                                                <td className="px-4 py-3 text-sm">{po.supplier?.name || '—'}</td>
-                                                <td className="px-4 py-3">
-                                                    <Badge variant={po.status === 'received' ? 'success' : po.status === 'cancelled' ? 'cancelled' : 'warning'}>{po.status}</Badge>
-                                                </td>
-                                                <td className="px-4 py-3 text-right font-mono text-sm tabular-nums">{po.total}</td>
-                                                <td className="px-4 py-3 text-xs">{po.ordered_at ? new Date(po.ordered_at).toLocaleDateString() : '—'}</td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                    <CardHeader>
+                        <CardTitle>All Purchase Orders</CardTitle>
+                    </CardHeader>
+                    <CardContent className="px-0">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>PO Number</TableHead>
+                                    <TableHead>Supplier</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead className="text-right">Total</TableHead>
+                                    <TableHead>Date</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {purchase_orders.data.length === 0 ? (
+                                    <TableEmpty colSpan={5}>No purchase orders.</TableEmpty>
+                                ) : (
+                                    purchase_orders.data.map((po) => (
+                                        <TableRow key={po.id}>
+                                            <TableCell className="font-mono text-sm">
+                                                <Link href={PurchaseOrderRoutes.show(po.id).url} className="hover:underline">
+                                                    {po.po_number}
+                                                </Link>
+                                            </TableCell>
+                                            <TableCell className="text-sm">{po.supplier?.name || '—'}</TableCell>
+                                            <TableCell>
+                                                <Badge variant={po.status === 'received' ? 'success' : po.status === 'cancelled' ? 'cancelled' : 'warning'}>{po.status}</Badge>
+                                            </TableCell>
+                                            <TableCell className="text-right font-mono text-sm tabular-nums">{po.total}</TableCell>
+                                            <TableCell className="text-xs">{po.ordered_at ? new Date(po.ordered_at).toLocaleDateString() : '—'}</TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                        {purchase_orders.last_page > 1 && <Pagination links={purchase_orders.links} className="px-4 pt-4 pb-2" />}
                     </CardContent>
                 </Card>
-                {purchase_orders.last_page > 1 && (
-                    <div className="flex flex-wrap items-center justify-center gap-1.5">
-                        {purchase_orders.links.map((link, i) =>
-                            link.url ? (
-                                <Link key={i} href={link.url} className={`inline-flex min-w-8 justify-center rounded-md border px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${link.active ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-transparent text-muted-foreground hover:bg-accent hover:text-foreground'}`} dangerouslySetInnerHTML={{ __html: link.label }} />
-                            ) : (
-                                <span key={i} className="inline-flex min-w-8 justify-center px-3 py-1.5 text-xs opacity-40" dangerouslySetInnerHTML={{ __html: link.label }} />
-                            ),
-                        )}
-                    </div>
-                )}
             </div>
         </>
     );

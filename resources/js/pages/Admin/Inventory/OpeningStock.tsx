@@ -1,5 +1,6 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState, useMemo } from 'react';
+import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -59,11 +60,11 @@ export default function OpeningStock({ products }: Props) {
         <>
             <Head title="Opening Stock" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <div className="border-b border-border pb-8">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground dark:text-primary mb-3">Inventory — Opening Stock</p>
-                    <h1 className="font-serif text-[32px] leading-tight font-medium md:text-[40px] tracking-tight text-foreground">Opening Stock</h1>
-                    <p className="text-sm text-muted-foreground mt-2 max-w-xl">Establish initial inventory for a variant. This creates an opening_balance ledger entry.</p>
-                </div>
+                <Heading
+                    eyebrow="Inventory"
+                    title="Opening Stock"
+                    description="Establish initial inventory for a variant. This creates an opening_balance ledger entry."
+                />
 
                 {flashSuccess && <div className="rounded border border-green-200 bg-green-50 dark:border-[#477158] dark:bg-[#15261C] px-4 py-3 text-sm text-green-800 dark:text-[#95E6B6]">{flashSuccess}</div>}
 

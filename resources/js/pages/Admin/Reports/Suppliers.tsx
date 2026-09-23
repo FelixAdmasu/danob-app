@@ -1,12 +1,17 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
+import Heading from '@/components/heading';
+import { Pagination } from '@/components/pagination';
+import { StatCard } from '@/components/stat-card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ReportExportButton } from '@/components/report-export-button';
+import { ClipboardList, ShoppingCart, UserCheck, Users } from 'lucide-react';
 import ReportRoutes from '@/routes/admin/reports';
 
 type SupplierRow = {
@@ -59,45 +64,17 @@ export default function SuppliersReport({ suppliers, summary, filters }: Props) 
         <>
             <Head title="Suppliers Report" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <div className="border-b border-border pb-8">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground dark:text-primary mb-3">Reports — Suppliers</p>
-                    <h1 className="font-serif text-[32px] leading-tight font-medium md:text-[40px] tracking-tight text-foreground">Suppliers</h1>
-                    <p className="text-sm text-muted-foreground mt-2 max-w-xl">Supplier activity: purchase counts, open orders and purchase value.</p>
-                </div>
+                <Heading
+                    eyebrow="Reports — Suppliers"
+                    title="Suppliers"
+                    description="Supplier activity: purchase counts, open orders and purchase value."
+                />
 
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Suppliers</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{summary.suppliers}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Active Suppliers</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{summary.active_suppliers}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Suppliers With Purchases</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{summary.suppliers_with_purchases}</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm font-medium">Purchase Orders</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="font-serif text-3xl">{summary.purchase_orders}</p>
-                        </CardContent>
-                    </Card>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <StatCard label="Suppliers" value={summary.suppliers} icon={Users} />
+                    <StatCard label="Active Suppliers" value={summary.active_suppliers} icon={UserCheck} tone="success" />
+                    <StatCard label="Suppliers With Purchases" value={summary.suppliers_with_purchases} icon={ShoppingCart} />
+                    <StatCard label="Purchase Orders" value={summary.purchase_orders} icon={ClipboardList} />
                 </div>
 
                 <Card>
@@ -137,71 +114,52 @@ export default function SuppliersReport({ suppliers, summary, filters }: Props) 
                 </Card>
 
                 <Card>
-                    <CardContent className="p-0">
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="border-b bg-muted/50">
-                                    <tr className="text-left text-xs uppercase tracking-widest text-muted-foreground">
-                                        <th className="px-4 py-3">Supplier</th>
-                                        <th className="px-4 py-3">Status</th>
-                                        <th className="px-4 py-3">Purchase Orders</th>
-                                        <th className="px-4 py-3">Open Orders</th>
-                                        <th className="px-4 py-3">Purchase Value</th>
-                                        <th className="px-4 py-3">Last Order</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {suppliers.data.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={6} className="px-4 py-12 text-center text-sm text-muted-foreground">
-                                                No suppliers found.
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        suppliers.data.map((supplier) => (
-                                            <tr key={supplier.id} className="border-b transition-colors hover:bg-muted/40">
-                                                <td className="px-4 py-3 text-sm">
-                                                    <div className="font-medium">{supplier.name}</div>
-                                                    {supplier.contact_person && (
-                                                        <div className="text-xs text-muted-foreground">{supplier.contact_person}</div>
-                                                    )}
-                                                </td>
-                                                <td className="px-4 py-3">
-                                                    <Badge variant={supplier.is_active ? 'success' : 'secondary'}>
-                                                        {supplier.is_active ? 'Active' : 'Inactive'}
-                                                    </Badge>
-                                                </td>
-                                                <td className="px-4 py-3 text-sm font-mono">{supplier.purchase_orders_count}</td>
-                                                <td className="px-4 py-3 text-sm font-mono">{supplier.open_purchase_orders_count}</td>
-                                                <td className="px-4 py-3 text-sm font-mono">{supplier.purchase_value}</td>
-                                                <td className="px-4 py-3 text-xs">
-                                                    {supplier.last_ordered_at ? new Date(supplier.last_ordered_at).toLocaleDateString() : '—'}
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                    <CardHeader>
+                        <CardTitle>All Suppliers</CardTitle>
+                    </CardHeader>
+                    <CardContent className="px-0">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Supplier</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead className="text-right">Purchase Orders</TableHead>
+                                    <TableHead className="text-right">Open Orders</TableHead>
+                                    <TableHead className="text-right">Purchase Value</TableHead>
+                                    <TableHead>Last Order</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {suppliers.data.length === 0 ? (
+                                    <TableEmpty colSpan={6}>No suppliers found.</TableEmpty>
+                                ) : (
+                                    suppliers.data.map((supplier) => (
+                                        <TableRow key={supplier.id}>
+                                            <TableCell className="text-sm">
+                                                <div className="font-medium">{supplier.name}</div>
+                                                {supplier.contact_person && (
+                                                    <div className="text-xs text-muted-foreground">{supplier.contact_person}</div>
+                                                )}
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge variant={supplier.is_active ? 'success' : 'secondary'}>
+                                                    {supplier.is_active ? 'Active' : 'Inactive'}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="text-right text-sm font-mono">{supplier.purchase_orders_count}</TableCell>
+                                            <TableCell className="text-right text-sm font-mono">{supplier.open_purchase_orders_count}</TableCell>
+                                            <TableCell className="text-right text-sm font-mono">{supplier.purchase_value}</TableCell>
+                                            <TableCell className="text-xs">
+                                                {supplier.last_ordered_at ? new Date(supplier.last_ordered_at).toLocaleDateString() : '—'}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                        {suppliers.last_page > 1 && <Pagination links={suppliers.links} className="px-4 pt-4 pb-2" />}
                     </CardContent>
                 </Card>
-
-                {suppliers.last_page > 1 && (
-                    <div className="flex flex-wrap items-center justify-center gap-1.5">
-                        {suppliers.links.map((link, i) =>
-                            link.url ? (
-                                <Link
-                                    key={i}
-                                    href={link.url}
-                                    className={`inline-flex min-w-8 justify-center rounded-md border px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${link.active ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-transparent text-muted-foreground hover:bg-accent hover:text-foreground'}`}
-                                    dangerouslySetInnerHTML={{ __html: link.label }}
-                                />
-                            ) : (
-                                <span key={i} className="inline-flex min-w-8 justify-center px-3 py-1.5 text-xs opacity-40" dangerouslySetInnerHTML={{ __html: link.label }} />
-                            ),
-                        )}
-                    </div>
-                )}
             </div>
         </>
     );

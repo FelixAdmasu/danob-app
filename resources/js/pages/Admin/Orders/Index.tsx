@@ -1,10 +1,13 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
+import Heading from '@/components/heading';
+import { Pagination } from '@/components/pagination';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Plus, Search } from 'lucide-react';
 import * as OrderRoutes from '@/routes/admin/orders';
 
@@ -46,20 +49,23 @@ export default function Index({ orders, filters }: Props) {
         <>
             <Head title="Orders" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between border-b border-border pb-8">
-                    <div>
-                        <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground dark:text-primary mb-3">Sales — Orders</p>
-                        <h1 className="font-serif text-[32px] leading-tight font-medium md:text-[40px] tracking-tight text-foreground">Orders</h1>
-                        <p className="text-sm text-muted-foreground mt-2">Track and manage customer orders.</p>
-                    </div>
-                    <Link href={OrderRoutes.create().url}>
-                        <Button type="button">
-                            <Plus className="mr-2 h-4 w-4" /> New Order
-                        </Button>
-                    </Link>
-                </div>
+                <Heading
+                    eyebrow="Sales"
+                    title="Orders"
+                    description="Track and manage customer orders."
+                    actions={
+                        <Link href={OrderRoutes.create().url}>
+                            <Button type="button">
+                                <Plus className="mr-2 h-4 w-4" /> New Order
+                            </Button>
+                        </Link>
+                    }
+                />
 
-                <form onSubmit={handleSearch} className="flex flex-wrap items-center gap-2 rounded-lg border bg-card p-3">
+                <form
+                    onSubmit={handleSearch}
+                    className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-3 shadow-xs dark:shadow-none"
+                >
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input placeholder="Search reference or customer..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
@@ -82,64 +88,45 @@ export default function Index({ orders, filters }: Props) {
                 </form>
 
                 <Card>
-                    <CardContent className="p-0">
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="border-b bg-muted/50">
-                                    <tr className="text-left text-xs uppercase tracking-widest text-muted-foreground">
-                                        <th className="px-4 py-3">Reference</th>
-                                        <th className="px-4 py-3">Customer</th>
-                                        <th className="px-4 py-3">Status</th>
-                                        <th className="px-4 py-3 text-right">Total</th>
-                                        <th className="px-4 py-3">Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {orders.data.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={5} className="px-4 py-12 text-center text-sm text-muted-foreground">
-                                                No orders found.
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        orders.data.map((order) => (
-                                            <tr key={order.id} className="border-b transition-colors hover:bg-muted/40">
-                                                <td className="px-4 py-3 font-mono text-sm">
-                                                    <Link href={OrderRoutes.show(order.id).url} className="hover:underline">
-                                                        {order.reference_number}
-                                                    </Link>
-                                                </td>
-                                                <td className="px-4 py-3 text-sm">{order.customer?.company_name || order.customer?.contact_name || '—'}</td>
-                                                <td className="px-4 py-3">
-                                                    <Badge variant={order.status === 'delivered' ? 'success' : order.status === 'cancelled' ? 'cancelled' : 'warning'}>{order.status}</Badge>
-                                                </td>
-                                                <td className="px-4 py-3 text-right font-mono text-sm tabular-nums">{order.total}</td>
-                                                <td className="px-4 py-3 text-sm">{order.ordered_at ? new Date(order.ordered_at).toLocaleDateString() : '—'}</td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                    <CardHeader>
+                        <CardTitle>All Orders</CardTitle>
+                    </CardHeader>
+                    <CardContent className="px-0">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Reference</TableHead>
+                                    <TableHead>Customer</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead className="text-right">Total</TableHead>
+                                    <TableHead>Date</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {orders.data.length === 0 ? (
+                                    <TableEmpty colSpan={5}>No orders found.</TableEmpty>
+                                ) : (
+                                    orders.data.map((order) => (
+                                        <TableRow key={order.id}>
+                                            <TableCell className="font-mono text-sm">
+                                                <Link href={OrderRoutes.show(order.id).url} className="hover:underline">
+                                                    {order.reference_number}
+                                                </Link>
+                                            </TableCell>
+                                            <TableCell className="text-sm">{order.customer?.company_name || order.customer?.contact_name || '—'}</TableCell>
+                                            <TableCell>
+                                                <Badge variant={order.status === 'delivered' ? 'success' : order.status === 'cancelled' ? 'cancelled' : 'warning'}>{order.status}</Badge>
+                                            </TableCell>
+                                            <TableCell className="text-right font-mono text-sm tabular-nums">{order.total}</TableCell>
+                                            <TableCell className="text-sm">{order.ordered_at ? new Date(order.ordered_at).toLocaleDateString() : '—'}</TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                        {orders.last_page > 1 && <Pagination links={orders.links} className="px-4 pt-4 pb-2" />}
                     </CardContent>
                 </Card>
-
-                {orders.last_page > 1 && (
-                    <div className="flex flex-wrap items-center justify-center gap-1.5">
-                        {orders.links.map((link, i) =>
-                            link.url ? (
-                                <Link
-                                    key={i}
-                                    href={link.url}
-                                    className={`inline-flex min-w-8 justify-center rounded-md border px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${link.active ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-transparent text-muted-foreground hover:bg-accent hover:text-foreground'}`}
-                                    dangerouslySetInnerHTML={{ __html: link.label }}
-                                />
-                            ) : (
-                                <span key={i} className="inline-flex min-w-8 justify-center px-3 py-1.5 text-xs opacity-40" dangerouslySetInnerHTML={{ __html: link.label }} />
-                            ),
-                        )}
-                    </div>
-                )}
             </div>
         </>
     );

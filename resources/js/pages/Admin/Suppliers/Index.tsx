@@ -1,10 +1,13 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
+import Heading from '@/components/heading';
+import { Pagination } from '@/components/pagination';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Search, Plus, Pencil, Eye, Power } from 'lucide-react';
 import * as SupplierRoutes from '@/routes/admin/suppliers';
 
@@ -54,18 +57,18 @@ export default function Index({ suppliers, filters }: Props) {
         <>
             <Head title="Suppliers" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between border-b border-border pb-8">
-                    <div>
-                        <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground dark:text-primary mb-3">Purchasing — Suppliers</p>
-                        <h1 className="font-serif text-[32px] leading-tight font-medium md:text-[40px] tracking-tight text-foreground">Suppliers</h1>
-                        <p className="text-sm text-muted-foreground mt-2">Manage supplier contacts and purchasing relationships.</p>
-                    </div>
-                    <Link href={SupplierRoutes.create().url}>
-                        <Button className="bg-[#A16AE8] text-white hover:bg-[#8539D3]">
-                            <Plus className="mr-2 h-4 w-4" /> Add Supplier
-                        </Button>
-                    </Link>
-                </div>
+                <Heading
+                    eyebrow="Purchasing"
+                    title="Suppliers"
+                    description="Manage supplier contacts and purchasing relationships."
+                    actions={
+                        <Link href={SupplierRoutes.create().url}>
+                            <Button>
+                                <Plus className="mr-2 h-4 w-4" /> Add Supplier
+                            </Button>
+                        </Link>
+                    }
+                />
 
                 <Card>
                     <CardContent className="p-4">
@@ -99,73 +102,59 @@ export default function Index({ suppliers, filters }: Props) {
                 </Card>
 
                 <Card>
-                    <CardContent className="p-0">
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="border-b bg-muted/50">
-                                    <tr className="text-left text-xs uppercase tracking-widest text-muted-foreground">
-                                        <th className="px-4 py-3">Name</th>
-                                        <th className="px-4 py-3">Contact</th>
-                                        <th className="px-4 py-3">Phone</th>
-                                        <th className="px-4 py-3">Email</th>
-                                        <th className="px-4 py-3">Status</th>
-                                        <th className="px-4 py-3">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {suppliers.data.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={6} className="px-4 py-12 text-center text-sm text-muted-foreground">
-                                                No suppliers found.
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        suppliers.data.map((s) => (
-                                            <tr key={s.id} className="border-b transition-colors hover:bg-muted/40">
-                                                <td className="px-4 py-3 font-medium">{s.name}</td>
-                                                <td className="px-4 py-3 text-sm">{s.contact_person || '—'}</td>
-                                                <td className="px-4 py-3 text-sm">{s.phone || '—'}</td>
-                                                <td className="px-4 py-3 text-sm">{s.email || '—'}</td>
-                                                <td className="px-4 py-3">
-                                                    <Badge variant={s.is_active ? 'success' : 'secondary'}>{s.is_active ? 'Active' : 'Inactive'}</Badge>
-                                                </td>
-                                                <td className="px-4 py-3">
-                                                    <div className="flex gap-1">
-                                                        <Link href={SupplierRoutes.show(s.id).url}>
-                                                            <Button variant="ghost" size="icon">
-                                                                <Eye className="h-4 w-4" />
-                                                            </Button>
-                                                        </Link>
-                                                        <Link href={SupplierRoutes.edit(s.id).url}>
-                                                            <Button variant="ghost" size="icon">
-                                                                <Pencil className="h-4 w-4" />
-                                                            </Button>
-                                                        </Link>
-                                                        <Button variant="ghost" size="icon" onClick={() => handleToggle(s)}>
-                                                            <Power className="h-4 w-4" />
+                    <CardHeader>
+                        <CardTitle>All Suppliers</CardTitle>
+                    </CardHeader>
+                    <CardContent className="px-0">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Name</TableHead>
+                                    <TableHead>Contact</TableHead>
+                                    <TableHead>Phone</TableHead>
+                                    <TableHead>Email</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead>Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {suppliers.data.length === 0 ? (
+                                    <TableEmpty colSpan={6}>No suppliers found.</TableEmpty>
+                                ) : (
+                                    suppliers.data.map((s) => (
+                                        <TableRow key={s.id}>
+                                            <TableCell className="font-medium">{s.name}</TableCell>
+                                            <TableCell className="text-sm">{s.contact_person || '—'}</TableCell>
+                                            <TableCell className="text-sm">{s.phone || '—'}</TableCell>
+                                            <TableCell className="text-sm">{s.email || '—'}</TableCell>
+                                            <TableCell>
+                                                <Badge variant={s.is_active ? 'success' : 'secondary'}>{s.is_active ? 'Active' : 'Inactive'}</Badge>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="flex gap-1">
+                                                    <Link href={SupplierRoutes.show(s.id).url}>
+                                                        <Button variant="ghost" size="icon">
+                                                            <Eye className="h-4 w-4" />
                                                         </Button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                                                    </Link>
+                                                    <Link href={SupplierRoutes.edit(s.id).url}>
+                                                        <Button variant="ghost" size="icon">
+                                                            <Pencil className="h-4 w-4" />
+                                                        </Button>
+                                                    </Link>
+                                                    <Button variant="ghost" size="icon" onClick={() => handleToggle(s)}>
+                                                        <Power className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                        {suppliers.last_page > 1 && <Pagination links={suppliers.links} className="px-4 pt-4 pb-2" />}
                     </CardContent>
                 </Card>
-
-                {suppliers.last_page > 1 && (
-                    <div className="flex flex-wrap items-center justify-center gap-1.5">
-                        {suppliers.links.map((link, i) =>
-                            link.url ? (
-                                <Link key={i} href={link.url} className={`inline-flex min-w-8 justify-center rounded-md border px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${link.active ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-transparent text-muted-foreground hover:bg-accent hover:text-foreground'}`} dangerouslySetInnerHTML={{ __html: link.label }} />
-                            ) : (
-                                <span key={i} className="inline-flex min-w-8 justify-center px-3 py-1.5 text-xs opacity-40" dangerouslySetInnerHTML={{ __html: link.label }} />
-                            ),
-                        )}
-                    </div>
-                )}
             </div>
         </>
     );
