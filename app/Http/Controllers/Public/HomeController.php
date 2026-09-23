@@ -20,7 +20,7 @@ class HomeController extends Controller
             ->get();
 
         $featuredProducts = Product::where('status', 'active')
-            ->with(['category', 'brand'])
+            ->with(['category', 'brand', 'images' => fn ($q) => $q->orderBy('sort_order')->orderBy('id')])
             ->limit(6)
             ->get();
 

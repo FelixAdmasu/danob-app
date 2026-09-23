@@ -25,6 +25,7 @@ type Product = {
     description: string;
     category: { name: string; slug: string } | null;
     brand: { name: string; slug: string } | null;
+    images: { id: number; url: string; sort_order: number; is_primary: boolean; alt_text: string | null }[];
 };
 
 type Branch = {
@@ -248,7 +249,9 @@ export default function Home({ featuredProducts, categories, brands, branches }:
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-16 gap-x-12">
-                            {featuredProducts.map((product, i) => (
+                            {featuredProducts.map((product, i) => {
+                                const primaryImage = product.images?.find((img) => img.is_primary) || product.images?.[0] || null;
+                                return (
                                 <Link
                                     key={product.id}
                                     href={`/products/${product.slug}`}
@@ -256,7 +259,15 @@ export default function Home({ featuredProducts, categories, brands, branches }:
                                     data-animation-on-scroll
                                 >
                                     <div className="aspect-[4/5] overflow-hidden mb-8 relative bg-gradient-to-br from-[#D4E8C8] to-[#ECF3E5] flex items-center justify-center">
-                                        <span className="font-serif text-[#070E01]/10 text-5xl italic select-none">{product.name.split(' ').map(w => w[0]).join('').slice(0, 3)}</span>
+                                        {primaryImage ? (
+                                            <img
+                                                src={primaryImage.url}
+                                                alt={primaryImage.alt_text || product.name}
+                                                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                            />
+                                        ) : (
+                                            <span className="font-serif text-[#070E01]/10 text-5xl italic select-none">{product.name.split(' ').map(w => w[0]).join('').slice(0, 3)}</span>
+                                        )}
                                         {product.brand && (
                                             <div className="absolute top-6 left-6 px-3 py-1 bg-[#ECF3E5] text-[#070E01] text-[9px] font-bold uppercase tracking-widest">
                                                 {product.brand.name}
@@ -272,7 +283,8 @@ export default function Home({ featuredProducts, categories, brands, branches }:
                                         </div>
                                     </div>
                                 </Link>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 </section>
