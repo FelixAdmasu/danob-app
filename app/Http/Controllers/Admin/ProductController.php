@@ -123,8 +123,7 @@ class ProductController extends Controller
                     if ($file) {
                         $path = $file->store('products/'.$product->id, $disk);
                         $uploadedPaths[] = ['disk' => $disk, 'path' => $path];
-                        $url = Storage::disk($disk)->url($path);
-                        // For local public disk, url is /storage/..., for supabase it's full https://
+                        $url = $this->storageUrl($disk, $path);
                     }
 
                     if (! $url) {
@@ -320,7 +319,7 @@ class ProductController extends Controller
                         if ($file) {
                             $path = $file->store('products/'.$product->id, $disk);
                             $uploadedPaths[] = ['disk' => $disk, 'path' => $path];
-                            $url = Storage::disk($disk)->url($path);
+                            $url = $this->storageUrl($disk, $path);
                         } elseif ($id) {
                             // Keep existing url if no new file and no url provided
                             if (! $url) {
@@ -432,10 +431,36 @@ class ProductController extends Controller
         return redirect()->route('admin.products.index');
     }
 
+    /**
+     * Public URL for an uploaded image.
+     *
+     * Local disks are served through the /storage symlink, so persist a
+     * root-relative URL: it keeps working no matter which host, port or
+     * APP_URL the app is served from (dev server ports, deploy domains).
+     * Cloud disks (s3/supabase) keep their absolute public URL.
+     */
+    private function storageUrl(string $disk, string $path): string
+    {
+        $url = Storage::disk($disk)->url($path);
+
+        if (config("filesystems.disks.{$disk}.driver") !== 'local') {
+            return $url;
+        }
+
+        $relative = parse_url($url, PHP_URL_PATH);
+
+        return is_string($relative) && $relative !== '' ? $relative : $url;
+    }
+
     private function isOwnedStorageUrl(string $url): bool
     {
         // Owned if it's a storage path for product-images disk (local /storage/ or supabase bucket)
-        // External URLs (https://example.com/...) are not owned
+        // External URLs (https://example.com/...) are not owned.
+        // A hostless url resolves against this app's origin, so /storage/... is ours.
+        $path = parse_url($url, PHP_URL_PATH);
+        if (is_string($path) && str_starts_with($path, '/storage/') && parse_url($url, PHP_URL_HOST) === null) {
+            return true;
+        }
         if (str_starts_with($url, '/storage/product-images/')) {
             return true;
         }

@@ -395,4 +395,93 @@ class ProductImageUploadTest extends TestCase
         Storage::disk('public')->assertMissing($oldPath);
         $this->assertDatabaseMissing('product_images', ['url' => $oldUrl]);
     }
+
+    public function test_local_upload_stores_root_relative_url_when_disk_url_is_absolute(): void
+    {
+        // The real public disk builds an absolute APP_URL-based url; images must not
+        // bake in a host/port (dev ports and deploy domains change).
+        Storage::fake('public', ['url' => 'http://wrong-host:8000/storage']);
+        $admin = $this->admin();
+        $cat = $this->category();
+        $file = $this->fakeImage('test.jpg', 'image/jpeg');
+
+        $response = $this->actingAs($admin)->post(route('admin.products.store'), [
+            'name' => 'P-rel',
+            'slug' => 'p-rel',
+            'category_id' => $cat->id,
+            'description' => 'D',
+            'status' => 'active',
+            'images' => [['file' => $file, 'is_primary' => true]],
+        ]);
+
+        $response->assertRedirect(route('admin.products.index'));
+        $product = Product::where('slug', 'p-rel')->first();
+        $this->assertNotNull($product);
+        $image = $product->images->first();
+
+        $this->assertStringStartsWith('/storage/products/'.$product->id.'/', $image->url);
+        $this->assertStringNotContainsString('://', $image->url);
+        Storage::disk('public')->assertExists(str_replace('/storage/', '', $image->url));
+    }
+
+    public function test_relative_storage_url_is_owned_and_file_deleted(): void
+    {
+        Storage::fake('public', ['url' => 'http://wrong-host:8000/storage']);
+        $admin = $this->admin();
+        $cat = $this->category();
+        $product = Product::create(['category_id' => $cat->id, 'name' => 'P', 'slug' => 'p-rel-del', 'description' => 'D', 'status' => 'active']);
+        $path = 'products/'.$product->id.'/test.jpg';
+        Storage::disk('public')->put($path, 'fake');
+        $image = $product->images()->create(['url' => '/storage/'.$path, 'sort_order' => 0, 'is_primary' => true]);
+
+        $this->actingAs($admin)->put(route('admin.products.update', $product), [
+            'name' => 'P',
+            'slug' => 'p-rel-del',
+            'category_id' => $cat->id,
+            'description' => 'D',
+            'status' => 'active',
+            'images' => [],
+        ])->assertRedirect(route('admin.products.index'));
+
+        Storage::disk('public')->assertMissing($path);
+        $this->assertDatabaseMissing('product_images', ['id' => $image->id]);
+    }
+
+    public function test_stale_absolute_storage_url_is_still_deleted(): void
+    {
+        Storage::fake('public', ['url' => 'http://current-host:8222/storage']);
+        $admin = $this->admin();
+        $cat = $this->category();
+        $product = Product::create(['category_id' => $cat->id, 'name' => 'P', 'slug' => 'p-stale', 'description' => 'D', 'status' => 'active']);
+        $path = 'products/'.$product->id.'/stale.jpg';
+        Storage::disk('public')->put($path, 'fake');
+        // Persisted before APP_URL changed: different origin than the disk's current one.
+        $image = $product->images()->create(['url' => 'http://localhost:8000/storage/'.$path, 'sort_order' => 0, 'is_primary' => true]);
+
+        $this->actingAs($admin)->put(route('admin.products.update', $product), [
+            'name' => 'P',
+            'slug' => 'p-stale',
+            'category_id' => $cat->id,
+            'description' => 'D',
+            'status' => 'active',
+            'images' => [],
+        ])->assertRedirect(route('admin.products.index'));
+
+        Storage::disk('public')->assertMissing($path);
+        $this->assertDatabaseMissing('product_images', ['id' => $image->id]);
+    }
+
+    public function test_absolute_storage_urls_normalized_to_root_relative_on_read(): void
+    {
+        $product = Product::create(['category_id' => $this->category()->id, 'name' => 'P', 'slug' => 'p-read', 'description' => 'D', 'status' => 'active']);
+
+        $stale = $product->images()->create(['url' => 'http://old-origin:9000/storage/products/'.$product->id.'/a.jpg', 'sort_order' => 0, 'is_primary' => true]);
+        $this->assertSame('/storage/products/'.$product->id.'/a.jpg', $stale->url);
+
+        $external = $product->images()->create(['url' => 'https://example.com/external.jpg', 'sort_order' => 1]);
+        $this->assertSame('https://example.com/external.jpg', $external->url);
+
+        $supabase = $product->images()->create(['url' => 'https://proj.supabase.co/storage/v1/object/public/product-images/products/'.$product->id.'/b.jpg', 'sort_order' => 2]);
+        $this->assertSame('https://proj.supabase.co/storage/v1/object/public/product-images/products/'.$product->id.'/b.jpg', $supabase->url);
+    }
 }

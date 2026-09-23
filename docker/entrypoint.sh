@@ -13,6 +13,9 @@ php artisan config:clear || true
 php artisan route:clear || true
 php artisan view:clear || true
 
+echo "Ensuring storage symlink exists (serves /storage/* image uploads)..."
+php artisan storage:link --force || echo "WARN: storage:link failed — uploaded images will not be served"
+
 echo "Running migrations..."
 php artisan migrate --force || (echo "MIGRATE FAILED — check DB_* / Supabase allowlist and APP_KEY" && php artisan migrate --force --verbose)
 
