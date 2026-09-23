@@ -52,9 +52,15 @@ class Order extends Model
         return $this->status === self::STATUS_PENDING;
     }
 
+    /**
+     * Pending orders never deducted stock (plain status change); confirmed
+     * orders are cancellable only with an inventory reversal. Delivered
+     * orders require the Returns workflow, cancelled orders are final.
+     */
     public function canBeCancelled(): bool
     {
-        return $this->status === self::STATUS_PENDING;
+        return $this->status === self::STATUS_PENDING
+            || $this->status === self::STATUS_CONFIRMED;
     }
 
     public function canBeDelivered(): bool

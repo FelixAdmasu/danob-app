@@ -40,6 +40,8 @@ class StockMovement extends Model
 
     public const TYPE_ADJUSTMENT_OUT = 'adjustment_out';
 
+    public const TYPE_CANCELLATION_IN = 'cancellation_in';
+
     public const TYPE_RETURN_IN = 'return_in';
 
     public const TYPE_RETURN_OUT = 'return_out';
@@ -54,6 +56,7 @@ class StockMovement extends Model
         self::TYPE_SALE,
         self::TYPE_ADJUSTMENT_IN,
         self::TYPE_ADJUSTMENT_OUT,
+        self::TYPE_CANCELLATION_IN,
         self::TYPE_RETURN_IN,
         self::TYPE_RETURN_OUT,
         self::TYPE_DAMAGED,

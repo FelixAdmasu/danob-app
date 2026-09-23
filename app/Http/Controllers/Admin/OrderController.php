@@ -50,20 +50,32 @@ class OrderController extends Controller
     {
         $service->confirm($order, (int) auth()->id());
 
-        return redirect()->back()->with('success', 'Order confirmed. Stock deducted.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Order confirmed. Stock deducted.']);
+
+        return back();
     }
 
     public function cancel(Order $order, OrderService $service)
     {
-        $service->cancel($order);
+        // The service re-reads the status under lock (it is authoritative);
+        // this pre-read only words the success toast.
+        $wasConfirmed = $order->status === Order::STATUS_CONFIRMED;
 
-        return redirect()->back()->with('success', 'Order cancelled.');
+        $service->cancel($order, (int) auth()->id());
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => $wasConfirmed
+            ? 'Order cancelled and inventory restored.'
+            : 'Order cancelled.']);
+
+        return back();
     }
 
     public function deliver(Order $order, OrderService $service)
     {
         $service->deliver($order);
 
-        return redirect()->back()->with('success', 'Order delivered.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Order delivered.']);
+
+        return back();
     }
 }

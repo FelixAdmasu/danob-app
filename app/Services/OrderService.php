@@ -50,19 +50,64 @@ class OrderService
     }
 
     /**
-     * Cancel a pending order. Stock is only committed on confirmation, so a
-     * pending cancellation never touches inventory. Unwinding stock for an
-     * already-confirmed sale is deliberately blocked — restoring inventory on
-     * cancellations/returns belongs to the Returns phase.
+     * Cancel an order. A pending order never deducted stock, so cancellation
+     * is a plain status change. A confirmed order deducted stock on
+     * confirmation, so every line is restored through InventoryService
+     * (TYPE_CANCELLATION_IN) inside the same transaction: the order row is
+     * locked first, so a second cancellation waits, sees "cancelled" and is
+     * rejected — stock can never be restored twice. If any line fails to
+     * restore, the exception escapes DB::transaction and rolls back the
+     * partial restorations, their stock movements and the status change
+     * together. Delivered orders require the Returns workflow and stay
+     * blocked; cancelled orders are final.
      */
-    public function cancel(Order $order): Order
+    public function cancel(Order $order, int $userId): Order
     {
-        return $this->transition($order, Order::STATUS_PENDING, Order::STATUS_CANCELLED, 'Only pending orders can be cancelled.');
+        return DB::transaction(function () use ($order, $userId) {
+            $locked = Order::where('id', $order->id)->lockForUpdate()->firstOrFail();
+
+            if ($locked->status === Order::STATUS_CANCELLED) {
+                throw ValidationException::withMessages(['status' => 'Order is already cancelled.']);
+            }
+
+            if ($locked->status === Order::STATUS_PENDING) {
+                // No stock was ever deducted for a pending order.
+                $locked->update(['status' => Order::STATUS_CANCELLED]);
+
+                return $locked;
+            }
+
+            if ($locked->status !== Order::STATUS_CONFIRMED) {
+                throw ValidationException::withMessages(['status' => 'Only pending or confirmed orders can be cancelled. Delivered orders require the returns workflow.']);
+            }
+
+            $inventory = app(InventoryService::class);
+
+            foreach ($locked->items()->get() as $item) {
+                $variant = ProductVariant::where('id', $item->product_variant_id)->lockForUpdate()->firstOrFail();
+
+                $inventory->increase(
+                    $variant,
+                    $item->quantity,
+                    StockMovement::TYPE_CANCELLATION_IN,
+                    'Order '.$locked->reference_number.' cancellation reversal',
+                    null,
+                    Order::class,
+                    $locked->id,
+                    $userId,
+                );
+            }
+
+            $locked->update(['status' => Order::STATUS_CANCELLED]);
+
+            return $locked;
+        });
     }
 
     /**
      * Deliver a confirmed order. Pure status change — stock was already
-     * deducted at confirmation.
+     * deducted at confirmation (and would have been restored by a
+     * cancellation, but a cancelled order can never reach this transition).
      */
     public function deliver(Order $order): Order
     {

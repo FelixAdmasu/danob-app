@@ -167,7 +167,8 @@ class SalesInventoryDeductionTest extends TestCase
 
     // ------------------------------------------------------------------
     // Lifecycle guards (status flow: pending -> confirmed -> delivered;
-    // pending -> cancelled; unwinding confirmed sales = Returns phase)
+    // pending/confirmed -> cancelled — a confirmed cancellation reverses
+    // its stock deduction, covered in depth by OrderCancellationTest)
     // ------------------------------------------------------------------
 
     public function test_cancel_pending_order_leaves_inventory_untouched(): void
@@ -184,7 +185,7 @@ class SalesInventoryDeductionTest extends TestCase
         $this->assertSame(0, DB::table('stock_movements')->count());
     }
 
-    public function test_cancel_is_blocked_for_confirmed_order(): void
+    public function test_cancelling_confirmed_order_restores_the_deducted_stock(): void
     {
         $admin = $this->userWithRole('admin');
         $variant = $this->makeVariant(10);
@@ -192,14 +193,16 @@ class SalesInventoryDeductionTest extends TestCase
 
         $this->actingAs($admin)->post(route('admin.orders.confirm', $order))
             ->assertSessionHasNoErrors();
+        $this->assertSame(6, $variant->fresh()->quantity);
 
         $this->actingAs($admin)->post(route('admin.orders.cancel', $order))
-            ->assertSessionHasErrors('status');
+            ->assertSessionHasNoErrors();
 
-        // Deduction stays committed; unwinding belongs to the Returns phase.
-        $this->assertSame(Order::STATUS_CONFIRMED, $order->fresh()->status);
-        $this->assertSame(6, $variant->fresh()->quantity);
+        // The deduction is undone; the original SALE movement stays on record.
+        $this->assertSame(Order::STATUS_CANCELLED, $order->fresh()->status);
+        $this->assertSame(10, $variant->fresh()->quantity);
         $this->assertSame(1, StockMovement::where('movement_type', StockMovement::TYPE_SALE)->count());
+        $this->assertSame(1, StockMovement::where('movement_type', StockMovement::TYPE_CANCELLATION_IN)->count());
     }
 
     public function test_deliver_is_status_only_and_blocked_from_pending(): void

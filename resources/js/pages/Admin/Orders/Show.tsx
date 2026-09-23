@@ -29,7 +29,10 @@ type Order = {
 };
 
 export default function Show({ order }: { order: Order }) {
-    const { auth } = usePage().props as { auth: Auth };
+    const { auth, errors } = usePage().props as {
+        auth: Auth;
+        errors?: Record<string, string>;
+    };
     const role = auth.user?.role as string | undefined;
     // Mirrors the route middleware (admin, manager + super_admin); the server
     // still enforces access — this only hides actions the user cannot use.
@@ -37,6 +40,10 @@ export default function Show({ order }: { order: Order }) {
 
     const isPending = order.status === 'pending';
     const isConfirmed = order.status === 'confirmed';
+
+    // Server-side status validation (OrderService) lands in the shared errors
+    // bag; surface it so blocked actions explain themselves.
+    const actionError = errors?.status || errors?.quantity;
 
     const post = (action: 'confirm' | 'cancel' | 'deliver') =>
         router.post(OrderRoutes[action](order.id).url);
@@ -58,12 +65,12 @@ export default function Show({ order }: { order: Order }) {
                     />
                     <div className="flex gap-2">
                         {canManage && isPending && (
-                            <>
-                                <Button onClick={() => post('confirm')}>Confirm</Button>
-                                <Button variant="destructive" onClick={() => post('cancel')}>
-                                    Cancel
-                                </Button>
-                            </>
+                            <Button onClick={() => post('confirm')}>Confirm</Button>
+                        )}
+                        {canManage && (isPending || isConfirmed) && (
+                            <Button variant="destructive" onClick={() => post('cancel')}>
+                                Cancel
+                            </Button>
                         )}
                         {canManage && isConfirmed && (
                             <Button onClick={() => post('deliver')}>Deliver</Button>
@@ -73,6 +80,14 @@ export default function Show({ order }: { order: Order }) {
                         </Link>
                     </div>
                 </div>
+                {actionError && (
+                    <div
+                        role="alert"
+                        className="rounded border border-destructive bg-destructive/10 px-4 py-3 text-sm text-destructive"
+                    >
+                        {actionError}
+                    </div>
+                )}
                 <Card>
                     <CardHeader>
                         <CardTitle>Items</CardTitle>
