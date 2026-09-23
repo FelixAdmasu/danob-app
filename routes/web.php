@@ -47,7 +47,10 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::get('/', DashboardController::class)->name('dashboard');
 
     Route::middleware('role:admin,manager,staff')->group(function () {
-        Route::resource('orders', OrderController::class)->only(['index', 'show']);
+        // Order entry creates pending orders only — no stock effect — so it
+        // shares the viewing authorization; confirmation (the inventory step)
+        // stays with admin/manager in the group below.
+        Route::resource('orders', OrderController::class)->only(['index', 'create', 'store', 'show']);
         Route::resource('customers', CustomerController::class);
         // Read-only sales dashboard: same authorization as viewing orders and
         // customers; stock-level data inside it is gated to admin/manager.

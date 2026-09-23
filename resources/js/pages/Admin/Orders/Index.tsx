@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { dashboard } from '@/routes';
 import * as OrderRoutes from '@/routes/admin/orders';
 
@@ -53,6 +53,11 @@ export default function Index({ orders, filters }: Props) {
                         <h1 className="font-serif text-3xl md:text-4xl tracking-tight text-[#070E01] dark:text-[#ECF3E5]">Orders</h1>
                         <p className="text-sm text-[#4A4A4A] dark:text-[#ECF3E5]/70 mt-2">Track and manage customer orders.</p>
                     </div>
+                    <Link href={OrderRoutes.create().url}>
+                        <Button type="button">
+                            <Plus className="mr-2 h-4 w-4" /> New Order
+                        </Button>
+                    </Link>
                 </div>
 
                 <form onSubmit={handleSearch} className="flex gap-2 max-w-lg">
