@@ -47,6 +47,11 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function returns(): HasMany
+    {
+        return $this->hasMany(SalesReturn::class);
+    }
+
     public function canBeConfirmed(): bool
     {
         return $this->status === self::STATUS_PENDING;

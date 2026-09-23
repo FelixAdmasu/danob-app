@@ -10,9 +10,20 @@ import type { Auth } from '@/types';
 type OrderItem = {
     id: number;
     quantity: number;
+    returned_quantity: number;
     unit_price: string;
     subtotal: string;
-    productVariant: { id: number; name: string; sku?: string | null } | null;
+    // Relation keys serialize snake_case (Eloquent $snakeAttributes).
+    product_variant: { id: number; name: string; sku?: string | null } | null;
+};
+
+type SalesReturn = {
+    id: number;
+    return_number: string;
+    returned_at: string | null;
+    total: string;
+    returned_by: { id: number; name: string } | null;
+    items: { id: number; quantity: number }[];
 };
 
 type Order = {
@@ -26,6 +37,7 @@ type Order = {
     ordered_at: string | null;
     customer: { id: number; company_name?: string | null; contact_name?: string | null } | null;
     items: OrderItem[];
+    returns: SalesReturn[];
 };
 
 export default function Show({ order }: { order: Order }) {
@@ -40,6 +52,7 @@ export default function Show({ order }: { order: Order }) {
 
     const isPending = order.status === 'pending';
     const isConfirmed = order.status === 'confirmed';
+    const isDelivered = order.status === 'delivered';
 
     // Server-side status validation (OrderService) lands in the shared errors
     // bag; surface it so blocked actions explain themselves.
@@ -75,6 +88,11 @@ export default function Show({ order }: { order: Order }) {
                         {canManage && isConfirmed && (
                             <Button onClick={() => post('deliver')}>Deliver</Button>
                         )}
+                        {canManage && isDelivered && (
+                            <Link href={OrderRoutes.processReturn(order.id).url}>
+                                <Button>Process Return</Button>
+                            </Link>
+                        )}
                         <Link href={OrderRoutes.index().url}>
                             <Button variant="outline">Back</Button>
                         </Link>
@@ -100,6 +118,7 @@ export default function Show({ order }: { order: Order }) {
                                         <th className="px-3 py-2">Variant</th>
                                         <th className="px-3 py-2">SKU</th>
                                         <th className="px-3 py-2">Qty</th>
+                                        <th className="px-3 py-2">Returned</th>
                                         <th className="px-3 py-2">Unit Price</th>
                                         <th className="px-3 py-2">Line Total</th>
                                     </tr>
@@ -107,9 +126,10 @@ export default function Show({ order }: { order: Order }) {
                                 <tbody>
                                     {order.items.map((item) => (
                                         <tr key={item.id} className="border-b">
-                                            <td className="px-3 py-2">{item.productVariant?.name || '—'}</td>
-                                            <td className="px-3 py-2">{item.productVariant?.sku || '—'}</td>
+                                            <td className="px-3 py-2">{item.product_variant?.name || '—'}</td>
+                                            <td className="px-3 py-2">{item.product_variant?.sku || '—'}</td>
                                             <td className="px-3 py-2">{item.quantity}</td>
+                                            <td className="px-3 py-2">{item.returned_quantity ?? 0}</td>
                                             <td className="px-3 py-2">{item.unit_price}</td>
                                             <td className="px-3 py-2">{item.subtotal}</td>
                                         </tr>
@@ -139,6 +159,45 @@ export default function Show({ order }: { order: Order }) {
                         )}
                     </CardContent>
                 </Card>
+                {order.returns && order.returns.length > 0 && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Returns</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="overflow-x-auto">
+                                <table className="w-full">
+                                    <thead className="border-b">
+                                        <tr className="text-left text-xs">
+                                            <th className="px-3 py-2">Return #</th>
+                                            <th className="px-3 py-2">Date</th>
+                                            <th className="px-3 py-2">Lines</th>
+                                            <th className="px-3 py-2">Total</th>
+                                            <th className="px-3 py-2">Processed by</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {order.returns.map((salesReturn) => (
+                                            <tr key={salesReturn.id} className="border-b">
+                                                <td className="px-3 py-2">{salesReturn.return_number}</td>
+                                                <td className="px-3 py-2">
+                                                    {salesReturn.returned_at
+                                                        ? new Date(salesReturn.returned_at).toLocaleDateString()
+                                                        : '—'}
+                                                </td>
+                                                <td className="px-3 py-2">{salesReturn.items.length}</td>
+                                                <td className="px-3 py-2">{salesReturn.total}</td>
+                                                <td className="px-3 py-2">
+                                                    {salesReturn.returned_by?.name || '—'}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
             </div>
         </>
     );

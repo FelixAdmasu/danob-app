@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\PurchaseOrderController;
 use App\Http\Controllers\Admin\ReceivingController;
+use App\Http\Controllers\Admin\SalesReturnController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Public\BranchController;
 use App\Http\Controllers\Public\BrandController;
@@ -71,6 +72,11 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::post('orders/{order}/confirm', [OrderController::class, 'confirm'])->name('orders.confirm');
         Route::post('orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
         Route::post('orders/{order}/deliver', [OrderController::class, 'deliver'])->name('orders.deliver');
+
+        // Sales returns: only delivered orders, restores stock through
+        // InventoryService — inventory-affecting (admin, manager only).
+        Route::get('orders/{order}/process-return', [SalesReturnController::class, 'create'])->name('orders.process-return');
+        Route::post('orders/{order}/process-return', [SalesReturnController::class, 'store'])->name('orders.process-return.store');
     });
 
 });
