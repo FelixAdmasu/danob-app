@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AdminQuickNav } from '@/components/admin-quick-nav';
 import { ReportExportButton } from '@/components/report-export-button';
 import { dashboard } from '@/routes';
 import * as OrderRoutes from '@/routes/admin/orders';
@@ -92,8 +91,6 @@ export default function Sales({ orders, summary, filters, customers, order_statu
                     <h1 className="font-serif text-3xl md:text-4xl tracking-tight text-[#070E01] dark:text-[#ECF3E5]">Sales</h1>
                     <p className="text-sm text-[#4A4A4A] dark:text-[#ECF3E5]/70 mt-2 max-w-xl">Orders by status, date and customer with returned quantities.</p>
                 </div>
-
-                <AdminQuickNav />
 
                 <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
                     <Card>

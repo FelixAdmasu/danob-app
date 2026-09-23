@@ -6,7 +6,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search } from 'lucide-react';
-import { AdminQuickNav } from '@/components/admin-quick-nav';
 import { dashboard } from '@/routes';
 import * as OrderRoutes from '@/routes/admin/orders';
 
@@ -55,8 +54,6 @@ export default function Index({ orders, filters }: Props) {
                         <p className="text-sm text-[#4A4A4A] dark:text-[#ECF3E5]/70 mt-2">Track and manage customer orders.</p>
                     </div>
                 </div>
-
-                <AdminQuickNav />
 
                 <form onSubmit={handleSearch} className="flex gap-2 max-w-lg">
                     <div className="relative flex-1">

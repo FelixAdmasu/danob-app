@@ -28,8 +28,9 @@ import type { NavItem } from '@/types';
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: dashboard(),
+        href: '/admin',
         icon: LayoutGrid,
+        exact: true,
     },
 ];
 

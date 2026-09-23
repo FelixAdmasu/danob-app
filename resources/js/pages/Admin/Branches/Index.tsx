@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
-import { AdminQuickNav } from '@/components/admin-quick-nav';
 import { dashboard } from '@/routes';
 import * as BranchRoutes from '@/routes/admin/branches';
 
@@ -57,7 +56,6 @@ export default function Index({ branches, filters }: Props) {
                         <Link href={BranchRoutes.index().url}><Button type="button" variant="ghost">Clear</Button></Link>
                     )}
                 </form>
-                <AdminQuickNav />
                 <Card>
                     <CardContent className="p-0">
                         <div className="overflow-x-auto">

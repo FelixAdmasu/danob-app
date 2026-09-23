@@ -11,4 +11,7 @@ export type NavItem = {
     href: NonNullable<InertiaLinkProps['href']>;
     icon?: LucideIcon | null;
     isActive?: boolean;
+    // Match the path exactly instead of treating it as a parent prefix,
+    // so /admin only highlights on the admin dashboard itself.
+    exact?: boolean;
 };

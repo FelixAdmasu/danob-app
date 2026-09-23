@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AdminQuickNav } from '@/components/admin-quick-nav';
 import { ReportExportButton } from '@/components/report-export-button';
 import { dashboard } from '@/routes';
 import ReportRoutes from '@/routes/admin/reports';
@@ -100,8 +99,6 @@ export default function InventoryMovements({ movements, summary, filters, produc
                     <h1 className="font-serif text-3xl md:text-4xl tracking-tight text-[#070E01] dark:text-[#ECF3E5]">Inventory Movements</h1>
                     <p className="text-sm text-[#4A4A4A] dark:text-[#ECF3E5]/70 mt-2 max-w-xl">Review stock changes across products, variants, users and movement types.</p>
                 </div>
-
-                <AdminQuickNav />
 
                 <div className="grid gap-4 md:grid-cols-3">
                     <Card>

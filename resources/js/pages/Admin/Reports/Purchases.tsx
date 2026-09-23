@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AdminQuickNav } from '@/components/admin-quick-nav';
 import { ReportExportButton } from '@/components/report-export-button';
 import { dashboard } from '@/routes';
 import * as PurchaseOrderRoutes from '@/routes/admin/purchase-orders';
@@ -87,8 +86,6 @@ export default function Purchases({ purchase_orders, summary, filters, suppliers
                     <h1 className="font-serif text-3xl md:text-4xl tracking-tight text-[#070E01] dark:text-[#ECF3E5]">Purchases</h1>
                     <p className="text-sm text-[#4A4A4A] dark:text-[#ECF3E5]/70 mt-2 max-w-xl">Purchase order activity by supplier, status and order date.</p>
                 </div>
-
-                <AdminQuickNav />
 
                 <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
                     <Card>
