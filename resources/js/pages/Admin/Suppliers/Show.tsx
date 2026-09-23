@@ -55,7 +55,7 @@ export default function Show({ supplier }: { supplier: Supplier }) {
                         </div>
                         <div>
                             <p className="text-xs uppercase tracking-widest text-muted-foreground">Status</p>
-                            <Badge variant={supplier.is_active ? 'default' : 'secondary'}>{supplier.is_active ? 'Active' : 'Inactive'}</Badge>
+                            <Badge variant={supplier.is_active ? 'success' : 'secondary'}>{supplier.is_active ? 'Active' : 'Inactive'}</Badge>
                         </div>
                         <div className="md:col-span-2">
                             <p className="text-xs uppercase tracking-widest text-muted-foreground">Notes</p>

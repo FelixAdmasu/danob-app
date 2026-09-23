@@ -201,7 +201,7 @@ export default function Create({ search: initialSearch, customers, products }: P
                                     </SelectContent>
                                 </Select>
                                 {errors.customer_id && (
-                                    <p role="alert" className="text-xs text-red-600">{errors.customer_id}</p>
+                                    <p role="alert" className="text-xs text-red-600 dark:text-red-400">{errors.customer_id}</p>
                                 )}
                             </div>
 
@@ -293,7 +293,7 @@ export default function Create({ search: initialSearch, customers, products }: P
                                 </Button>
 
                                 {errors.items && (
-                                    <p role="alert" className="text-xs text-red-600">{errors.items}</p>
+                                    <p role="alert" className="text-xs text-red-600 dark:text-red-400">{errors.items}</p>
                                 )}
 
                                 {items.length > 0 ? (
@@ -350,7 +350,7 @@ export default function Create({ search: initialSearch, customers, products }: P
                                                         {itemError(idx) && (
                                                             <tr>
                                                                 <td colSpan={6} className="px-2 pb-2">
-                                                                    <p role="alert" className="text-xs text-red-600">{itemError(idx)}</p>
+                                                                    <p role="alert" className="text-xs text-red-600 dark:text-red-400">{itemError(idx)}</p>
                                                                 </td>
                                                             </tr>
                                                         )}
@@ -387,7 +387,7 @@ export default function Create({ search: initialSearch, customers, products }: P
                                     className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                 />
                                 {errors.notes && (
-                                    <p role="alert" className="text-xs text-red-600">{errors.notes}</p>
+                                    <p role="alert" className="text-xs text-red-600 dark:text-red-400">{errors.notes}</p>
                                 )}
                             </div>
 

@@ -80,10 +80,10 @@ export default function History({ movements, filters, products, variants, users,
         <>
             <Head title="Inventory History" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <div className="border-b border-[#070E01]/10 dark:border-[#ECF3E5]/15 pb-8">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#4A4A4A] dark:text-[#A5FFA9]/80 mb-3">Inventory — History</p>
-                    <h1 className="font-serif text-3xl md:text-4xl tracking-tight text-[#070E01] dark:text-[#ECF3E5]">Inventory History</h1>
-                    <p className="text-sm text-[#4A4A4A] dark:text-[#ECF3E5]/70 mt-2 max-w-xl">Searchable, filterable, paginated stock movement ledger.</p>
+                <div className="border-b border-border pb-8">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground dark:text-primary mb-3">Inventory — History</p>
+                    <h1 className="font-serif text-3xl md:text-4xl tracking-tight text-foreground">Inventory History</h1>
+                    <p className="text-sm text-muted-foreground mt-2 max-w-xl">Searchable, filterable, paginated stock movement ledger.</p>
                 </div>
 
                 <Card>
@@ -204,7 +204,7 @@ export default function History({ movements, filters, products, variants, users,
                                                     <div className="text-xs text-muted-foreground">{m.variant.name}{m.variant.id ? ` — ${m.variant.id}` : ''}</div>
                                                 </td>
                                                 <td className="px-4 py-3">
-                                                    <Badge variant={m.movement_type.includes('in') || m.movement_type === 'purchase' || m.movement_type === 'opening_balance' ? 'default' : 'secondary'}>
+                                                    <Badge variant={m.movement_type.includes('in') || m.movement_type === 'purchase' || m.movement_type === 'opening_balance' ? 'success' : 'secondary'}>
                                                         {m.movement_type}
                                                     </Badge>
                                                 </td>
@@ -233,7 +233,7 @@ export default function History({ movements, filters, products, variants, users,
                                 <Link
                                     key={i}
                                     href={link.url}
-                                    className={`px-3 py-1 text-xs border rounded ${link.active ? 'bg-black text-white' : 'bg-white'}`}
+                                    className={`px-3 py-1 text-xs border rounded ${link.active ? 'bg-black text-white dark:bg-primary dark:text-primary-foreground' : 'bg-white dark:bg-secondary dark:text-secondary-foreground'}`}
                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                 />
                             ) : (

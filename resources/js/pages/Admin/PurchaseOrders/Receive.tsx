@@ -73,7 +73,7 @@ export default function Receive({ purchase_order }: { purchase_order: PurchaseOr
                     </div>
                 </div>
                 {(errors.purchase_order || errors.items || errors.quantity) && (
-                    <p className="text-sm text-red-600">
+                    <p className="text-sm text-red-600 dark:text-red-400">
                         {errors.purchase_order || errors.items || errors.quantity}
                     </p>
                 )}
@@ -155,7 +155,7 @@ export default function Receive({ purchase_order }: { purchase_order: PurchaseOr
                                     onChange={(e) => setNotes(e.target.value)}
                                     placeholder="Optional"
                                 />
-                                {errors.notes && <p className="text-xs text-red-600">{errors.notes}</p>}
+                                {errors.notes && <p className="text-xs text-red-600 dark:text-red-400">{errors.notes}</p>}
                             </div>
                         </CardContent>
                     </Card>

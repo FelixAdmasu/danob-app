@@ -89,7 +89,7 @@ export default function Index({ purchase_orders, filters }: { purchase_orders: P
                                                 </td>
                                                 <td className="px-4 py-3 text-sm">{po.supplier?.name || '—'}</td>
                                                 <td className="px-4 py-3">
-                                                    <Badge variant={po.status === 'received' ? 'default' : 'secondary'}>{po.status}</Badge>
+                                                    <Badge variant={po.status === 'received' ? 'success' : po.status === 'cancelled' ? 'cancelled' : 'warning'}>{po.status}</Badge>
                                                 </td>
                                                 <td className="px-4 py-3 text-sm">{po.total}</td>
                                                 <td className="px-4 py-3 text-xs">{po.ordered_at ? new Date(po.ordered_at).toLocaleDateString() : '—'}</td>
@@ -105,7 +105,7 @@ export default function Index({ purchase_orders, filters }: { purchase_orders: P
                     <div className="flex gap-2 justify-center">
                         {purchase_orders.links.map((link, i) =>
                             link.url ? (
-                                <Link key={i} href={link.url} className={`px-3 py-1 text-xs border rounded ${link.active ? 'bg-black text-white' : 'bg-white'}`} dangerouslySetInnerHTML={{ __html: link.label }} />
+                                <Link key={i} href={link.url} className={`px-3 py-1 text-xs border rounded ${link.active ? 'bg-black text-white dark:bg-primary dark:text-primary-foreground' : 'bg-white dark:bg-secondary dark:text-secondary-foreground'}`} dangerouslySetInnerHTML={{ __html: link.label }} />
                             ) : (
                                 <span key={i} className="px-3 py-1 text-xs opacity-30" dangerouslySetInnerHTML={{ __html: link.label }} />
                             ),

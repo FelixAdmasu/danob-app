@@ -76,7 +76,7 @@ export default function Create({ order }: { order: Order }) {
                     </div>
                 </div>
                 {(errors.order || errors.items || errors.quantity) && (
-                    <p role="alert" className="text-sm text-red-600">
+                    <p role="alert" className="text-sm text-red-600 dark:text-red-400">
                         {errors.order || errors.items || errors.quantity}
                     </p>
                 )}
@@ -188,7 +188,7 @@ export default function Create({ order }: { order: Order }) {
                                     onChange={(e) => setNotes(e.target.value)}
                                     placeholder="Optional"
                                 />
-                                {errors.notes && <p className="text-xs text-red-600">{errors.notes}</p>}
+                                {errors.notes && <p className="text-xs text-red-600 dark:text-red-400">{errors.notes}</p>}
                             </div>
                         </CardContent>
                     </Card>

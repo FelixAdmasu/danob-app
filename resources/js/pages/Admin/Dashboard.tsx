@@ -31,7 +31,7 @@ type Inventory = {
 
 function StatTile({ label, value, accent }: { label: string; value: number; accent?: string }) {
     return (
-        <div className="rounded border p-4">
+        <div className="rounded border p-4 dark:bg-card">
             <p className="text-xs uppercase tracking-widest text-muted-foreground">{label}</p>
             <p className={`text-2xl font-bold ${accent ?? ''}`}>{value}</p>
         </div>
@@ -65,7 +65,7 @@ export default function Dashboard({
                     <StatTile label="Products" value={stats.products} />
                     <StatTile label="Categories" value={stats.categories} />
                     <StatTile label="Orders" value={stats.orders} />
-                    <StatTile label="Pending" value={stats.pending_orders} accent="text-amber-600" />
+                    <StatTile label="Pending" value={stats.pending_orders} accent="text-amber-600 dark:text-[#BF9FEF]" />
                     <StatTile label="Customers" value={stats.customers} />
                     <StatTile label="Branches" value={stats.branches} />
                 </div>
@@ -76,8 +76,8 @@ export default function Dashboard({
                             <StatTile label="Active Variants" value={inventory.metrics.total_active} />
                             <StatTile label="Total Units in Stock" value={inventory.metrics.total_units} />
                             <StatTile label="In Stock" value={inventory.metrics.in_stock} />
-                            <StatTile label="Low Stock" value={inventory.metrics.low_stock} accent="text-amber-600" />
-                            <StatTile label="Out of Stock" value={inventory.metrics.out_of_stock} accent="text-red-600" />
+                            <StatTile label="Low Stock" value={inventory.metrics.low_stock} accent="text-amber-600 dark:text-[#BF9FEF]" />
+                            <StatTile label="Out of Stock" value={inventory.metrics.out_of_stock} accent="text-red-600 dark:text-red-400" />
                             <StatTile label="Monitored Variants" value={inventory.metrics.monitored} />
                         </div>
 
@@ -159,7 +159,7 @@ export default function Dashboard({
                                                         </p>
                                                     </div>
                                                     <div className="flex shrink-0 items-center gap-2">
-                                                        <Badge variant={m.quantity_after >= m.quantity_before ? 'default' : 'secondary'}>{m.movement_type}</Badge>
+                                                        <Badge variant={m.quantity_after >= m.quantity_before ? 'success' : 'secondary'}>{m.movement_type}</Badge>
                                                         <span className="font-mono text-sm font-semibold">{movementLabel(m)}</span>
                                                     </div>
                                                 </div>
@@ -192,7 +192,7 @@ export default function Dashboard({
                                                     </div>
                                                     <div className="flex shrink-0 items-center gap-2">
                                                         <span className="font-mono text-sm">{po.total}</span>
-                                                        <Badge variant={po.status === 'received' ? 'default' : 'secondary'}>{po.status}</Badge>
+                                                        <Badge variant={po.status === 'received' ? 'success' : po.status === 'cancelled' ? 'cancelled' : 'warning'}>{po.status}</Badge>
                                                     </div>
                                                 </div>
                                             ))}
@@ -230,7 +230,7 @@ export default function Dashboard({
                                       ]
                                     : []),
                             ].map((item) => (
-                                <Link key={item.title} href={item.href} className="group flex flex-col gap-2 rounded-lg border p-4 hover:bg-accent hover:text-accent-foreground transition-colors">
+                                <Link key={item.title} href={item.href} className="group flex flex-col gap-2 rounded-lg border p-4 dark:bg-card hover:bg-accent hover:text-accent-foreground transition-colors">
                                     <item.icon className="h-5 w-5 text-muted-foreground group-hover:text-foreground" />
                                     <span className="text-sm font-medium">{item.title}</span>
                                     <span className="text-xs text-muted-foreground">{item.desc}</span>
@@ -255,7 +255,7 @@ export default function Dashboard({
                                             <p className="font-mono text-sm">{o.reference_number}</p>
                                             <p className="text-xs text-muted-foreground">{o.customer?.name || 'Guest'}</p>
                                         </div>
-                                        <Badge variant={o.status === 'delivered' ? 'default' : 'secondary'}>{o.status}</Badge>
+                                        <Badge variant={o.status === 'delivered' ? 'success' : o.status === 'cancelled' ? 'cancelled' : 'warning'}>{o.status}</Badge>
                                     </div>
                                 ))}
                                 <Link href="/admin/orders" className="text-xs text-primary hover:underline">

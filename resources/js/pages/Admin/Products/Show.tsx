@@ -85,7 +85,7 @@ export default function Show({ product }: Props) {
                         </div>
                         <div>
                             <p className="text-xs uppercase tracking-widest text-muted-foreground">Status</p>
-                            <Badge variant={product.status === 'active' ? 'default' : 'secondary'}>{product.status}</Badge>
+                            <Badge variant={product.status === 'active' ? 'success' : 'secondary'}>{product.status}</Badge>
                         </div>
                     </CardContent>
                 </Card>
@@ -117,14 +117,14 @@ export default function Show({ product }: Props) {
                                                 <td className="px-3 py-2 font-mono text-xs">{v.sku || '—'}</td>
                                                 <td className="px-3 py-2">{v.unit || '—'}</td>
                                                 <td className="px-3 py-2">
-                                                    <span className={v.is_active && v.stock_status !== 'in_stock' ? 'text-red-600 font-bold' : ''}>{v.quantity}</span>
+                                                    <span className={v.is_active && v.stock_status !== 'in_stock' ? 'text-red-600 dark:text-red-400 font-bold' : ''}>{v.quantity}</span>
                                                     {v.is_active && v.stock_status === 'low_stock' && <Badge variant="destructive" className="ml-2 text-[10px]">Low</Badge>}
                                                     {v.is_active && v.stock_status === 'out_of_stock' && <Badge variant="destructive" className="ml-2 text-[10px]">Out</Badge>}
                                                     <div className="text-[10px] text-muted-foreground">Threshold: {v.low_stock_threshold ?? '—'}</div>
                                                 </td>
                                                 <td className="px-3 py-2">{v.public_price ?? '—'}</td>
                                                 <td className="px-3 py-2">
-                                                    <Badge variant={v.is_active ? 'default' : 'secondary'}>
+                                                    <Badge variant={v.is_active ? 'success' : 'secondary'}>
                                                         {v.is_active ? 'Yes' : 'No'}
                                                     </Badge>
                                                 </td>

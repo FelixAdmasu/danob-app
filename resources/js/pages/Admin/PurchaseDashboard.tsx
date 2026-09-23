@@ -79,7 +79,7 @@ type Purchases = {
 
 function StatTile({ label, value, accent }: { label: string; value: React.ReactNode; accent?: string }) {
     return (
-        <div className="rounded border p-4">
+        <div className="rounded border p-4 dark:bg-card">
             <p className="text-xs uppercase tracking-widest text-muted-foreground">{label}</p>
             <p className={`text-2xl font-bold ${accent ?? ''}`}>{value}</p>
         </div>
@@ -88,7 +88,7 @@ function StatTile({ label, value, accent }: { label: string; value: React.ReactN
 
 // Textual status labels stay readable without relying on colour.
 function StatusBadge({ status }: { status: string }) {
-    return <Badge variant={status === 'received' ? 'default' : 'secondary'}>{status}</Badge>;
+    return <Badge variant={status === 'received' ? 'success' : status === 'cancelled' ? 'cancelled' : 'warning'}>{status}</Badge>;
 }
 
 function formatDate(value: string | null): string {
@@ -122,8 +122,8 @@ export default function PurchaseDashboard({ purchases }: { purchases: Purchases 
 
                 <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
                     <StatTile label="Total Purchase Orders" value={m.total_pos} />
-                    <StatTile label="Open Purchase Orders" value={m.open} accent="text-amber-600" />
-                    <StatTile label="Partially Received" value={m.partially_received} accent="text-amber-600" />
+                    <StatTile label="Open Purchase Orders" value={m.open} accent="text-amber-600 dark:text-[#BF9FEF]" />
+                    <StatTile label="Partially Received" value={m.partially_received} accent="text-amber-600 dark:text-[#BF9FEF]" />
                     <StatTile label="Fully Received" value={m.received} />
                     <StatTile label="Cancelled" value={m.cancelled} />
                     <StatTile label="Purchase Value" value={m.purchase_value} />

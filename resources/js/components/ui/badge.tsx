@@ -17,6 +17,15 @@ const badgeVariants = cva(
           "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:
           "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
+        // Semantic status variants: light rendering is identical to
+        // default/secondary (approved light theme unchanged); dark uses the
+        // palette's green / purple / destructive treatments.
+        success:
+          "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 dark:border-[#477158] dark:bg-[#15261C] dark:text-[#95E6B6] dark:[a&]:hover:bg-[#15261C]/80",
+        warning:
+          "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/80 dark:border-[#5C2595] dark:bg-[#341257] dark:text-[#DDCFF7] dark:[a&]:hover:bg-[#5C2595]",
+        cancelled:
+          "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/80 dark:border-transparent dark:bg-destructive/60 dark:text-white dark:[a&]:hover:bg-destructive/60",
       },
     },
     defaultVariants: {

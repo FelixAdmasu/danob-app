@@ -102,13 +102,13 @@ export default function Index({ categories, filters }: Props) {
         <>
             <Head title="Categories" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between border-b border-[#070E01]/10 dark:border-[#ECF3E5]/15 pb-8">
+                <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between border-b border-border pb-8">
                     <div>
-                        <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#4A4A4A] dark:text-[#A5FFA9]/80 mb-3">Catalog — Categories</p>
-                        <h1 className="font-serif text-3xl md:text-4xl tracking-tight text-[#070E01] dark:text-[#ECF3E5]">Categories</h1>
-                        <p className="text-sm text-[#4A4A4A] dark:text-[#ECF3E5]/70 mt-2">Organize your catalog with clear category groups.</p>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground dark:text-primary mb-3">Catalog — Categories</p>
+                        <h1 className="font-serif text-3xl md:text-4xl tracking-tight text-foreground">Categories</h1>
+                        <p className="text-sm text-muted-foreground mt-2">Organize your catalog with clear category groups.</p>
                     </div>
-                    <Button onClick={openCreate} className="bg-[#070E01] hover:bg-[#1A3A0A] text-[#ECF3E5] dark:bg-[#A5FFA9] dark:text-[#070E01] dark:hover:bg-[#8FEF95]">
+                    <Button onClick={openCreate} className="bg-[#070E01] hover:bg-[#1A3A0A] text-[#ECF3E5] dark:bg-primary dark:text-primary-foreground dark:hover:bg-[#8539D3]">
                         <Plus className="mr-2 h-4 w-4" /> Add Category
                     </Button>
                 </div>
@@ -168,7 +168,7 @@ export default function Index({ categories, filters }: Props) {
                                                 <td className="px-4 py-3 font-medium">{category.name}</td>
                                                 <td className="px-4 py-3 font-mono text-xs">{category.slug}</td>
                                                 <td className="px-4 py-3">
-                                                    <Badge variant={category.is_active ? 'default' : 'secondary'}>
+                                                    <Badge variant={category.is_active ? 'success' : 'secondary'}>
                                                         {category.is_active ? 'Active' : 'Inactive'}
                                                     </Badge>
                                                 </td>
@@ -202,7 +202,7 @@ export default function Index({ categories, filters }: Props) {
                                 <Link
                                     key={i}
                                     href={link.url}
-                                    className={`px-3 py-1 text-xs border rounded ${link.active ? 'bg-black text-white' : 'bg-white'}`}
+                                    className={`px-3 py-1 text-xs border rounded ${link.active ? 'bg-black text-white dark:bg-primary dark:text-primary-foreground' : 'bg-white dark:bg-secondary dark:text-secondary-foreground'}`}
                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                 />
                             ) : (

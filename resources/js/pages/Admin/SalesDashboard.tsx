@@ -74,7 +74,7 @@ type Sales = {
 
 function StatTile({ label, value, accent }: { label: string; value: React.ReactNode; accent?: string }) {
     return (
-        <div className="rounded border p-4">
+        <div className="rounded border p-4 dark:bg-card">
             <p className="text-xs uppercase tracking-widest text-muted-foreground">{label}</p>
             <p className={`text-2xl font-bold ${accent ?? ''}`}>{value}</p>
         </div>
@@ -84,7 +84,7 @@ function StatTile({ label, value, accent }: { label: string; value: React.ReactN
 // Textual status labels stay readable without relying on colour
 // (same convention as the Orders index).
 function StatusBadge({ status }: { status: string }) {
-    return <Badge variant={status === 'delivered' ? 'default' : 'secondary'}>{status}</Badge>;
+    return <Badge variant={status === 'delivered' ? 'success' : status === 'cancelled' ? 'cancelled' : 'warning'}>{status}</Badge>;
 }
 
 function formatDate(value: string | null): string {
@@ -119,7 +119,7 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
 
                 <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
                     <StatTile label="Total Orders" value={m.total_orders} />
-                    <StatTile label="Pending" value={m.pending} accent="text-amber-600" />
+                    <StatTile label="Pending" value={m.pending} accent="text-amber-600 dark:text-[#BF9FEF]" />
                     <StatTile label="Confirmed" value={m.confirmed} />
                     <StatTile label="Delivered" value={m.delivered} />
                     <StatTile label="Cancelled" value={m.cancelled} />
@@ -362,7 +362,7 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
                                                         </p>
                                                     </div>
                                                     <div className="flex shrink-0 items-center gap-2">
-                                                        <Badge variant={movement.quantity_after >= movement.quantity_before ? 'default' : 'secondary'}>
+                                                        <Badge variant={movement.quantity_after >= movement.quantity_before ? 'success' : 'secondary'}>
                                                             {movement.movement_type}
                                                         </Badge>
                                                         <span className="font-mono text-sm font-semibold">{movementLabel(movement)}</span>
@@ -391,7 +391,7 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
                                             <Link
                                                 key={item.title}
                                                 href={item.href}
-                                                className="flex flex-col gap-1 rounded-lg border p-4 hover:bg-accent hover:text-accent-foreground transition-colors"
+                                                className="flex flex-col gap-1 rounded-lg border p-4 dark:bg-card hover:bg-accent hover:text-accent-foreground transition-colors"
                                             >
                                                 <span className="text-sm font-medium">{item.title}</span>
                                                 <span className="text-xs text-muted-foreground">Open →</span>

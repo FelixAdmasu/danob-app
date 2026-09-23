@@ -73,13 +73,13 @@ export default function Adjustments({ products }: Props) {
         <>
             <Head title="Stock Adjustments" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <div className="border-b border-[#070E01]/10 dark:border-[#ECF3E5]/15 pb-8">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#4A4A4A] dark:text-[#A5FFA9]/80 mb-3">Inventory — Stock Adjustments</p>
-                    <h1 className="font-serif text-3xl md:text-4xl tracking-tight text-[#070E01] dark:text-[#ECF3E5]">Stock Adjustments</h1>
-                    <p className="text-sm text-[#4A4A4A] dark:text-[#ECF3E5]/70 mt-2 max-w-xl">Correct inventory with Adjustment In/Out. Creates an immutable ledger entry.</p>
+                <div className="border-b border-border pb-8">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground dark:text-primary mb-3">Inventory — Stock Adjustments</p>
+                    <h1 className="font-serif text-3xl md:text-4xl tracking-tight text-foreground">Stock Adjustments</h1>
+                    <p className="text-sm text-muted-foreground mt-2 max-w-xl">Correct inventory with Adjustment In/Out. Creates an immutable ledger entry.</p>
                 </div>
 
-                {flashSuccess && <div className="rounded border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">{flashSuccess}</div>}
+                {flashSuccess && <div className="rounded border border-green-200 bg-green-50 dark:border-[#477158] dark:bg-[#15261C] px-4 py-3 text-sm text-green-800 dark:text-[#95E6B6]">{flashSuccess}</div>}
 
                 <Card>
                     <CardHeader>
@@ -137,8 +137,8 @@ export default function Adjustments({ products }: Props) {
                                     {preview && (
                                         <p className="mt-2 text-xs">
                                             Current: {preview.before} | Adjustment: {adjustmentType === 'adjustment_in' ? '+' : '-'}
-                                            {preview.qty} | <span className={preview.after < 0 ? 'text-red-600 font-bold' : 'font-bold'}>New: {preview.after}</span>
-                                            {preview.after < 0 && <span className="text-red-600"> — will be blocked (negative stock)</span>}
+                                            {preview.qty} | <span className={preview.after < 0 ? 'text-red-600 dark:text-red-400 font-bold' : 'font-bold'}>New: {preview.after}</span>
+                                            {preview.after < 0 && <span className="text-red-600 dark:text-red-400"> — will be blocked (negative stock)</span>}
                                         </p>
                                     )}
                                 </div>

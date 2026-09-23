@@ -78,7 +78,7 @@ export default function Create({ suppliers, products }: { suppliers: Supplier[];
                                     </SelectContent>
                                 </Select>
                                 {errors.supplier_id && (
-                                    <p role="alert" className="text-xs text-red-600">{errors.supplier_id}</p>
+                                    <p role="alert" className="text-xs text-red-600 dark:text-red-400">{errors.supplier_id}</p>
                                 )}
                             </div>
                             <div className="space-y-4">
@@ -99,7 +99,7 @@ export default function Create({ suppliers, products }: { suppliers: Supplier[];
                                                 </SelectContent>
                                             </Select>
                                             {itemError(idx, 'product_variant_id') && (
-                                                <p role="alert" className="text-xs text-red-600">{itemError(idx, 'product_variant_id')}</p>
+                                                <p role="alert" className="text-xs text-red-600 dark:text-red-400">{itemError(idx, 'product_variant_id')}</p>
                                             )}
                                         </div>
                                         <div className="space-y-2">
@@ -113,7 +113,7 @@ export default function Create({ suppliers, products }: { suppliers: Supplier[];
                                                 onChange={(e) => updateItem(idx, 'quantity', e.target.value)}
                                             />
                                             {itemError(idx, 'quantity') && (
-                                                <p role="alert" className="text-xs text-red-600">{itemError(idx, 'quantity')}</p>
+                                                <p role="alert" className="text-xs text-red-600 dark:text-red-400">{itemError(idx, 'quantity')}</p>
                                             )}
                                         </div>
                                         <div className="space-y-2">
@@ -128,7 +128,7 @@ export default function Create({ suppliers, products }: { suppliers: Supplier[];
                                                 onChange={(e) => updateItem(idx, 'unit_cost', e.target.value)}
                                             />
                                             {itemError(idx, 'unit_cost') && (
-                                                <p role="alert" className="text-xs text-red-600">{itemError(idx, 'unit_cost')}</p>
+                                                <p role="alert" className="text-xs text-red-600 dark:text-red-400">{itemError(idx, 'unit_cost')}</p>
                                             )}
                                         </div>
                                         <div className="space-y-2">

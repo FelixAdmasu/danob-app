@@ -146,7 +146,7 @@ export default function Show({ order }: { order: Order }) {
                                 <span>{order.total}</span>
                             </div>
                             <div className="mt-2">
-                                <Badge variant={order.status === 'delivered' ? 'default' : 'secondary'}>
+                                <Badge variant={order.status === 'delivered' ? 'success' : order.status === 'cancelled' ? 'cancelled' : 'warning'}>
                                     {order.status}
                                 </Badge>
                             </div>
