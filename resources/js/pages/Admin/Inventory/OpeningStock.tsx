@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import * as InventoryRoutes from '@/routes/admin/inventory';
+import { Plus } from 'lucide-react';
 
 type Variant = { id: number; name: string; sku: string | null; quantity: number };
 type Product = { id: number; name: string; slug: string; variants: Variant[] };
@@ -140,7 +141,7 @@ export default function OpeningStock({ products }: Props) {
 
                             <div className="flex gap-2">
                                 <Button type="submit" disabled={processing || !productId || !variantId || quantity === ''}>
-                                    {processing ? 'Saving...' : 'Record Opening Stock'}
+                                    <Plus className="mr-2 h-4 w-4" /> {processing ? 'Saving...' : 'Record Opening Stock'}
                                 </Button>
                                 <Link href="/admin">
                                     <Button type="button" variant="outline">

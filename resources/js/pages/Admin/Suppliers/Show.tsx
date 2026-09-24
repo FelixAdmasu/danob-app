@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import * as SupplierRoutes from '@/routes/admin/suppliers';
+import { ArrowLeft, Pencil } from 'lucide-react';
 
 type Supplier = { id: number; name: string; contact_person: string | null; phone: string | null; email: string | null; address: string | null; tax_number: string | null; notes: string | null; is_active: boolean; created_at: string; updated_at: string; purchase_orders_count?: number };
 
@@ -16,10 +17,14 @@ export default function Show({ supplier }: { supplier: Supplier }) {
                     <Heading eyebrow="Operations" title={supplier.name} description={`Supplier detail`} />
                     <div className="flex gap-2">
                         <Link href={SupplierRoutes.edit(supplier.id).url}>
-                            <Button variant="outline">Edit</Button>
+                            <Button variant="outline">
+                                <Pencil className="mr-2 h-4 w-4" /> Edit
+                            </Button>
                         </Link>
                         <Link href={SupplierRoutes.index().url}>
-                            <Button variant="ghost">Back</Button>
+                            <Button variant="ghost">
+                                <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                            </Button>
                         </Link>
                     </div>
                 </div>

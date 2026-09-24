@@ -38,7 +38,7 @@ export default function ReportsIndex({ groups }: { groups: ReportGroup[] }) {
                                         <Link
                                             key={report.title}
                                             href={report.href}
-                                            className="group flex flex-col gap-2 rounded-xl border border-border bg-card p-4 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-sm dark:shadow-none"
+                                            className="group flex flex-col gap-2 rounded-2xl border border-border/70 bg-card p-4 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-sm dark:shadow-none"
                                         >
                                             <span className="text-sm font-medium">{report.title}</span>
                                             <span className="text-xs text-muted-foreground">{report.description}</span>

@@ -38,7 +38,7 @@ export default function Index({ purchase_orders, filters }: { purchase_orders: P
                         </Link>
                     }
                 />
-                <form onSubmit={handleSearch} className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
+                <form onSubmit={handleSearch} className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search PO number or supplier..." className="pl-9" />
@@ -58,7 +58,7 @@ export default function Index({ purchase_orders, filters }: { purchase_orders: P
                         </SelectContent>
                     </Select>
                     <Button type="submit" variant="outline">
-                        Search
+                        <Search className="mr-2 h-4 w-4" /> Search
                     </Button>
                 </form>
                 <Card>
@@ -82,17 +82,17 @@ export default function Index({ purchase_orders, filters }: { purchase_orders: P
                                 ) : (
                                     purchase_orders.data.map((po) => (
                                         <TableRow key={po.id}>
-                                            <TableCell className="font-mono text-sm">
+                                            <TableCell className="font-mono">
                                                 <Link href={PurchaseOrderRoutes.show(po.id).url} className="hover:underline">
                                                     {po.po_number}
                                                 </Link>
                                             </TableCell>
-                                            <TableCell className="text-sm">{po.supplier?.name || '—'}</TableCell>
+                                            <TableCell>{po.supplier?.name || '—'}</TableCell>
                                             <TableCell>
                                                 <Badge variant={po.status === 'received' ? 'success' : po.status === 'cancelled' ? 'cancelled' : 'warning'}>{po.status}</Badge>
                                             </TableCell>
-                                            <TableCell className="text-right font-mono text-sm tabular-nums">{po.total}</TableCell>
-                                            <TableCell className="text-xs">{po.ordered_at ? new Date(po.ordered_at).toLocaleDateString() : '—'}</TableCell>
+                                            <TableCell className="text-right font-mono tabular-nums">{po.total}</TableCell>
+                                            <TableCell>{po.ordered_at ? new Date(po.ordered_at).toLocaleDateString() : '—'}</TableCell>
                                         </TableRow>
                                     ))
                                 )}

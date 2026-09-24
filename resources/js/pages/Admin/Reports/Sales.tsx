@@ -104,7 +104,7 @@ export default function Sales({ orders, summary, filters, customers, order_statu
                     <StatCard label="Return Value" value={summary.return_value} icon={Receipt} tone="warning" />
                 </div>
 
-                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
+                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
                     <div className="space-y-2 flex-1">
                         <Label htmlFor="search">Search</Label>
                         <Input
@@ -186,19 +186,19 @@ export default function Sales({ orders, summary, filters, customers, order_statu
                                 ) : (
                                     orders.data.map((order) => (
                                         <TableRow key={order.id}>
-                                            <TableCell className="text-sm font-medium">
+                                            <TableCell>
                                                 <Link href={OrderRoutes.show(order.id).url} className="hover:underline">
                                                     {order.reference_number}
                                                 </Link>
                                             </TableCell>
-                                            <TableCell className="text-sm">{customerName(order)}</TableCell>
-                                            <TableCell className="text-xs">{new Date(order.ordered_at).toLocaleDateString()}</TableCell>
+                                            <TableCell>{customerName(order)}</TableCell>
+                                            <TableCell>{new Date(order.ordered_at).toLocaleDateString()}</TableCell>
                                             <TableCell>
                                                 <Badge variant="secondary">{order.status}</Badge>
                                             </TableCell>
-                                            <TableCell className="text-right text-sm font-mono">{order.total}</TableCell>
-                                            <TableCell className="text-right text-sm font-mono">{order.returned_quantity}</TableCell>
-                                            <TableCell className="text-right text-sm font-mono">{order.return_value}</TableCell>
+                                            <TableCell className="text-right font-mono">{order.total}</TableCell>
+                                            <TableCell className="text-right font-mono">{order.returned_quantity}</TableCell>
+                                            <TableCell className="text-right font-mono">{order.return_value}</TableCell>
                                         </TableRow>
                                     ))
                                 )}

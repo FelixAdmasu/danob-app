@@ -91,7 +91,7 @@ export default function Dashboard() {
                     </CardHeader>
                     <CardContent>
                         <div className="grid gap-4 sm:grid-cols-2">
-                            <div className="rounded-lg border border-dashed border-border bg-muted p-6 text-center dark:border-border dark:bg-muted">
+                            <div className="rounded-xl border border-dashed border-border bg-muted p-6 text-center dark:border-border dark:bg-muted">
                                 <p className="text-sm font-medium text-muted-foreground dark:text-muted-foreground">
                                     Profile
                                 </p>
@@ -99,7 +99,7 @@ export default function Dashboard() {
                                     Update your name and email
                                 </p>
                             </div>
-                            <div className="rounded-lg border border-dashed border-border bg-muted p-6 text-center dark:border-border dark:bg-muted">
+                            <div className="rounded-xl border border-dashed border-border bg-muted p-6 text-center dark:border-border dark:bg-muted">
                                 <p className="text-sm font-medium text-muted-foreground dark:text-muted-foreground">
                                     Security
                                 </p>

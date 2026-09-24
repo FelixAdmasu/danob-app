@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Search, Plus, Pencil, Eye, Power } from 'lucide-react';
+import { Search, Plus, Pencil, Eye, Power, X } from 'lucide-react';
 import * as SupplierRoutes from '@/routes/admin/suppliers';
 
 type Supplier = {
@@ -70,7 +70,7 @@ export default function Index({ suppliers, filters }: Props) {
                     }
                 />
 
-                <form onSubmit={handleSearch} className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
+                <form onSubmit={handleSearch} className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search name, contact, phone, email..." className="pl-9" />
@@ -86,12 +86,12 @@ export default function Index({ suppliers, filters }: Props) {
                         </SelectContent>
                     </Select>
                     <Button type="submit" variant="outline">
-                        Search
+                        <Search className="mr-2 h-4 w-4" /> Search
                     </Button>
                     {filters.search && (
                         <Link href={SupplierRoutes.index().url}>
                             <Button type="button" variant="ghost">
-                                Clear
+                                <X className="mr-2 h-4 w-4" /> Clear
                             </Button>
                         </Link>
                     )}
@@ -120,9 +120,9 @@ export default function Index({ suppliers, filters }: Props) {
                                     suppliers.data.map((s) => (
                                         <TableRow key={s.id}>
                                             <TableCell className="font-medium">{s.name}</TableCell>
-                                            <TableCell className="text-sm">{s.contact_person || '—'}</TableCell>
-                                            <TableCell className="text-sm">{s.phone || '—'}</TableCell>
-                                            <TableCell className="text-sm">{s.email || '—'}</TableCell>
+                                            <TableCell>{s.contact_person || '—'}</TableCell>
+                                            <TableCell>{s.phone || '—'}</TableCell>
+                                            <TableCell>{s.email || '—'}</TableCell>
                                             <TableCell>
                                                 <Badge variant={s.is_active ? 'success' : 'secondary'}>{s.is_active ? 'Active' : 'Inactive'}</Badge>
                                             </TableCell>

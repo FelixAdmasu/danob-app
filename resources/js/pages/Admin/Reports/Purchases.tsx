@@ -100,7 +100,7 @@ export default function Purchases({ purchase_orders, summary, filters, suppliers
                     <StatCard label="Purchase Value" value={summary.purchase_value} icon={Receipt} />
                 </div>
 
-                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
+                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
                     <div className="space-y-2 flex-1">
                         <Label htmlFor="search">Search</Label>
                         <Input
@@ -183,22 +183,22 @@ export default function Purchases({ purchase_orders, summary, filters, suppliers
                                 ) : (
                                     purchase_orders.data.map((po) => (
                                         <TableRow key={po.id}>
-                                            <TableCell className="text-sm font-medium">
+                                            <TableCell>
                                                 <Link href={PurchaseOrderRoutes.show(po.id).url} className="hover:underline">
                                                     {po.po_number}
                                                 </Link>
                                             </TableCell>
-                                            <TableCell className="text-sm">{po.supplier?.name || '—'}</TableCell>
-                                            <TableCell className="text-xs">
+                                            <TableCell>{po.supplier?.name || '—'}</TableCell>
+                                            <TableCell>
                                                 {po.ordered_at ? new Date(po.ordered_at).toLocaleDateString() : '—'}
                                             </TableCell>
                                             <TableCell>
                                                 <Badge variant="secondary">{po.status}</Badge>
                                             </TableCell>
-                                            <TableCell className="text-right text-sm font-mono">{po.ordered_quantity}</TableCell>
-                                            <TableCell className="text-right text-sm font-mono">{po.received_quantity}</TableCell>
-                                            <TableCell className="text-right text-sm font-mono">{po.remaining_quantity}</TableCell>
-                                            <TableCell className="text-right text-sm font-mono">{po.total}</TableCell>
+                                            <TableCell className="text-right font-mono">{po.ordered_quantity}</TableCell>
+                                            <TableCell className="text-right font-mono">{po.received_quantity}</TableCell>
+                                            <TableCell className="text-right font-mono">{po.remaining_quantity}</TableCell>
+                                            <TableCell className="text-right font-mono">{po.total}</TableCell>
                                         </TableRow>
                                     ))
                                 )}

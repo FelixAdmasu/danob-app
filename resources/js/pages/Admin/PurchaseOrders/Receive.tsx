@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import * as PurchaseOrderRoutes from '@/routes/admin/purchase-orders';
+import { ArrowLeft, PackageCheck } from 'lucide-react';
 
 type ReceiveItem = {
     id: number;
@@ -71,7 +72,9 @@ export default function Receive({ purchase_order }: { purchase_order: PurchaseOr
                             {purchase_order.status}
                         </Badge>
                         <Link href={PurchaseOrderRoutes.show(purchase_order.id).url}>
-                            <Button variant="outline">Back</Button>
+                            <Button variant="outline">
+                                <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                            </Button>
                         </Link>
                     </div>
                 </div>
@@ -172,7 +175,7 @@ export default function Receive({ purchase_order }: { purchase_order: PurchaseOr
                                 )
                             }
                         >
-                            Receive
+                            <PackageCheck className="mr-2 h-4 w-4" /> Receive
                         </Button>
                         <Link href={PurchaseOrderRoutes.show(purchase_order.id).url}>
                             <Button type="button" variant="outline">

@@ -1,6 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
 import { ArrowUpRight, Github, BookOpen, LayoutGrid, LayoutDashboard, Package, Tag, Building2, ShoppingCart, Users, Layers, Store, Archive, ArrowUpDown, History, Truck, FileText, AlertTriangle, BarChart3 } from 'lucide-react';
-import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -53,10 +52,11 @@ const footerNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
-    const page = usePage<{ auth: { user: { role?: string } | null } }>();
+    const page = usePage<{ auth: { user: { role?: string } | null }; name?: string }>();
     const role = (page.props.auth?.user as { role?: string } | null)?.role;
     const isAdmin = role === 'super_admin' || role === 'admin' || role === 'manager';
     const isStaffPlus = isAdmin || role === 'staff';
+    const brandName = page.props.name ?? 'Danob';
 
     // Sections mirror the page eyebrows (Catalog / Operations / Inventory /
     // Sales) so the nav, breadcrumbs and page headers tell the same story.
@@ -99,16 +99,26 @@ export function AppSidebar() {
 
     return (
         <Sidebar collapsible="icon" variant="inset">
-            <SidebarHeader className="border-b border-sidebar-border/70 pb-3">
+            <SidebarHeader className="border-b border-sidebar-border pb-3">
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton
-                            size="lg"
-                            asChild
-                            className="hover:bg-transparent data-[state=open]:bg-transparent"
-                        >
+                        <SidebarMenuButton size="lg" asChild>
                             <Link href={dashboard()} prefetch>
-                                <AppLogo />
+                                {/* Premium brand block: gradient monogram tile +
+                                    serif wordmark + micro console caption. */}
+                                <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#9CCB7B] via-[#4A8C2A] to-[#24411B] shadow-[0_6px_16px_-6px_rgba(127,176,105,0.85)] ring-1 ring-white/15">
+                                    <span className="font-serif text-[15px] leading-none font-semibold text-[#081006]">
+                                        {brandName.charAt(0).toUpperCase()}
+                                    </span>
+                                </span>
+                                <span className="flex min-w-0 flex-1 flex-col text-left leading-none group-data-[collapsible=icon]:hidden">
+                                    <span className="truncate font-serif text-[15px] font-semibold tracking-tight text-white">
+                                        {brandName}
+                                    </span>
+                                    <span className="mt-1 truncate text-[9px] font-bold tracking-[0.3em] text-white/40 uppercase">
+                                        Admin Console
+                                    </span>
+                                </span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -123,14 +133,14 @@ export function AppSidebar() {
                 <NavMain items={salesItems} label="Sales" className={SECTION_DIVIDER} />
             </SidebarContent>
 
-            <SidebarFooter className="border-t border-sidebar-border/70 pt-3">
+            <SidebarFooter className="border-t border-sidebar-border pt-3">
                 {isStaffPlus && (
                     <div className="px-2 pb-2">
                         <a
                             href="/products"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="group flex items-center gap-2.5 rounded-lg border border-sidebar-border bg-secondary/60 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground transition-colors duration-200 hover:border-primary/40 hover:bg-primary hover:text-primary-foreground"
+                            className="group flex items-center gap-2.5 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-semibold tracking-[0.18em] text-white/65 uppercase transition-all duration-200 hover:border-[#7FB069]/40 hover:bg-[#7FB069] hover:text-[#0B1406]"
                         >
                             <Store className="h-4 w-4 shrink-0 transition-colors" />
                             <span className="flex-1 text-left">View Store</span>

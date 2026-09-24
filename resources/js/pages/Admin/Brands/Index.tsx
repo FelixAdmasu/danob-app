@@ -166,7 +166,7 @@ export default function Index({ brands, filters }: Props) {
 
                 {flashError && <div className="rounded border border-destructive bg-destructive/10 px-4 py-3 text-sm text-destructive">{flashError}</div>}
 
-                <form onSubmit={handleSearch} className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
+                <form onSubmit={handleSearch} className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
@@ -177,7 +177,7 @@ export default function Index({ brands, filters }: Props) {
                         />
                     </div>
                     <Button type="submit" variant="outline">
-                        Search
+                        <Search className="mr-2 h-4 w-4" /> Search
                     </Button>
                     {filters.search && (
                         <Link href={BrandRoutes.index().url}>
@@ -216,24 +216,24 @@ export default function Index({ brands, filters }: Props) {
                                                     <img
                                                         src={brand.logo_url}
                                                         alt={brand.name}
-                                                        className="h-10 w-10 rounded-md border object-cover"
+                                                        className="size-9 shrink-0 rounded-lg object-cover ring-1 ring-border/60"
                                                         onError={onImageError}
                                                     />
                                                 ) : (
-                                                    <div className="flex h-10 w-10 items-center justify-center rounded-md border border-dashed bg-muted">
+                                                    <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-dashed bg-muted">
                                                         <ImageIcon className="h-4 w-4 text-muted-foreground opacity-40" aria-hidden="true" />
                                                     </div>
                                                 )}
                                             </TableCell>
                                             <TableCell className="font-medium">{brand.name}</TableCell>
-                                            <TableCell className="font-mono text-xs">{brand.slug}</TableCell>
+                                            <TableCell className="font-mono">{brand.slug}</TableCell>
                                             <TableCell>
                                                 <Badge variant={brand.is_active ? 'success' : 'secondary'}>
                                                     {brand.is_active ? 'Active' : 'Inactive'}
                                                 </Badge>
                                             </TableCell>
-                                            <TableCell className="text-right text-sm">{brand.products_count} products</TableCell>
-                                            <TableCell className="text-xs text-muted-foreground">
+                                            <TableCell className="text-right">{brand.products_count} products</TableCell>
+                                            <TableCell className="text-muted-foreground">
                                                 {new Date(brand.created_at).toLocaleDateString()}
                                             </TableCell>
                                             <TableCell className="text-right">
@@ -283,7 +283,7 @@ export default function Index({ brands, filters }: Props) {
                                     value={form.description}
                                     onChange={(e) => setForm({ ...form, description: e.target.value })}
                                     rows={3}
-                                    className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                    className="flex min-h-[60px] w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
                                 />
                                 {errors.description && <InputError message={errors.description} />}
                             </div>

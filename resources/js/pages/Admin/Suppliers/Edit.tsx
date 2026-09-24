@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import * as SupplierRoutes from '@/routes/admin/suppliers';
+import { Pencil } from 'lucide-react';
 
 type Supplier = { id: number; name: string; contact_person: string | null; phone: string | null; email: string | null; address: string | null; tax_number: string | null; notes: string | null; is_active: boolean };
 
@@ -71,7 +72,7 @@ export default function Edit({ supplier }: { supplier: Supplier }) {
                                 </div>
                                 <div className="space-y-2 md:col-span-2">
                                     <Label htmlFor="address">Address</Label>
-                                    <textarea id="address" value={data.address} onChange={(e) => setData({ ...data, address: e.target.value })} rows={3} className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+                                    <textarea id="address" value={data.address} onChange={(e) => setData({ ...data, address: e.target.value })} rows={3} className="flex min-h-[60px] w-full rounded-md rounded-lg border border-input bg-background px-3 py-2 text-sm" />
                                     <InputError message={errors.address} />
                                 </div>
                                 <div className="space-y-2">
@@ -85,13 +86,13 @@ export default function Edit({ supplier }: { supplier: Supplier }) {
                                 </div>
                                 <div className="space-y-2 md:col-span-2">
                                     <Label htmlFor="notes">Notes</Label>
-                                    <textarea id="notes" value={data.notes} onChange={(e) => setData({ ...data, notes: e.target.value })} rows={3} className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+                                    <textarea id="notes" value={data.notes} onChange={(e) => setData({ ...data, notes: e.target.value })} rows={3} className="flex min-h-[60px] w-full rounded-md rounded-lg border border-input bg-background px-3 py-2 text-sm" />
                                     <InputError message={errors.notes} />
                                 </div>
                             </div>
                             <div className="flex gap-2">
                                 <Button type="submit" disabled={processing}>
-                                    Update Supplier
+                                    <Pencil className="mr-2 h-4 w-4" /> Update Supplier
                                 </Button>
                                 <Link href={SupplierRoutes.index().url}>
                                     <Button type="button" variant="outline">

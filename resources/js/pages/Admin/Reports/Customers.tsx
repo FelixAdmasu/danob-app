@@ -75,7 +75,7 @@ export default function CustomersReport({ customers, summary, filters }: Props) 
                     <StatCard label="Delivered Sales Value" value={summary.delivered_sales_value} icon={DollarSign} />
                 </div>
 
-                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
+                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
                     <div className="space-y-2 flex-1">
                         <Label htmlFor="search">Search</Label>
                         <Input
@@ -116,7 +116,7 @@ export default function CustomersReport({ customers, summary, filters }: Props) 
                                 ) : (
                                     customers.data.map((customer) => (
                                         <TableRow key={customer.id}>
-                                            <TableCell className="text-sm">
+                                            <TableCell>
                                                 <Link href={CustomerRoutes.edit(customer.id).url} className="font-medium hover:underline">
                                                     {customer.name}
                                                 </Link>
@@ -124,11 +124,11 @@ export default function CustomersReport({ customers, summary, filters }: Props) 
                                                     <div className="text-xs text-muted-foreground">{customer.email}</div>
                                                 )}
                                             </TableCell>
-                                            <TableCell className="text-right text-sm font-mono">{customer.orders_count}</TableCell>
-                                            <TableCell className="text-right text-sm font-mono">{customer.delivered_orders_count}</TableCell>
-                                            <TableCell className="text-right text-sm font-mono">{customer.delivered_sales_value}</TableCell>
-                                            <TableCell className="text-right text-sm font-mono">{customer.returned_units}</TableCell>
-                                            <TableCell className="text-right text-sm font-mono">{customer.return_value}</TableCell>
+                                            <TableCell className="text-right font-mono">{customer.orders_count}</TableCell>
+                                            <TableCell className="text-right font-mono">{customer.delivered_orders_count}</TableCell>
+                                            <TableCell className="text-right font-mono">{customer.delivered_sales_value}</TableCell>
+                                            <TableCell className="text-right font-mono">{customer.returned_units}</TableCell>
+                                            <TableCell className="text-right font-mono">{customer.return_value}</TableCell>
                                         </TableRow>
                                     ))
                                 )}

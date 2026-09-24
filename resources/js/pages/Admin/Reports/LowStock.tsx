@@ -85,7 +85,7 @@ export default function LowStockReport({ variants, counts, filters }: Props) {
                     <StatCard label="Monitored Variants" value={counts.monitored} icon={Layers} />
                 </div>
 
-                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
+                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
                     <div className="space-y-2">
                         <Label>Status</Label>
                         <Select value={status} onValueChange={setStatus}>
@@ -142,12 +142,12 @@ export default function LowStockReport({ variants, counts, filters }: Props) {
                                 ) : (
                                     variants.data.map((v) => (
                                         <TableRow key={v.id}>
-                                            <TableCell className="text-sm font-medium">{v.product.name}</TableCell>
-                                            <TableCell className="text-sm">{v.name}</TableCell>
-                                            <TableCell className="font-mono text-xs">{v.sku || '—'}</TableCell>
-                                            <TableCell className="text-right text-sm font-mono">{v.quantity}</TableCell>
-                                            <TableCell className="text-right text-sm font-mono">{v.low_stock_threshold ?? '—'}</TableCell>
-                                            <TableCell className="text-xs">
+                                            <TableCell>{v.product.name}</TableCell>
+                                            <TableCell>{v.name}</TableCell>
+                                            <TableCell className="font-mono">{v.sku || '—'}</TableCell>
+                                            <TableCell className="text-right font-mono">{v.quantity}</TableCell>
+                                            <TableCell className="text-right font-mono">{v.low_stock_threshold ?? '—'}</TableCell>
+                                            <TableCell>
                                                 {v.low_stock_threshold === null ? 'Unmonitored' : 'Monitored'}
                                             </TableCell>
                                             <TableCell>

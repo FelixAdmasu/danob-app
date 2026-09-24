@@ -31,10 +31,10 @@ export function Pagination({
                         key={i}
                         href={link.url}
                         className={cn(
-                            'inline-flex min-w-8 justify-center rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors duration-200',
+                            'inline-flex min-w-8 justify-center rounded-lg border border-border/60 px-3 py-1.5 text-xs font-medium transition-colors duration-200',
                             link.active
                                 ? 'border-primary bg-primary text-primary-foreground shadow-xs'
-                                : 'border-border bg-card text-muted-foreground hover:border-primary/40 hover:bg-accent hover:text-foreground',
+                                : 'bg-transparent text-muted-foreground hover:border-primary/40 hover:bg-primary/5 hover:text-primary',
                         )}
                         dangerouslySetInnerHTML={{ __html: link.label }}
                     />

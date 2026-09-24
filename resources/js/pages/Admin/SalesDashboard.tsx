@@ -174,8 +174,8 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
                                                 <TableCell>
                                                     <StatusBadge status={row.status} />
                                                 </TableCell>
-                                                <TableCell className="text-right font-mono text-sm">{row.count}</TableCell>
-                                                <TableCell className="text-right font-mono text-sm">{row.value}</TableCell>
+                                                <TableCell className="text-right font-mono">{row.count}</TableCell>
+                                                <TableCell className="text-right font-mono">{row.value}</TableCell>
                                             </TableRow>
                                         ))
                                     )}
@@ -208,17 +208,17 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
                                     ) : (
                                         sales.recent_orders.map((o) => (
                                             <TableRow key={o.id}>
-                                                <TableCell className="font-mono text-sm">
+                                                <TableCell className="font-mono">
                                                     <Link href={OrderRoutes.show(o.id).url} className="hover:underline">
                                                         {o.reference_number}
                                                     </Link>
                                                 </TableCell>
-                                                <TableCell className="text-sm">
+                                                <TableCell>
                                                     {o.customer?.company_name || o.customer?.contact_name || '—'}
                                                 </TableCell>
-                                                <TableCell className="text-xs">{formatDate(o.ordered_at)}</TableCell>
-                                                <TableCell className="text-right font-mono text-sm">{o.total}</TableCell>
-                                                <TableCell className="text-right text-sm">{o.returned_quantity ?? 0}</TableCell>
+                                                <TableCell>{formatDate(o.ordered_at)}</TableCell>
+                                                <TableCell className="text-right font-mono">{o.total}</TableCell>
+                                                <TableCell className="text-right">{o.returned_quantity ?? 0}</TableCell>
                                                 <TableCell>
                                                     <StatusBadge status={o.status} />
                                                 </TableCell>
@@ -359,7 +359,7 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
                                         <Link
                                             key={item.title}
                                             href={item.href}
-                                            className="flex flex-col gap-1 rounded-xl border border-border bg-card p-4 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-sm dark:shadow-none"
+                                            className="flex flex-col gap-1 rounded-2xl border border-border/70 bg-card p-4 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-sm dark:shadow-none"
                                         >
                                             <span className="text-sm font-medium">{item.title}</span>
                                             <span className="text-xs text-muted-foreground">Open →</span>

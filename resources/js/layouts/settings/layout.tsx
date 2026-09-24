@@ -1,4 +1,5 @@
 import { Link } from '@inertiajs/react';
+import { Palette, ShieldCheck, UserRound } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
 import Heading from '@/components/heading';
 import { Separator } from '@/components/ui/separator';
@@ -13,17 +14,17 @@ const sidebarNavItems: NavItem[] = [
     {
         title: 'Profile',
         href: edit(),
-        icon: null,
+        icon: UserRound,
     },
     {
         title: 'Security',
         href: editSecurity(),
-        icon: null,
+        icon: ShieldCheck,
     },
     {
         title: 'Appearance',
         href: editAppearance(),
-        icon: null,
+        icon: Palette,
     },
 ];
 
@@ -46,7 +47,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
             <div className="flex flex-col gap-6 lg:flex-row lg:gap-10">
                 <aside className="w-full lg:w-60 lg:shrink-0">
                     <nav
-                        className="flex flex-col gap-1 rounded-xl border border-border bg-card p-2 shadow-xs dark:shadow-none"
+                        className="flex flex-col gap-1 rounded-2xl border border-border bg-card p-1.5 shadow-xs dark:shadow-none"
                         aria-label="Settings"
                     >
                         {sidebarNavItems.map((item, index) => {
@@ -56,14 +57,19 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                     key={`${toUrl(item.href)}-${index}`}
                                     href={item.href}
                                     className={cn(
-                                        'flex h-9 items-center gap-2 rounded-lg px-3 text-sm transition-colors duration-200',
+                                        'flex h-10 items-center gap-2.5 rounded-xl px-3 text-sm transition-colors duration-200',
                                         active
-                                            ? 'bg-primary font-medium text-primary-foreground dark:bg-[#24411B] dark:text-foreground'
-                                            : 'text-muted-foreground hover:bg-sidebar-accent/70 hover:text-foreground',
+                                            ? 'bg-primary font-medium text-primary-foreground shadow-xs'
+                                            : 'text-muted-foreground hover:bg-muted/70 hover:text-foreground',
                                     )}
                                 >
                                     {item.icon && (
-                                        <item.icon className="h-4 w-4 shrink-0" />
+                                        <item.icon
+                                            className={cn(
+                                                'h-4 w-4 shrink-0',
+                                                active ? 'text-primary-foreground' : 'text-primary dark:text-[#8FBF74]',
+                                            )}
+                                        />
                                     )}
                                     <span className="truncate">{item.title}</span>
                                 </Link>

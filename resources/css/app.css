@@ -119,14 +119,22 @@
     --viz-info: #2d5016;
 
     --radius: 8px;
-    --sidebar: #ECF3E5;
-    --sidebar-foreground: #070E01;
-    --sidebar-primary: #2D5016;
-    --sidebar-primary-foreground: #FFFFFF;
-    --sidebar-accent: #D4E8C8;
-    --sidebar-accent-foreground: #070E01;
-    --sidebar-border: rgba(7, 14, 1, 0.1);
-    --sidebar-ring: #2D5016;
+
+    /*
+     * Sidebar — premium deep-forest rail (admin shell only; no live public
+     * component consumes these). Light and dark share the same rail so the
+     * chrome is identical across themes: near-black green surface, warm
+     * off-white text, translucent white washes for hover/open states and a
+     * moss-green focus/active accent.
+     */
+    --sidebar: #101C0A;
+    --sidebar-foreground: #E7EDE0;
+    --sidebar-primary: #7FB069;
+    --sidebar-primary-foreground: #0B1406;
+    --sidebar-accent: rgba(255, 255, 255, 0.07);
+    --sidebar-accent-foreground: #FFFFFF;
+    --sidebar-border: rgba(255, 255, 255, 0.08);
+    --sidebar-ring: #7FB069;
 }
 
 /*
@@ -185,14 +193,14 @@
     --viz-danger: #f87171;
     --viz-info: #7fb069;
 
-    /* Sidebar — deeper forest-black surface */
-    --sidebar: #090F05;
-    --sidebar-foreground: #C7D6B6;
+    /* Sidebar — same premium rail as light (see :root note) */
+    --sidebar: #101C0A;
+    --sidebar-foreground: #E7EDE0;
     --sidebar-primary: #7FB069;
-    --sidebar-primary-foreground: #08110B;
-    --sidebar-accent: #1C2B12;
-    --sidebar-accent-foreground: #ECF3E5;
-    --sidebar-border: #243219;
+    --sidebar-primary-foreground: #0B1406;
+    --sidebar-accent: rgba(255, 255, 255, 0.07);
+    --sidebar-accent-foreground: #FFFFFF;
+    --sidebar-border: rgba(255, 255, 255, 0.08);
     --sidebar-ring: #7FB069;
 }
 
@@ -330,22 +338,65 @@ img.img-fallback {
 }
 
 /*
- * Admin sidebar — white card floating on the sage canvas (public-site
- * foundation: sage background + white cards). Dark keeps the deep
- * forest-black surface with a delineating border.
- * Unlayered, so it intentionally wins over the `bg-sidebar` utility.
+ * Admin sidebar rail — premium deep-forest surface with a soft top-lit
+ * gradient, hairline light border and a floating-card shadow. Unlayered, so
+ * it intentionally wins over the `bg-sidebar` utility. Only the admin
+ * Sidebar (and its mobile sheet) carries `data-sidebar="sidebar"`.
  */
 [data-sidebar="sidebar"] {
-    background-color: var(--card);
-    border: 1px solid var(--border);
+    background-color: #101c0a;
+    background-image: linear-gradient(165deg, #182a10 0%, #101c0a 60%, #0c1607 100%);
+    border: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: 12px;
-    box-shadow: 0 1px 2px rgb(7 14 1 / 0.04);
+    box-shadow:
+        0 1px 0 0 rgb(255 255 255 / 0.04) inset,
+        0 18px 44px -28px rgb(3 8 2 / 0.85);
+    color: #e7ede0;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
 }
 
 .dark [data-sidebar="sidebar"] {
-    background-color: var(--sidebar);
-    border-color: var(--sidebar-border);
-    box-shadow: none;
+    border-color: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 1px 0 0 rgb(255 255 255 / 0.03) inset;
+}
+
+[data-sidebar="sidebar"]::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+[data-sidebar="sidebar"]::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+[data-sidebar="sidebar"]::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.14);
+    border-radius: 9999px;
+}
+
+/* Table scrollports — slim, quiet scrollbars on the card surface */
+[data-slot="table-scroll"] {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(7 14 1 / 0.18) transparent;
+}
+
+[data-slot="table-scroll"]::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+[data-slot="table-scroll"]::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+[data-slot="table-scroll"]::-webkit-scrollbar-thumb {
+    background: rgb(7 14 1 / 0.16);
+    border-radius: 9999px;
+}
+
+.dark [data-slot="table-scroll"]::-webkit-scrollbar-thumb {
+    background: rgb(236 243 229 / 0.16);
 }
 
 /*

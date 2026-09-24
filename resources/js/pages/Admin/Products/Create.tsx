@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import * as ProductRoutes from '@/routes/admin/products';
-import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { Plus, Upload, X, Image as ImageIcon } from 'lucide-react';
 
 type Category = { id: number; name: string; slug: string };
 type Brand = { id: number; name: string; slug: string };
@@ -186,7 +186,7 @@ export default function Create({ categories, brands }: Props) {
                                     onChange={(e) => setData({ ...data, description: e.target.value })}
                                     required
                                     rows={4}
-                                    className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                    className="flex min-h-[80px] w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
                                 />
                                 <InputError message={errors.description} />
                             </div>
@@ -210,7 +210,7 @@ export default function Create({ categories, brands }: Props) {
                         <CardHeader className="flex flex-row items-center justify-between">
                             <CardTitle>Variants</CardTitle>
                             <Button type="button" variant="outline" size="sm" onClick={addVariant}>
-                                Add Variant
+                                <Plus className="mr-2 h-4 w-4" /> Add Variant
                             </Button>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -330,7 +330,7 @@ export default function Create({ categories, brands }: Props) {
 
                     <div className="flex gap-2">
                         <Button type="submit" disabled={processing}>
-                            Create Product
+                            <Plus className="mr-2 h-4 w-4" /> Create Product
                         </Button>
                         <Link href={ProductRoutes.index().url}>
                             <Button type="button" variant="outline">

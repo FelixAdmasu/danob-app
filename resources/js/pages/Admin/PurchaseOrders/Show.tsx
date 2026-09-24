@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import * as PurchaseOrderRoutes from '@/routes/admin/purchase-orders';
+import { ArrowLeft, Ban, CheckCircle2, PackageCheck, Pencil, Send } from 'lucide-react';
 
 type OrderItem = {
     id: number;
@@ -49,27 +50,37 @@ export default function Show({ purchase_order }: { purchase_order: PurchaseOrder
                     <div className="flex gap-2">
                         {canEdit && (
                             <Link href={PurchaseOrderRoutes.edit(purchase_order.id).url}>
-                                <Button variant="outline">Edit</Button>
+                                <Button variant="outline">
+                                    <Pencil className="mr-2 h-4 w-4" /> Edit
+                                </Button>
                             </Link>
                         )}
                         {canSubmit && (
-                            <Button onClick={() => router.post(PurchaseOrderRoutes.submit(purchase_order.id).url)}>Submit</Button>
+                            <Button onClick={() => router.post(PurchaseOrderRoutes.submit(purchase_order.id).url)}>
+                                <Send className="mr-2 h-4 w-4" /> Submit
+                            </Button>
                         )}
                         {canApprove && (
-                            <Button onClick={() => router.post(PurchaseOrderRoutes.approve(purchase_order.id).url)}>Approve</Button>
+                            <Button onClick={() => router.post(PurchaseOrderRoutes.approve(purchase_order.id).url)}>
+                                <CheckCircle2 className="mr-2 h-4 w-4" /> Approve
+                            </Button>
                         )}
                         {canReceive && (
                             <Link href={PurchaseOrderRoutes.receive(purchase_order.id).url}>
-                                <Button>Receive</Button>
+                                <Button>
+                                    <PackageCheck className="mr-2 h-4 w-4" /> Receive
+                                </Button>
                             </Link>
                         )}
                         {canCancel && (
                             <Button variant="destructive" onClick={() => router.post(PurchaseOrderRoutes.cancel(purchase_order.id).url)}>
-                                Cancel
+                                <Ban className="mr-2 h-4 w-4" /> Cancel
                             </Button>
                         )}
                         <Link href={PurchaseOrderRoutes.index().url}>
-                            <Button variant="outline">Back</Button>
+                            <Button variant="outline">
+                                <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                            </Button>
                         </Link>
                     </div>
                 </div>

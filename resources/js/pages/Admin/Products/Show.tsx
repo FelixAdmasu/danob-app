@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ArrowLeft, Pencil } from 'lucide-react';
 import * as ProductRoutes from '@/routes/admin/products';
 import { onImageError } from '@/lib/image-fallback';
 
@@ -52,10 +53,14 @@ export default function Show({ product }: Props) {
                     <Heading eyebrow="Catalog" title={product.name} description={`Slug: ${product.slug}`} />
                     <div className="flex gap-2">
                         <Link href={ProductRoutes.edit(product.id).url}>
-                            <Button variant="outline">Edit</Button>
+                            <Button variant="outline">
+                                <Pencil className="mr-2 h-4 w-4" /> Edit
+                            </Button>
                         </Link>
                         <Link href={ProductRoutes.index().url}>
-                            <Button variant="ghost">Back</Button>
+                            <Button variant="ghost">
+                                <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                            </Button>
                         </Link>
                     </div>
                 </div>
@@ -115,7 +120,7 @@ export default function Show({ product }: Props) {
                                     product.variants.map((v) => (
                                         <TableRow key={v.id}>
                                             <TableCell className="font-medium">{v.name}</TableCell>
-                                            <TableCell className="font-mono text-xs">{v.sku || '—'}</TableCell>
+                                            <TableCell className="font-mono">{v.sku || '—'}</TableCell>
                                             <TableCell>{v.unit || '—'}</TableCell>
                                             <TableCell>
                                                 <span className={v.is_active && v.stock_status !== 'in_stock' ? 'text-red-600 dark:text-red-400 font-bold' : ''}>{v.quantity}</span>
@@ -150,7 +155,7 @@ export default function Show({ product }: Props) {
                                     .slice()
                                     .sort((a, b) => a.sort_order - b.sort_order)
                                     .map((img) => (
-                                        <div key={img.id} className="rounded-lg border overflow-hidden">
+                                        <div key={img.id} className="overflow-hidden rounded-2xl ring-1 ring-border">
                                             <div className="aspect-square bg-muted">
                                                 <img src={img.url} alt={img.alt_text || product.name} onError={onImageError} className="h-full w-full object-cover" />
                                             </div>

@@ -77,7 +77,7 @@ export default function SuppliersReport({ suppliers, summary, filters }: Props) 
                     <StatCard label="Purchase Orders" value={summary.purchase_orders} icon={ClipboardList} />
                 </div>
 
-                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
+                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
                     <div className="space-y-2">
                         <Label>Status</Label>
                         <Select value={status} onValueChange={setStatus}>
@@ -131,7 +131,7 @@ export default function SuppliersReport({ suppliers, summary, filters }: Props) 
                                 ) : (
                                     suppliers.data.map((supplier) => (
                                         <TableRow key={supplier.id}>
-                                            <TableCell className="text-sm">
+                                            <TableCell>
                                                 <div className="font-medium">{supplier.name}</div>
                                                 {supplier.contact_person && (
                                                     <div className="text-xs text-muted-foreground">{supplier.contact_person}</div>
@@ -142,10 +142,10 @@ export default function SuppliersReport({ suppliers, summary, filters }: Props) 
                                                     {supplier.is_active ? 'Active' : 'Inactive'}
                                                 </Badge>
                                             </TableCell>
-                                            <TableCell className="text-right text-sm font-mono">{supplier.purchase_orders_count}</TableCell>
-                                            <TableCell className="text-right text-sm font-mono">{supplier.open_purchase_orders_count}</TableCell>
-                                            <TableCell className="text-right text-sm font-mono">{supplier.purchase_value}</TableCell>
-                                            <TableCell className="text-xs">
+                                            <TableCell className="text-right font-mono">{supplier.purchase_orders_count}</TableCell>
+                                            <TableCell className="text-right font-mono">{supplier.open_purchase_orders_count}</TableCell>
+                                            <TableCell className="text-right font-mono">{supplier.purchase_value}</TableCell>
+                                            <TableCell>
                                                 {supplier.last_ordered_at ? new Date(supplier.last_ordered_at).toLocaleDateString() : '—'}
                                             </TableCell>
                                         </TableRow>

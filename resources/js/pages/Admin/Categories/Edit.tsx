@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import * as CategoryRoutes from '@/routes/admin/categories';
 import { onImageError } from '@/lib/image-fallback';
-import { Image as ImageIcon, Upload } from 'lucide-react';
+import { Image as ImageIcon, Pencil, Upload } from 'lucide-react';
 
 type Category = {
     id: number;
@@ -105,7 +105,7 @@ export default function Edit({ category }: Props) {
                                     value={data.description}
                                     onChange={(e) => setData({ ...data, description: e.target.value })}
                                     rows={3}
-                                    className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                    className="flex min-h-[60px] w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
                                 />
                                 <InputError message={errors.description} />
                             </div>
@@ -154,7 +154,7 @@ export default function Edit({ category }: Props) {
 
                     <div className="flex gap-2">
                         <Button type="submit" disabled={processing}>
-                            Update
+                            <Pencil className="mr-2 h-4 w-4" /> Update
                         </Button>
                         <Link href={CategoryRoutes.index().url}>
                             <Button type="button" variant="outline">

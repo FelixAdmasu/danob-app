@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import * as InventoryRoutes from '@/routes/admin/inventory';
+import { Filter, X } from 'lucide-react';
 
 type Movement = {
     id: number;
@@ -89,7 +90,7 @@ export default function History({ movements, filters, products, variants, users,
                     description="Searchable, filterable, paginated stock movement ledger."
                 />
 
-                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
+                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
                     <div className="space-y-2">
                         <Label>Product</Label>
                         <Select value={productId} onValueChange={setProductId}>
@@ -165,9 +166,11 @@ export default function History({ movements, filters, products, variants, users,
                         <Input id="date_to" type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
                     </div>
                     <div className="flex gap-2">
-                        <Button type="submit">Filter</Button>
+                        <Button type="submit">
+                            <Filter className="mr-2 h-4 w-4" /> Filter
+                        </Button>
                         <Button type="button" variant="outline" onClick={clearFilters}>
-                            Clear
+                            <X className="mr-2 h-4 w-4" /> Clear
                         </Button>
                     </div>
                 </form>
@@ -192,8 +195,8 @@ export default function History({ movements, filters, products, variants, users,
                                 ) : (
                                     movements.data.map((m) => (
                                         <TableRow key={m.id}>
-                                            <TableCell className="text-xs">{new Date(m.created_at).toLocaleString()}</TableCell>
-                                            <TableCell className="text-sm">
+                                            <TableCell>{new Date(m.created_at).toLocaleString()}</TableCell>
+                                            <TableCell>
                                                 <div className="font-medium">{m.variant.product.name}</div>
                                                 <div className="text-xs text-muted-foreground">{m.variant.name}{m.variant.id ? ` — ${m.variant.id}` : ''}</div>
                                             </TableCell>
@@ -202,15 +205,15 @@ export default function History({ movements, filters, products, variants, users,
                                                     {m.movement_type}
                                                 </Badge>
                                             </TableCell>
-                                            <TableCell className="text-right text-sm font-mono">{m.quantity}</TableCell>
-                                            <TableCell className="text-xs font-mono">
+                                            <TableCell className="text-right font-mono">{m.quantity}</TableCell>
+                                            <TableCell className="font-mono">
                                                 {m.quantity_before} → {m.quantity_after}
                                             </TableCell>
-                                            <TableCell className="max-w-[200px] truncate text-xs" title={m.reason || ''}>
+                                            <TableCell className="max-w-[200px] truncate" title={m.reason || ''}>
                                                 {m.reason || '—'}
                                                 {m.notes && <div className="text-[10px] text-muted-foreground">{m.notes}</div>}
                                             </TableCell>
-                                            <TableCell className="text-xs">{m.user?.name || '—'}</TableCell>
+                                            <TableCell>{m.user?.name || '—'}</TableCell>
                                         </TableRow>
                                     ))
                                 )}

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ArrowLeft } from 'lucide-react';
 import * as OrderRoutes from '@/routes/admin/orders';
 
 type ReturnItem = {
@@ -72,7 +73,9 @@ export default function Create({ order }: { order: Order }) {
                     <div className="flex items-center gap-2">
                         <Badge>{order.status}</Badge>
                         <Link href={OrderRoutes.show(order.id).url}>
-                            <Button variant="outline">Back</Button>
+                            <Button variant="outline">
+                                <ArrowLeft /> Back
+                            </Button>
                         </Link>
                     </div>
                 </div>
@@ -207,7 +210,7 @@ export default function Create({ order }: { order: Order }) {
                         </Button>
                         <Link href={OrderRoutes.show(order.id).url}>
                             <Button type="button" variant="outline">
-                                Back
+                                <ArrowLeft /> Back
                             </Button>
                         </Link>
                     </div>

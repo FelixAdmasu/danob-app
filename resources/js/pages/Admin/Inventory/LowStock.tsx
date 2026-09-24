@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import * as InventoryRoutes from '@/routes/admin/inventory';
 import * as ProductRoutes from '@/routes/admin/products';
-import { AlertTriangle, Layers, Package } from 'lucide-react';
+import { AlertTriangle, Eye, Filter, Layers, Package, X } from 'lucide-react';
 
 type VariantRow = {
     id: number;
@@ -82,7 +82,7 @@ export default function LowStock({ variants, counts, filters }: Props) {
                     <StatCard label="Monitored Variants" value={counts.monitored} icon={Layers} />
                 </div>
 
-                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
+                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
                     <div className="space-y-2">
                         <Label>Status</Label>
                         <Select value={status} onValueChange={setStatus}>
@@ -107,9 +107,11 @@ export default function LowStock({ variants, counts, filters }: Props) {
                         />
                     </div>
                     <div className="flex gap-2">
-                        <Button type="submit">Filter</Button>
+                        <Button type="submit">
+                            <Filter className="mr-2 h-4 w-4" /> Filter
+                        </Button>
                         <Button type="button" variant="outline" onClick={clearFilters}>
-                            Clear
+                            <X className="mr-2 h-4 w-4" /> Clear
                         </Button>
                     </div>
                 </form>
@@ -134,10 +136,10 @@ export default function LowStock({ variants, counts, filters }: Props) {
                                 ) : (
                                     variants.data.map((v) => (
                                         <TableRow key={v.id}>
-                                            <TableCell className="text-sm font-medium">{v.product.name}</TableCell>
-                                            <TableCell className="text-sm">{v.name}</TableCell>
-                                            <TableCell className="font-mono text-xs">{v.sku || '—'}</TableCell>
-                                            <TableCell className="text-right text-sm font-mono">
+                                            <TableCell className="font-medium">{v.product.name}</TableCell>
+                                            <TableCell>{v.name}</TableCell>
+                                            <TableCell className="font-mono">{v.sku || '—'}</TableCell>
+                                            <TableCell className="text-right font-mono">
                                                 {v.quantity}
                                                 {(v.low_stock_threshold ?? 0) > 0 && (
                                                     <ProgressBar
@@ -148,13 +150,15 @@ export default function LowStock({ variants, counts, filters }: Props) {
                                                     />
                                                 )}
                                             </TableCell>
-                                            <TableCell className="text-right text-sm font-mono">{v.low_stock_threshold ?? '—'}</TableCell>
+                                            <TableCell className="text-right font-mono">{v.low_stock_threshold ?? '—'}</TableCell>
                                             <TableCell>
                                                 <StatusBadge status={v.stock_status} />
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <Link href={ProductRoutes.show(v.product.id).url}>
-                                                    <Button variant="ghost" size="sm">View Product</Button>
+                                                    <Button variant="ghost" size="sm">
+                                                        <Eye className="mr-2 h-4 w-4" /> View Product
+                                                    </Button>
                                                 </Link>
                                             </TableCell>
                                         </TableRow>

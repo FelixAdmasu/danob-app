@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Upload, Image as ImageIcon } from 'lucide-react';
+import { Image as ImageIcon, Plus, Upload } from 'lucide-react';
 import { onImageError } from '@/lib/image-fallback';
 import * as BrandRoutes from '@/routes/admin/brands';
 
@@ -90,7 +90,7 @@ export default function Create() {
                                     value={data.description}
                                     onChange={(e) => setData({ ...data, description: e.target.value })}
                                     rows={3}
-                                    className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                    className="flex min-h-[60px] w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
                                 />
                                 <InputError message={errors.description} />
                             </div>
@@ -121,7 +121,7 @@ export default function Create() {
                             </div>
                             <div className="flex gap-2">
                                 <Button type="submit" disabled={processing}>
-                                    Create
+                                    <Plus className="mr-2 h-4 w-4" /> Create
                                 </Button>
                                 <Link href={BrandRoutes.index().url}>
                                     <Button type="button" variant="outline">

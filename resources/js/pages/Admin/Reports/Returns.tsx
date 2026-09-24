@@ -105,7 +105,7 @@ export default function Returns({ returns, summary, filters, customers, products
                     <StatCard label="Return Value" value={summary.return_value} icon={Receipt} tone="warning" />
                 </div>
 
-                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
+                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
                     <div className="space-y-2 flex-1">
                         <Label htmlFor="search">Search</Label>
                         <Input
@@ -205,8 +205,8 @@ export default function Returns({ returns, summary, filters, customers, products
                                 ) : (
                                     returns.data.map((row) => (
                                         <TableRow key={row.id}>
-                                            <TableCell className="text-sm font-medium">{row.return_number}</TableCell>
-                                            <TableCell className="text-sm">
+                                            <TableCell>{row.return_number}</TableCell>
+                                            <TableCell>
                                                 {row.order ? (
                                                     <>
                                                         <Link href={OrderRoutes.show(row.order.id).url} className="font-medium hover:underline">
@@ -218,11 +218,11 @@ export default function Returns({ returns, summary, filters, customers, products
                                                     '—'
                                                 )}
                                             </TableCell>
-                                            <TableCell className="text-xs">{new Date(row.returned_at).toLocaleDateString()}</TableCell>
-                                            <TableCell className="text-xs">{row.returned_by?.name || '—'}</TableCell>
-                                            <TableCell className="text-right text-sm font-mono">{row.returned_quantity}</TableCell>
-                                            <TableCell className="text-right text-sm font-mono">{row.total}</TableCell>
-                                            <TableCell className="max-w-[200px] truncate text-xs" title={row.notes || ''}>
+                                            <TableCell>{new Date(row.returned_at).toLocaleDateString()}</TableCell>
+                                            <TableCell>{row.returned_by?.name || '—'}</TableCell>
+                                            <TableCell className="text-right font-mono">{row.returned_quantity}</TableCell>
+                                            <TableCell className="text-right font-mono">{row.total}</TableCell>
+                                            <TableCell className="max-w-[200px] truncate" title={row.notes || ''}>
                                                 {row.notes || '—'}
                                             </TableCell>
                                         </TableRow>

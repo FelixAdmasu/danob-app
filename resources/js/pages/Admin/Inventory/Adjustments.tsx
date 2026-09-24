@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import * as InventoryRoutes from '@/routes/admin/inventory';
+import { Send } from 'lucide-react';
 
 type Variant = { id: number; name: string; sku: string | null; quantity: number };
 type Product = { id: number; name: string; slug: string; variants: Variant[] };
@@ -180,7 +181,7 @@ export default function Adjustments({ products }: Props) {
 
                             <div className="flex gap-2">
                                 <Button type="submit" disabled={processing || !productId || !variantId || !quantity || !reason}>
-                                    {processing ? 'Saving...' : 'Submit Adjustment'}
+                                    <Send className="mr-2 h-4 w-4" /> {processing ? 'Saving...' : 'Submit Adjustment'}
                                 </Button>
                                 <Link href="/admin">
                                     <Button type="button" variant="outline">

@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ArrowLeft } from 'lucide-react';
 import * as OrderRoutes from '@/routes/admin/orders';
 import type { Auth } from '@/types';
 
@@ -95,7 +96,9 @@ export default function Show({ order }: { order: Order }) {
                             </Link>
                         )}
                         <Link href={OrderRoutes.index().url}>
-                            <Button variant="outline">Back</Button>
+                            <Button variant="outline">
+                                <ArrowLeft /> Back
+                            </Button>
                         </Link>
                     </div>
                 </div>

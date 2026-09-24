@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableR
 import * as InventoryRoutes from '@/routes/admin/inventory';
 import * as PurchaseOrderRoutes from '@/routes/admin/purchase-orders';
 import * as SupplierRoutes from '@/routes/admin/suppliers';
-import { Ban, CheckCircle2, Hourglass, Layers, PackageCheck, Plus, Truck, Users } from 'lucide-react';
+import { Ban, CheckCircle2, Eye, Hourglass, Layers, PackageCheck, Plus, Truck, Users } from 'lucide-react';
 
 type Metrics = {
     total_pos: number;
@@ -123,7 +123,9 @@ export default function PurchaseDashboard({ purchases }: { purchases: Purchases 
                     actions={
                         <div className="flex gap-2">
                             <Link href={PurchaseOrderRoutes.index().url}>
-                                <Button variant="outline">View Purchase Orders</Button>
+                                <Button variant="outline">
+                                    <Eye className="mr-2 h-4 w-4" /> View Purchase Orders
+                                </Button>
                             </Link>
                             <Link href={PurchaseOrderRoutes.create().url}>
                                 <Button>
@@ -170,22 +172,22 @@ export default function PurchaseDashboard({ purchases }: { purchases: Purchases 
                                 ) : (
                                     purchases.outstanding.map((po) => (
                                         <TableRow key={po.id}>
-                                            <TableCell className="font-mono text-sm">
+                                            <TableCell className="font-mono">
                                                 <Link href={PurchaseOrderRoutes.show(po.id).url} className="hover:underline">
                                                     {po.po_number}
                                                 </Link>
                                             </TableCell>
-                                            <TableCell className="text-sm">{po.supplier?.name || '—'}</TableCell>
-                                            <TableCell className="text-xs">{formatDate(po.ordered_at)}</TableCell>
-                                            <TableCell className="text-xs">{formatDate(po.expected_at)}</TableCell>
-                                            <TableCell className="text-right text-sm">{po.ordered_quantity}</TableCell>
-                                            <TableCell className="text-right text-sm">{po.received_quantity}</TableCell>
-                                            <TableCell className="text-right text-sm">{po.remaining_quantity}</TableCell>
-                                            <TableCell className="text-right font-mono text-sm">{po.total}</TableCell>
+                                            <TableCell>{po.supplier?.name || '—'}</TableCell>
+                                            <TableCell>{formatDate(po.ordered_at)}</TableCell>
+                                            <TableCell>{formatDate(po.expected_at)}</TableCell>
+                                            <TableCell className="text-right">{po.ordered_quantity}</TableCell>
+                                            <TableCell className="text-right">{po.received_quantity}</TableCell>
+                                            <TableCell className="text-right">{po.remaining_quantity}</TableCell>
+                                            <TableCell className="text-right font-mono">{po.total}</TableCell>
                                             <TableCell>
                                                 <StatusBadge status={po.status} />
                                             </TableCell>
-                                            <TableCell className="text-xs">
+                                            <TableCell>
                                                 {canReceive(po.status) ? (
                                                     <Link href={PurchaseOrderRoutes.receive(po.id).url} className="font-medium text-primary hover:underline">
                                                         Receive
@@ -354,14 +356,14 @@ export default function PurchaseDashboard({ purchases }: { purchases: Purchases 
                                     ) : (
                                         purchases.recent_purchase_orders.map((po) => (
                                             <TableRow key={po.id}>
-                                                <TableCell className="font-mono text-sm">
+                                                <TableCell className="font-mono">
                                                     <Link href={PurchaseOrderRoutes.show(po.id).url} className="hover:underline">
                                                         {po.po_number}
                                                     </Link>
                                                 </TableCell>
-                                                <TableCell className="text-sm">{po.supplier?.name || '—'}</TableCell>
-                                                <TableCell className="text-xs">{formatDate(po.ordered_at)}</TableCell>
-                                                <TableCell className="text-right font-mono text-sm">{po.total}</TableCell>
+                                                <TableCell>{po.supplier?.name || '—'}</TableCell>
+                                                <TableCell>{formatDate(po.ordered_at)}</TableCell>
+                                                <TableCell className="text-right font-mono">{po.total}</TableCell>
                                                 <TableCell>
                                                     <StatusBadge status={po.status} />
                                                 </TableCell>

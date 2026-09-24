@@ -64,7 +64,7 @@ export default function Index({ orders, filters }: Props) {
 
                 <form
                     onSubmit={handleSearch}
-                    className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-3 shadow-xs dark:shadow-none"
+                    className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-3 shadow-xs dark:shadow-none"
                 >
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -108,17 +108,17 @@ export default function Index({ orders, filters }: Props) {
                                 ) : (
                                     orders.data.map((order) => (
                                         <TableRow key={order.id}>
-                                            <TableCell className="font-mono text-sm">
+                                            <TableCell className="font-mono">
                                                 <Link href={OrderRoutes.show(order.id).url} className="hover:underline">
                                                     {order.reference_number}
                                                 </Link>
                                             </TableCell>
-                                            <TableCell className="text-sm">{order.customer?.company_name || order.customer?.contact_name || '—'}</TableCell>
+                                            <TableCell>{order.customer?.company_name || order.customer?.contact_name || '—'}</TableCell>
                                             <TableCell>
                                                 <Badge variant={order.status === 'delivered' ? 'success' : order.status === 'cancelled' ? 'cancelled' : 'warning'}>{order.status}</Badge>
                                             </TableCell>
-                                            <TableCell className="text-right font-mono text-sm tabular-nums">{order.total}</TableCell>
-                                            <TableCell className="text-sm">{order.ordered_at ? new Date(order.ordered_at).toLocaleDateString() : '—'}</TableCell>
+                                            <TableCell className="text-right font-mono tabular-nums">{order.total}</TableCell>
+                                            <TableCell>{order.ordered_at ? new Date(order.ordered_at).toLocaleDateString() : '—'}</TableCell>
                                         </TableRow>
                                     ))
                                 )}

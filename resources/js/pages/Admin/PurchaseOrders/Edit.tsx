@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import * as PurchaseOrderRoutes from '@/routes/admin/purchase-orders';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
 
 type Supplier = { id: number; name: string };
 type Variant = { id: number; name: string; product_id: number };
@@ -165,12 +166,12 @@ export default function Edit({
                                             </output>
                                         </div>
                                         <Button type="button" variant="ghost" onClick={() => removeItem(idx)}>
-                                            Remove
+                                            <Trash2 className="mr-2 h-4 w-4" /> Remove
                                         </Button>
                                     </div>
                                 ))}
                                 <Button type="button" variant="outline" onClick={addItem}>
-                                    Add Item
+                                    <Plus className="mr-2 h-4 w-4" /> Add Item
                                 </Button>
                             </div>
                             <div className="flex items-center justify-between rounded border bg-muted/50 px-4 py-3">
@@ -181,7 +182,7 @@ export default function Edit({
                             </div>
                             <div className="flex gap-2">
                                 <Button type="submit" disabled={processing}>
-                                    Save Changes
+                                    <Pencil className="mr-2 h-4 w-4" /> Save Changes
                                 </Button>
                                 <Link href={PurchaseOrderRoutes.show(purchase_order.id).url}>
                                     <Button type="button" variant="outline">
