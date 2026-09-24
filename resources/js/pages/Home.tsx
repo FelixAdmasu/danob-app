@@ -1,6 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import { useEffect, useRef } from 'react';
 import { MapPin, Phone, Clock } from 'lucide-react';
+import { onImageError } from '@/lib/image-fallback';
 
 type Category = {
     id: number;
@@ -263,6 +264,7 @@ export default function Home({ featuredProducts, categories, brands, branches }:
                                             <img
                                                 src={primaryImage.url}
                                                 alt={primaryImage.alt_text || product.name}
+                                                onError={onImageError}
                                                 className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                                             />
                                         ) : (

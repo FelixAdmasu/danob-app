@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import * as ProductRoutes from '@/routes/admin/products';
+import { onImageError } from '@/lib/image-fallback';
 
 type Variant = {
     id: number;
@@ -152,7 +153,7 @@ export default function Show({ product }: Props) {
                                     .map((img) => (
                                         <div key={img.id} className="rounded-lg border overflow-hidden">
                                             <div className="aspect-square bg-muted">
-                                                <img src={img.url} alt={img.alt_text || product.name} className="h-full w-full object-cover" />
+                                                <img src={img.url} alt={img.alt_text || product.name} onError={onImageError} className="h-full w-full object-cover" />
                                             </div>
                                             <div className="p-3 space-y-1">
                                                 <p className="text-xs font-mono truncate">{img.url}</p>

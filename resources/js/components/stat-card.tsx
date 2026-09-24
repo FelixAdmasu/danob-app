@@ -9,9 +9,9 @@ type Tone = 'default' | 'success' | 'warning' | 'danger' | 'info';
 const TONE_VALUE: Record<Tone, string> = {
     default: 'text-foreground',
     success: 'text-[#2D5016] dark:text-[#95E6B6]',
-    warning: 'text-amber-600 dark:text-[#BF9FEF]',
+    warning: 'text-amber-600 dark:text-[#F0B429]',
     danger: 'text-red-600 dark:text-red-400',
-    info: 'text-[#2D5016] dark:text-[#A16AE8]',
+    info: 'text-[#2D5016] dark:text-[#7FB069]',
 };
 
 /**

@@ -5,13 +5,13 @@ type Tone = 'primary' | 'success' | 'warning' | 'danger' | 'info';
 const TONE_FILL: Record<Tone, string> = {
     primary: 'bg-primary',
     success: 'bg-[#4A8C2A] dark:bg-[#95E6B6]',
-    warning: 'bg-amber-500 dark:bg-[#BF9FEF]',
+    warning: 'bg-amber-500 dark:bg-[#F0B429]',
     danger: 'bg-red-500 dark:bg-red-400',
-    info: 'bg-[#2D5016] dark:bg-[#A16AE8]',
+    info: 'bg-[#2D5016] dark:bg-[#7FB069]',
 };
 
 /**
- * Foundation progress meter: sage track, green (light) / violet (dark) fill,
+ * Foundation progress meter: sage track, green (light) / moss-green (dark) fill,
  * optional micro-label + percentage readout. The fill grows once on mount via
  * the shared `bar-grow` keyframe (reduced-motion safe — see app.css).
  */

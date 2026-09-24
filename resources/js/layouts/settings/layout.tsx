@@ -51,7 +51,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                 variant="ghost"
                                 asChild
                                 className={cn('w-full justify-start', {
-                                    'bg-muted dark:bg-[#341257] dark:text-foreground':
+                                    'bg-muted dark:bg-[#24411B] dark:text-foreground':
                                         isCurrentOrParentUrl(item.href),
                                 })}
                             >

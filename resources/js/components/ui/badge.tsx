@@ -12,18 +12,18 @@ const badgeVariants = cva(
         default:
           "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
         secondary:
-          "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90 dark:border-[#383B3D] dark:bg-[#191B1C] dark:text-[#C2C9CC] dark:[a&]:hover:bg-[#2C2942]",
+          "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90 dark:border-[#26331C] dark:bg-[#111B0A] dark:text-[#D4E8C8] dark:[a&]:hover:bg-[#18240F]",
         destructive:
           "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:
           "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
         // Semantic status variants: light rendering is identical to
         // default/secondary (approved light theme unchanged); dark uses the
-        // palette's green / purple / destructive treatments.
+        // palette's green / amber / destructive treatments.
         success:
           "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90 dark:border-[#477158] dark:bg-[#15261C] dark:text-[#95E6B6] dark:[a&]:hover:bg-[#15261C]/80",
         warning:
-          "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/80 dark:border-[#4E4870] dark:bg-[#341257] dark:text-[#BF9FEF] dark:[a&]:hover:bg-[#5C2595]",
+          "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/80 dark:border-[#5C4A16] dark:bg-[#2A2411] dark:text-[#F0B429] dark:[a&]:hover:bg-[#3A3116]",
         cancelled:
           "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/80 dark:border-transparent dark:bg-destructive/60 dark:text-white dark:[a&]:hover:bg-destructive/60",
       },

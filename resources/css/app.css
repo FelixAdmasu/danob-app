@@ -130,32 +130,33 @@
 }
 
 /*
- * Dark theme — premium violet/purple palette.
- * Exact palette families: neutral/violet, purple, green, bright green, gray.
+ * Dark theme — foundation forest palette (dark counterpart of the approved
+ * light sage/green scheme): deep green-black surfaces, sage text, moss accents.
+ * Exact palette families: neutral/green-black, forest green, bright green, gray-green.
  * Light theme (:root) is approved and must not change.
  */
 .dark {
     /* Core surfaces */
-    --background: #0E0D19;
-    --foreground: #EDEFF0;
-    --card: #191B1C;
-    --card-foreground: #EDEFF0;
-    --popover: #2C2942;
-    --popover-foreground: #EDEFF0;
+    --background: #0B1406;
+    --foreground: #ECF3E5;
+    --card: #111B0A;
+    --card-foreground: #ECF3E5;
+    --popover: #18240F;
+    --popover-foreground: #ECF3E5;
 
-    /* Primary — purple interactive language */
-    --primary: #A16AE8;
-    --primary-foreground: #100320;
+    /* Primary — foundation moss green (readable on dark surfaces) */
+    --primary: #7FB069;
+    --primary-foreground: #08110B;
 
-    /* Secondary — elevated neutral (spec: #2C2942 + #C2C9CC) */
-    --secondary: #2C2942;
-    --secondary-foreground: #C2C9CC;
+    /* Secondary — elevated forest-neutral */
+    --secondary: #1E2E14;
+    --secondary-foreground: #D4E8C8;
 
-    /* Muted — elevated surface (#2C2942); accent — selected/hover (#341257) */
-    --muted: #2C2942;
-    --muted-foreground: #9BA3A8;
-    --accent: #341257;
-    --accent-foreground: #EDEFF0;
+    /* Muted — quiet surface; accent — selected/hover wash */
+    --muted: #1A2812;
+    --muted-foreground: #9DAE8E;
+    --accent: #24411B;
+    --accent-foreground: #ECF3E5;
 
     /* Unused legacy token kept as-is */
     --color-danob: #2D5016;
@@ -165,33 +166,34 @@
     --destructive: oklch(0.396 0.141 25.723);
     --destructive-foreground: oklch(0.637 0.237 25.331);
 
-    /* Borders — neutral #383B3D, strong/input #4E4870 */
-    --border: #383B3D;
-    --input: #4E4870;
-    --ring: #A16AE8;
+    /* Borders — forest #26331C, strong/input #33452A */
+    --border: #26331C;
+    --input: #33452A;
+    --ring: #7FB069;
 
-    /* Charts */
-    --chart-1: #A16AE8;
-    --chart-2: #95E6B6;
-    --chart-3: #BF9FEF;
-    --chart-4: #619777;
-    --chart-5: #6F6998;
+    /* Charts — foundation greens reordered so every segment contrasts the
+       dark card (no near-black series on near-black surfaces) */
+    --chart-1: #7FB069;
+    --chart-2: #D4E8C8;
+    --chart-3: #4A8C2A;
+    --chart-4: #A5FFA9;
+    --chart-5: #95E6B6;
 
     /* Semantic viz colors — dark palette counterparts */
     --viz-success: #95e6b6;
-    --viz-warning: #bf9fef;
+    --viz-warning: #f0b429;
     --viz-danger: #f87171;
-    --viz-info: #a16ae8;
+    --viz-info: #7fb069;
 
-    /* Sidebar — deep violet-black */
-    --sidebar: #100320;
-    --sidebar-foreground: #C2C9CC;
-    --sidebar-primary: #A16AE8;
-    --sidebar-primary-foreground: #100320;
-    --sidebar-accent: #2C2942;
-    --sidebar-accent-foreground: #EDEFF0;
-    --sidebar-border: #2C2942;
-    --sidebar-ring: #A16AE8;
+    /* Sidebar — deeper forest-black surface */
+    --sidebar: #090F05;
+    --sidebar-foreground: #C7D6B6;
+    --sidebar-primary: #7FB069;
+    --sidebar-primary-foreground: #08110B;
+    --sidebar-accent: #1C2B12;
+    --sidebar-accent-foreground: #ECF3E5;
+    --sidebar-border: #243219;
+    --sidebar-ring: #7FB069;
 }
 
 @layer base {
@@ -312,9 +314,25 @@
 }
 
 /*
+ * Broken stored image → placeholder surface (see onImageError in
+ * resources/js/lib/image-fallback.ts). The helper swaps the src for a 1×1
+ * transparent gif so the element keeps its box; this paints a muted
+ * backdrop with a centered image glyph behind it. Uses --muted, so it
+ * follows the active theme.
+ */
+img.img-fallback {
+    background-color: var(--muted);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23889d6e' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2'/%3E%3Ccircle cx='9' cy='9' r='2'/%3E%3Cpath d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 40%;
+    border-radius: inherit;
+}
+
+/*
  * Admin sidebar — white card floating on the sage canvas (public-site
- * foundation: sage background + white cards). Dark keeps the approved
- * deep violet-black surface with a delineating border.
+ * foundation: sage background + white cards). Dark keeps the deep
+ * forest-black surface with a delineating border.
  * Unlayered, so it intentionally wins over the `bg-sidebar` utility.
  */
 [data-sidebar="sidebar"] {

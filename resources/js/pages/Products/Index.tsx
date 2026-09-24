@@ -1,5 +1,6 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import { Package, Search, X } from 'lucide-react';
+import { onImageError } from '@/lib/image-fallback';
 
 type ProductImage = {
     id: number;
@@ -215,6 +216,7 @@ export default function ProductsIndex({ products, filters, categories, brands }:
                                                 <img
                                                     src={primaryImage.url}
                                                     alt={primaryImage.alt_text || product.name}
+                                                    onError={onImageError}
                                                     className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                                                 />
                                             ) : (

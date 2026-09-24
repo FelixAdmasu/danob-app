@@ -1,5 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import { Package, ArrowRight } from 'lucide-react';
+import { onImageError } from '@/lib/image-fallback';
 
 type Variant = {
     id: number;
@@ -61,7 +62,7 @@ export default function ProductShow({ product }: Props) {
                         <div>
                             <div className="aspect-square overflow-hidden bg-[#D4E8C8] relative">
                                 {primaryImage ? (
-                                    <img src={primaryImage.url} alt={primaryImage.alt_text || product.name} className="h-full w-full object-cover" />
+                                    <img src={primaryImage.url} alt={primaryImage.alt_text || product.name} onError={onImageError} className="h-full w-full object-cover" />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center">
                                         <Package className="h-32 w-32 text-[#070E01]/15" />
@@ -77,7 +78,7 @@ export default function ProductShow({ product }: Props) {
                                                 img.id === primaryImage?.id ? 'ring-2 ring-[#2D5016]' : ''
                                             }`}
                                         >
-                                            <img src={img.url} alt={img.alt_text || product.name} className="h-full w-full object-cover" />
+                                            <img src={img.url} alt={img.alt_text || product.name} onError={onImageError} className="h-full w-full object-cover" />
                                         </div>
                                     ))}
                                 </div>

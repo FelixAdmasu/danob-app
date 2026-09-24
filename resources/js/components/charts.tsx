@@ -24,8 +24,8 @@ function totalOf(data: ChartDatum[]) {
  *
  * Segments use `pathLength={100}` so dash math is percentage-based and
  * resolution-independent. Colors come from the theme's `--chart-*` tokens by
- * default (foundation green ramp in light, approved violet ramp in dark) or
- * from semantic `--viz-*` tokens passed per datum.
+ * default (foundation green ramp, ordered for contrast on each theme's
+ * surface) or from semantic `--viz-*` tokens passed per datum.
  */
 export function DonutChart({
     data,

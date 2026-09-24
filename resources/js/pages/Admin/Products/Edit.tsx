@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import * as ProductRoutes from '@/routes/admin/products';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { onImageError } from '@/lib/image-fallback';
 
 type Category = { id: number; name: string; slug: string };
 type Brand = { id: number; name: string; slug: string };
@@ -305,9 +306,9 @@ export default function Edit({ product, categories, brands }: Props) {
                                         </div>
                                         <div className="h-32 w-full overflow-hidden rounded border bg-muted">
                                             {image.preview ? (
-                                                <img src={image.preview} alt={image.alt_text || 'Preview'} className="h-full w-full object-cover" />
+                                                <img src={image.preview} alt={image.alt_text || 'Preview'} onError={onImageError} className="h-full w-full object-cover" />
                                             ) : image.url ? (
-                                                <img src={image.url} alt={image.alt_text || 'Preview'} className="h-full w-full object-cover" onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')} />
+                                                <img src={image.url} alt={image.alt_text || 'Preview'} className="h-full w-full object-cover" onError={onImageError} />
                                             ) : (
                                                 <div className="h-full w-full flex items-center justify-center">
                                                     <ImageIcon className="h-8 w-8 opacity-20" />

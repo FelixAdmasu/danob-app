@@ -10,7 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Search, Plus, Pencil, Trash2 } from 'lucide-react';
+import { Search, Plus, Pencil, Trash2, Image as ImageIcon } from 'lucide-react';
+import { onImageError } from '@/lib/image-fallback';
 import * as BrandRoutes from '@/routes/admin/brands';
 
 type Brand = {
@@ -18,6 +19,7 @@ type Brand = {
     name: string;
     slug: string;
     description: string | null;
+    logo_url: string | null;
     is_active: boolean;
     products_count: number;
     created_at: string;
@@ -35,13 +37,33 @@ type Props = {
     filters: { search: string | null };
 };
 
+type BrandForm = {
+    name: string;
+    slug: string;
+    description: string;
+    is_active: boolean;
+    logo: File | null;
+    logoPreview: string | null;
+    removeLogo: boolean;
+};
+
+const emptyForm = (): BrandForm => ({
+    name: '',
+    slug: '',
+    description: '',
+    is_active: true,
+    logo: null,
+    logoPreview: null,
+    removeLogo: false,
+});
+
 export default function Index({ brands, filters }: Props) {
     const { props } = usePage<{ flash?: { error?: string } }>();
     const flashError = (props.flash as { error?: string } | undefined)?.error;
     const [search, setSearch] = useState(filters.search || '');
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editing, setEditing] = useState<Brand | null>(null);
-    const [form, setForm] = useState({ name: '', slug: '', description: '', is_active: true });
+    const [form, setForm] = useState<BrandForm>(emptyForm);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [processing, setProcessing] = useState(false);
 
@@ -50,49 +72,75 @@ export default function Index({ brands, filters }: Props) {
         router.get(BrandRoutes.index().url, search ? { search } : {}, { preserveState: true, replace: true });
     };
 
+    const revokePreview = (preview: string | null) => {
+        if (preview?.startsWith('blob:')) URL.revokeObjectURL(preview);
+    };
+
     const openCreate = () => {
+        revokePreview(form.logoPreview);
         setEditing(null);
-        setForm({ name: '', slug: '', description: '', is_active: true });
+        setForm(emptyForm());
         setErrors({});
         setDialogOpen(true);
     };
 
     const openEdit = (brand: Brand) => {
+        revokePreview(form.logoPreview);
         setEditing(brand);
-        setForm({ name: brand.name, slug: brand.slug, description: brand.description || '', is_active: brand.is_active });
+        setForm({ ...emptyForm(), name: brand.name, slug: brand.slug, description: brand.description || '', is_active: brand.is_active, logoPreview: brand.logo_url });
         setErrors({});
         setDialogOpen(true);
+    };
+
+    const closeDialog = () => {
+        revokePreview(form.logoPreview);
+        setDialogOpen(false);
+    };
+
+    const handleLogoChange = (file: File | null) => {
+        revokePreview(form.logoPreview);
+        setForm({
+            ...form,
+            logo: file,
+            logoPreview: file ? URL.createObjectURL(file) : editing?.logo_url ?? null,
+            removeLogo: file ? false : form.removeLogo,
+        });
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setProcessing(true);
-        const payload = {
-            name: form.name,
-            slug: form.slug || form.name.toLowerCase().replace(/\s+/g, '-'),
-            description: form.description || null,
-            is_active: form.is_active,
-        };
+        setErrors({});
+
+        // Multipart PUT bodies are not parsed by PHP: edits submit as POST
+        // with _method appended to the FormData (mirrors Admin/Products/Edit).
+        const formData = new FormData();
+        formData.append('name', form.name);
+        formData.append('slug', form.slug || form.name.toLowerCase().replace(/\s+/g, '-'));
+        formData.append('description', form.description);
+        formData.append('is_active', form.is_active ? '1' : '0');
+        if (form.logo) formData.append('logo', form.logo);
+        if (editing && form.removeLogo && !form.logo) formData.append('remove_logo', '1');
+        if (editing) formData.append('_method', 'PUT');
+
         const onError = (err: Record<string, string>) => {
             setErrors(err);
             setProcessing(false);
         };
         const onSuccess = () => {
-            setDialogOpen(false);
+            closeDialog();
             setProcessing(false);
         };
+        const options = {
+            forceFormData: true,
+            onError,
+            onSuccess,
+            onFinish: () => setProcessing(false),
+        };
         if (editing) {
-            router.put(BrandRoutes.update(editing.id).url, payload as never, {
-                onError,
-                onSuccess,
-                onFinish: () => setProcessing(false),
-            });
+            router.post(BrandRoutes.update(editing.id).url, formData, options as never);
         } else {
-            router.post(BrandRoutes.store().url, payload as never, {
-                onError,
-                onSuccess,
-                onFinish: () => setProcessing(false),
-            });
+            router.post(BrandRoutes.store().url, formData, options as never);
         }
     };
 
@@ -148,6 +196,7 @@ export default function Index({ brands, filters }: Props) {
                         <Table>
                             <TableHeader>
                                 <TableRow>
+                                    <TableHead>Logo</TableHead>
                                     <TableHead>Name</TableHead>
                                     <TableHead>Slug</TableHead>
                                     <TableHead>Status</TableHead>
@@ -158,10 +207,24 @@ export default function Index({ brands, filters }: Props) {
                             </TableHeader>
                             <TableBody>
                                 {brands.data.length === 0 ? (
-                                    <TableEmpty colSpan={6}>No brands found.</TableEmpty>
+                                    <TableEmpty colSpan={7}>No brands found.</TableEmpty>
                                 ) : (
                                     brands.data.map((brand) => (
                                         <TableRow key={brand.id}>
+                                            <TableCell>
+                                                {brand.logo_url ? (
+                                                    <img
+                                                        src={brand.logo_url}
+                                                        alt={brand.name}
+                                                        className="h-10 w-10 rounded-md border object-cover"
+                                                        onError={onImageError}
+                                                    />
+                                                ) : (
+                                                    <div className="flex h-10 w-10 items-center justify-center rounded-md border border-dashed bg-muted">
+                                                        <ImageIcon className="h-4 w-4 text-muted-foreground opacity-40" aria-hidden="true" />
+                                                    </div>
+                                                )}
+                                            </TableCell>
                                             <TableCell className="font-medium">{brand.name}</TableCell>
                                             <TableCell className="font-mono text-xs">{brand.slug}</TableCell>
                                             <TableCell>
@@ -192,7 +255,7 @@ export default function Index({ brands, filters }: Props) {
                     </CardContent>
                 </Card>
 
-                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                <Dialog open={dialogOpen} onOpenChange={(open) => (open ? setDialogOpen(true) : closeDialog())}>
                     <DialogContent>
                         <DialogHeader>
                             <DialogTitle>{editing ? 'Edit Brand' : 'Add Brand'}</DialogTitle>
@@ -224,6 +287,40 @@ export default function Index({ brands, filters }: Props) {
                                 />
                                 {errors.description && <InputError message={errors.description} />}
                             </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="brand-logo">Logo</Label>
+                                <Input
+                                    id="brand-logo"
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    onChange={(e) => handleLogoChange(e.target.files?.[0] ?? null)}
+                                />
+                                {errors.logo && <InputError message={errors.logo} />}
+                                {form.logoPreview ? (
+                                    <img
+                                        src={form.logoPreview}
+                                        alt="Logo preview"
+                                        className={`h-24 w-24 rounded-md border object-cover ${form.removeLogo && !form.logo ? 'opacity-50' : ''}`}
+                                        onError={onImageError}
+                                    />
+                                ) : (
+                                    <div className="flex h-24 w-24 items-center justify-center rounded-md border border-dashed bg-muted">
+                                        <ImageIcon className="h-6 w-6 text-muted-foreground opacity-40" aria-hidden="true" />
+                                    </div>
+                                )}
+                                {editing?.logo_url && (
+                                    <div className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            id="brand-remove-logo"
+                                            checked={form.removeLogo}
+                                            disabled={!!form.logo}
+                                            onChange={(e) => setForm({ ...form, removeLogo: e.target.checked })}
+                                        />
+                                        <Label htmlFor="brand-remove-logo">Remove logo</Label>
+                                    </div>
+                                )}
+                            </div>
                             <div className="flex items-center gap-2">
                                 <input
                                     type="checkbox"
@@ -234,7 +331,7 @@ export default function Index({ brands, filters }: Props) {
                                 <Label htmlFor="brand-active">Active</Label>
                             </div>
                             <DialogFooter>
-                                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                                <Button type="button" variant="outline" onClick={closeDialog}>
                                     Cancel
                                 </Button>
                                 <Button type="submit" disabled={processing}>

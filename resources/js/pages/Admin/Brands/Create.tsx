@@ -1,26 +1,65 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Upload, Image as ImageIcon } from 'lucide-react';
+import { onImageError } from '@/lib/image-fallback';
 import * as BrandRoutes from '@/routes/admin/brands';
 
 export default function Create() {
-    const { data, setData, post, processing, errors } = useForm({
+    const [data, setData] = useState({
         name: '',
         slug: '',
         description: '',
-        is_active: true as boolean,
+        is_active: true,
     });
+    const [logoFile, setLogoFile] = useState<File | null>(null);
+    const [logoPreview, setLogoPreview] = useState<string | null>(null);
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [processing, setProcessing] = useState(false);
+
+    // Revoke stale object URLs whenever the preview changes or the page unmounts.
+    useEffect(
+        () => () => {
+            if (logoPreview?.startsWith('blob:')) URL.revokeObjectURL(logoPreview);
+        },
+        [logoPreview],
+    );
+
+    const handleLogoChange = (file: File | null) => {
+        setLogoFile(file);
+        setLogoPreview(file ? URL.createObjectURL(file) : null);
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(BrandRoutes.store().url, {
-            ...data,
-            slug: data.slug || data.name.toLowerCase().replace(/\s+/g, '-'),
-        } as never);
+        setProcessing(true);
+        setErrors({});
+
+        const formData = new FormData();
+        formData.append('name', data.name);
+        formData.append('slug', data.slug || data.name.toLowerCase().replace(/\s+/g, '-'));
+        formData.append('description', data.description);
+        formData.append('is_active', data.is_active ? '1' : '0');
+        if (logoFile) formData.append('logo', logoFile);
+
+        router.post(
+            BrandRoutes.store().url,
+            formData,
+            {
+                forceFormData: true,
+                onError: (err: Record<string, string>) => {
+                    setErrors(err);
+                    setProcessing(false);
+                },
+                onSuccess: () => setProcessing(false),
+                onFinish: () => setProcessing(false),
+            } as never,
+        );
     };
 
     return (
@@ -36,12 +75,12 @@ export default function Create() {
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="name">Name *</Label>
-                                <Input id="name" value={data.name} onChange={(e) => setData('name', e.target.value)} required />
+                                <Input id="name" value={data.name} onChange={(e) => setData({ ...data, name: e.target.value })} required />
                                 <InputError message={errors.name} />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="slug">Slug *</Label>
-                                <Input id="slug" value={data.slug} onChange={(e) => setData('slug', e.target.value)} placeholder="auto-generated if empty" />
+                                <Input id="slug" value={data.slug} onChange={(e) => setData({ ...data, slug: e.target.value })} placeholder="auto-generated if empty" />
                                 <InputError message={errors.slug} />
                             </div>
                             <div className="space-y-2">
@@ -49,14 +88,35 @@ export default function Create() {
                                 <textarea
                                     id="description"
                                     value={data.description}
-                                    onChange={(e) => setData('description', e.target.value)}
+                                    onChange={(e) => setData({ ...data, description: e.target.value })}
                                     rows={3}
                                     className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                 />
                                 <InputError message={errors.description} />
                             </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="logo" className="flex items-center gap-1.5">
+                                    <Upload className="h-4 w-4" /> Upload Logo
+                                </Label>
+                                <Input
+                                    id="logo"
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    onChange={(e) => handleLogoChange(e.target.files?.[0] ?? null)}
+                                />
+                                <InputError message={errors.logo} />
+                                {logoPreview ? (
+                                    <div className="h-32 w-full overflow-hidden rounded border">
+                                        <img src={logoPreview} alt="Logo preview" className="h-full w-full object-cover" onError={onImageError} />
+                                    </div>
+                                ) : (
+                                    <div className="flex h-32 w-full items-center justify-center rounded border border-dashed bg-muted">
+                                        <ImageIcon className="h-8 w-8 opacity-20" />
+                                    </div>
+                                )}
+                            </div>
                             <div className="flex items-center gap-2">
-                                <input type="checkbox" id="is_active" checked={data.is_active} onChange={(e) => setData('is_active', e.target.checked)} />
+                                <input type="checkbox" id="is_active" checked={data.is_active} onChange={(e) => setData({ ...data, is_active: e.target.checked })} />
                                 <Label htmlFor="is_active">Active</Label>
                             </div>
                             <div className="flex gap-2">

@@ -384,7 +384,7 @@ export default function Create({ search: initialSearch, customers, products }: P
                                     value={notes}
                                     onChange={(e) => setNotes(e.target.value)}
                                     rows={3}
-                                    className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm dark:border-[#4E4870] dark:bg-[#191B1C]"
+                                    className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm dark:border-[#33452A] dark:bg-[#111B0A]"
                                 />
                                 {errors.notes && (
                                     <p role="alert" className="text-xs text-red-600 dark:text-red-400">{errors.notes}</p>

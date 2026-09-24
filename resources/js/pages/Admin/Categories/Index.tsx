@@ -10,8 +10,9 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Search, Plus, Pencil, Trash2 } from 'lucide-react';
+import { Image as ImageIcon, Search, Plus, Pencil, Trash2, Upload } from 'lucide-react';
 import * as CategoryRoutes from '@/routes/admin/categories';
+import { onImageError } from '@/lib/image-fallback';
 
 type Category = {
     id: number;
@@ -19,6 +20,7 @@ type Category = {
     slug: string;
     description: string | null;
     is_active: boolean;
+    image_url: string | null;
     products_count: number;
     created_at: string;
 };
@@ -42,6 +44,10 @@ export default function Index({ categories, filters }: Props) {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editing, setEditing] = useState<Category | null>(null);
     const [form, setForm] = useState({ name: '', slug: '', description: '', is_active: true });
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
+    const [removeImage, setRemoveImage] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [processing, setProcessing] = useState(false);
 
@@ -53,6 +59,10 @@ export default function Index({ categories, filters }: Props) {
     const openCreate = () => {
         setEditing(null);
         setForm({ name: '', slug: '', description: '', is_active: true });
+        setImageFile(null);
+        setImagePreview(null);
+        setCurrentImageUrl(null);
+        setRemoveImage(false);
         setErrors({});
         setDialogOpen(true);
     };
@@ -60,19 +70,42 @@ export default function Index({ categories, filters }: Props) {
     const openEdit = (category: Category) => {
         setEditing(category);
         setForm({ name: category.name, slug: category.slug, description: category.description || '', is_active: category.is_active });
+        setImageFile(null);
+        setImagePreview(category.image_url);
+        setCurrentImageUrl(category.image_url);
+        setRemoveImage(false);
         setErrors({});
         setDialogOpen(true);
+    };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0] || null;
+        if (imagePreview?.startsWith('blob:')) URL.revokeObjectURL(imagePreview);
+        if (file) {
+            setImageFile(file);
+            setImagePreview(URL.createObjectURL(file));
+            setRemoveImage(false);
+        } else {
+            setImageFile(null);
+            setImagePreview(currentImageUrl);
+        }
+    };
+
+    const handleDialogOpenChange = (open: boolean) => {
+        if (!open && imagePreview?.startsWith('blob:')) URL.revokeObjectURL(imagePreview);
+        setDialogOpen(open);
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setProcessing(true);
-        const payload = {
-            name: form.name,
-            slug: form.slug || form.name.toLowerCase().replace(/\s+/g, '-'),
-            description: form.description || null,
-            is_active: form.is_active,
-        };
+        setErrors({});
+        const formData = new FormData();
+        formData.append('name', form.name);
+        formData.append('slug', form.slug || form.name.toLowerCase().replace(/\s+/g, '-'));
+        formData.append('description', form.description);
+        formData.append('is_active', form.is_active ? '1' : '0');
+        if (imageFile) formData.append('image', imageFile);
         const onError = (err: Record<string, string>) => {
             setErrors(err);
             setProcessing(false);
@@ -81,18 +114,18 @@ export default function Index({ categories, filters }: Props) {
             setDialogOpen(false);
             setProcessing(false);
         };
+        const options = {
+            forceFormData: true,
+            onError,
+            onSuccess,
+            onFinish: () => setProcessing(false),
+        } as never;
         if (editing) {
-            router.put(CategoryRoutes.update(editing.id).url, payload as never, {
-                onError,
-                onSuccess,
-                onFinish: () => setProcessing(false),
-            });
+            formData.append('_method', 'PUT');
+            if (removeImage && !imageFile) formData.append('remove_image', '1');
+            router.post(CategoryRoutes.update(editing.id).url, formData, options);
         } else {
-            router.post(CategoryRoutes.store().url, payload as never, {
-                onError,
-                onSuccess,
-                onFinish: () => setProcessing(false),
-            });
+            router.post(CategoryRoutes.store().url, formData, options);
         }
     };
 
@@ -148,6 +181,7 @@ export default function Index({ categories, filters }: Props) {
                         <Table>
                             <TableHeader>
                                 <TableRow>
+                                    <TableHead>Image</TableHead>
                                     <TableHead>Name</TableHead>
                                     <TableHead>Slug</TableHead>
                                     <TableHead>Status</TableHead>
@@ -158,10 +192,24 @@ export default function Index({ categories, filters }: Props) {
                             </TableHeader>
                             <TableBody>
                                 {categories.data.length === 0 ? (
-                                    <TableEmpty colSpan={6}>No categories found.</TableEmpty>
+                                    <TableEmpty colSpan={7}>No categories found.</TableEmpty>
                                 ) : (
                                     categories.data.map((category) => (
                                         <TableRow key={category.id}>
+                                            <TableCell>
+                                                {category.image_url ? (
+                                                    <img
+                                                        src={category.image_url}
+                                                        alt={category.name}
+                                                        className="h-10 w-10 rounded-md border border-border object-cover"
+                                                        onError={onImageError}
+                                                    />
+                                                ) : (
+                                                    <div className="flex h-10 w-10 items-center justify-center rounded-md border border-dashed border-border bg-muted/60">
+                                                        <ImageIcon className="h-4 w-4 opacity-30" aria-hidden="true" />
+                                                    </div>
+                                                )}
+                                            </TableCell>
                                             <TableCell className="font-medium">{category.name}</TableCell>
                                             <TableCell className="font-mono text-xs">{category.slug}</TableCell>
                                             <TableCell>
@@ -192,7 +240,7 @@ export default function Index({ categories, filters }: Props) {
                     </CardContent>
                 </Card>
 
-                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
                     <DialogContent>
                         <DialogHeader>
                             <DialogTitle>{editing ? 'Edit Category' : 'Add Category'}</DialogTitle>
@@ -223,6 +271,38 @@ export default function Index({ categories, filters }: Props) {
                                     className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                 />
                                 {errors.description && <InputError message={errors.description} />}
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="cat-image" className="flex items-center gap-1.5">
+                                    <Upload className="h-4 w-4" aria-hidden="true" /> Image
+                                </Label>
+                                {!removeImage && imagePreview ? (
+                                    <div className="h-32 w-full overflow-hidden rounded-md border border-border bg-muted">
+                                        <img
+                                            src={imagePreview}
+                                            alt="Category image preview"
+                                            className="h-full w-full object-cover"
+                                            onError={onImageError}
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="flex h-32 w-full items-center justify-center rounded-md border border-dashed border-border bg-muted">
+                                        <ImageIcon className="h-8 w-8 opacity-20" aria-hidden="true" />
+                                    </div>
+                                )}
+                                <Input id="cat-image" type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageChange} />
+                                {errors.image && <InputError message={errors.image} />}
+                                {currentImageUrl && !imageFile && (
+                                    <div className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            id="cat-remove-image"
+                                            checked={removeImage}
+                                            onChange={(e) => setRemoveImage(e.target.checked)}
+                                        />
+                                        <Label htmlFor="cat-remove-image">Remove image</Label>
+                                    </div>
+                                )}
                             </div>
                             <div className="flex items-center gap-2">
                                 <input

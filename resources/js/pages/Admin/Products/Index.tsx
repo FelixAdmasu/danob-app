@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Eye, Package, Pencil, Plus, Search, Trash2 } from 'lucide-react';
 import * as ProductRoutes from '@/routes/admin/products';
+import { onImageError } from '@/lib/image-fallback';
 
 type ProductImage = {
     id: number;
@@ -120,7 +121,7 @@ export default function Index({ products, filters }: Props) {
                                             <TableRow key={product.id}>
                                                 <TableCell>
                                                     {primary ? (
-                                                        <img src={primary.url} alt={product.name} className="h-10 w-10 rounded-lg border border-border object-cover" />
+                                                        <img src={primary.url} alt={product.name} onError={onImageError} className="h-10 w-10 rounded-lg border border-border object-cover" />
                                                     ) : (
                                                         <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-dashed border-border bg-muted/60">
                                                             <Package className="h-4 w-4 opacity-30" aria-hidden="true" />
