@@ -124,7 +124,7 @@ export default function Create({ categories, brands }: Props) {
         <>
             <Head title="Create Product" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <Heading title="Create Product" description="Add a new product to the catalog" />
+                <Heading eyebrow="Catalog" title="Create Product" description="Add a new product to the catalog" />
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <Card>
                         <CardHeader>

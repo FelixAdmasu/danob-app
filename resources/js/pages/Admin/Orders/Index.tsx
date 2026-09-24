@@ -124,7 +124,7 @@ export default function Index({ orders, filters }: Props) {
                                 )}
                             </TableBody>
                         </Table>
-                        {orders.last_page > 1 && <Pagination links={orders.links} className="px-4 pt-4 pb-2" />}
+                        {orders.last_page > 1 && <Pagination links={orders.links} className="px-6 pt-4 pb-2" />}
                     </CardContent>
                 </Card>
             </div>

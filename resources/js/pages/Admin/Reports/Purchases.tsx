@@ -100,68 +100,64 @@ export default function Purchases({ purchase_orders, summary, filters, suppliers
                     <StatCard label="Purchase Value" value={summary.purchase_value} icon={Receipt} />
                 </div>
 
-                <Card>
-                    <CardContent className="p-4">
-                        <form onSubmit={handleFilter} className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
-                            <div className="space-y-2 md:col-span-3 lg:col-span-6">
-                                <Label htmlFor="search">Search</Label>
-                                <Input
-                                    id="search"
-                                    placeholder="Search by PO number or supplier..."
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Supplier</Label>
-                                <Select value={supplierId} onValueChange={setSupplierId}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="All suppliers" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All suppliers</SelectItem>
-                                        {suppliers.map((s) => (
-                                            <SelectItem key={s.id} value={String(s.id)}>
-                                                {s.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Status</Label>
-                                <Select value={status} onValueChange={setStatus}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="All statuses" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All statuses</SelectItem>
-                                        {purchase_statuses.map((s) => (
-                                            <SelectItem key={s} value={s}>
-                                                {s}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="date_from">From</Label>
-                                <Input id="date_from" type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="date_to">To</Label>
-                                <Input id="date_to" type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
-                            </div>
-                            <div className="flex gap-2 md:col-span-3 lg:col-span-6">
-                                <Button type="submit">Filter</Button>
-                                <Button type="button" variant="outline" onClick={clearFilters}>
-                                    Clear
-                                </Button>
-                                <ReportExportButton url={ReportRoutes.purchases.export().url} filters={filters} />
-                            </div>
-                        </form>
-                    </CardContent>
-                </Card>
+                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
+                    <div className="space-y-2 flex-1">
+                        <Label htmlFor="search">Search</Label>
+                        <Input
+                            id="search"
+                            placeholder="Search by PO number or supplier..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Supplier</Label>
+                        <Select value={supplierId} onValueChange={setSupplierId}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="All suppliers" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All suppliers</SelectItem>
+                                {suppliers.map((s) => (
+                                    <SelectItem key={s.id} value={String(s.id)}>
+                                        {s.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Status</Label>
+                        <Select value={status} onValueChange={setStatus}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="All statuses" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All statuses</SelectItem>
+                                {purchase_statuses.map((s) => (
+                                    <SelectItem key={s} value={s}>
+                                        {s}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="date_from">From</Label>
+                        <Input id="date_from" type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="date_to">To</Label>
+                        <Input id="date_to" type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
+                    </div>
+                    <div className="flex gap-2">
+                        <Button type="submit">Filter</Button>
+                        <Button type="button" variant="outline" onClick={clearFilters}>
+                            Clear
+                        </Button>
+                        <ReportExportButton url={ReportRoutes.purchases.export().url} filters={filters} />
+                    </div>
+                </form>
 
                 <Card>
                     <CardHeader>
@@ -208,7 +204,7 @@ export default function Purchases({ purchase_orders, summary, filters, suppliers
                                 )}
                             </TableBody>
                         </Table>
-                        {purchase_orders.last_page > 1 && <Pagination links={purchase_orders.links} className="px-4 pt-4 pb-2" />}
+                        {purchase_orders.last_page > 1 && <Pagination links={purchase_orders.links} className="px-6 pt-4 pb-2" />}
                     </CardContent>
                 </Card>
             </div>

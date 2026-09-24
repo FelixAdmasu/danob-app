@@ -236,7 +236,7 @@ export default function Index({ categories, filters }: Props) {
                                 )}
                             </TableBody>
                         </Table>
-                        {categories.last_page > 1 && <Pagination links={categories.links} className="px-4 pt-4 pb-2" />}
+                        {categories.last_page > 1 && <Pagination links={categories.links} className="px-6 pt-4 pb-2" />}
                     </CardContent>
                 </Card>
 

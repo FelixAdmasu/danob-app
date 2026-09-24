@@ -110,102 +110,98 @@ export default function InventoryMovements({ movements, summary, filters, produc
                     <StatCard label="Units Out" value={summary.units_out} icon={ArrowUpFromLine} />
                 </div>
 
-                <Card>
-                    <CardContent className="p-4">
-                        <form onSubmit={handleFilter} className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
-                            <div className="space-y-2 md:col-span-3 lg:col-span-6">
-                                <Label htmlFor="search">Search</Label>
-                                <Input
-                                    id="search"
-                                    placeholder="Search by reason, variant, SKU or product..."
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Product</Label>
-                                <Select value={productId} onValueChange={setProductId}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="All products" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All products</SelectItem>
-                                        {products.map((p) => (
-                                            <SelectItem key={p.id} value={String(p.id)}>
-                                                {p.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Variant</Label>
-                                <Select value={variantId} onValueChange={setVariantId}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="All variants" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All variants</SelectItem>
-                                        {variants
-                                            .filter((v) => productId === 'all' || String(v.product_id) === productId)
-                                            .map((v) => (
-                                                <SelectItem key={v.id} value={String(v.id)}>
-                                                    {v.name}
-                                                </SelectItem>
-                                            ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Type</Label>
-                                <Select value={movementType} onValueChange={setMovementType}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="All types" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All types</SelectItem>
-                                        {movement_types.map((t) => (
-                                            <SelectItem key={t} value={t}>
-                                                {t}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label>User</Label>
-                                <Select value={userId} onValueChange={setUserId}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="All users" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All users</SelectItem>
-                                        {users.map((u) => (
-                                            <SelectItem key={u.id} value={String(u.id)}>
-                                                {u.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="date_from">From</Label>
-                                <Input id="date_from" type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="date_to">To</Label>
-                                <Input id="date_to" type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
-                            </div>
-                            <div className="flex gap-2 md:col-span-3 lg:col-span-6">
-                                <Button type="submit">Filter</Button>
-                                <Button type="button" variant="outline" onClick={clearFilters}>
-                                    Clear
-                                </Button>
-                                <ReportExportButton url={ReportRoutes.inventoryMovements.export().url} filters={filters} />
-                            </div>
-                        </form>
-                    </CardContent>
-                </Card>
+                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
+                    <div className="space-y-2 flex-1">
+                        <Label htmlFor="search">Search</Label>
+                        <Input
+                            id="search"
+                            placeholder="Search by reason, variant, SKU or product..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Product</Label>
+                        <Select value={productId} onValueChange={setProductId}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="All products" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All products</SelectItem>
+                                {products.map((p) => (
+                                    <SelectItem key={p.id} value={String(p.id)}>
+                                        {p.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Variant</Label>
+                        <Select value={variantId} onValueChange={setVariantId}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="All variants" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All variants</SelectItem>
+                                {variants
+                                    .filter((v) => productId === 'all' || String(v.product_id) === productId)
+                                    .map((v) => (
+                                        <SelectItem key={v.id} value={String(v.id)}>
+                                            {v.name}
+                                        </SelectItem>
+                                    ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Type</Label>
+                        <Select value={movementType} onValueChange={setMovementType}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="All types" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All types</SelectItem>
+                                {movement_types.map((t) => (
+                                    <SelectItem key={t} value={t}>
+                                        {t}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <Label>User</Label>
+                        <Select value={userId} onValueChange={setUserId}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="All users" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All users</SelectItem>
+                                {users.map((u) => (
+                                    <SelectItem key={u.id} value={String(u.id)}>
+                                        {u.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="date_from">From</Label>
+                        <Input id="date_from" type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="date_to">To</Label>
+                        <Input id="date_to" type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
+                    </div>
+                    <div className="flex gap-2">
+                        <Button type="submit">Filter</Button>
+                        <Button type="button" variant="outline" onClick={clearFilters}>
+                            Clear
+                        </Button>
+                        <ReportExportButton url={ReportRoutes.inventoryMovements.export().url} filters={filters} />
+                    </div>
+                </form>
 
                 <Card>
                     <CardHeader>
@@ -254,7 +250,7 @@ export default function InventoryMovements({ movements, summary, filters, produc
                                 )}
                             </TableBody>
                         </Table>
-                        {movements.last_page > 1 && <Pagination links={movements.links} className="px-4 pt-4 pb-2" />}
+                        {movements.last_page > 1 && <Pagination links={movements.links} className="px-6 pt-4 pb-2" />}
                     </CardContent>
                 </Card>
             </div>

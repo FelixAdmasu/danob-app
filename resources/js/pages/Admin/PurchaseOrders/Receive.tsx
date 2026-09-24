@@ -62,11 +62,14 @@ export default function Receive({ purchase_order }: { purchase_order: PurchaseOr
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
                 <div className="flex items-center justify-between">
                     <Heading
+                        eyebrow="Operations"
                         title={`Receive ${purchase_order.po_number}`}
                         description={`Supplier: ${purchase_order.supplier?.name || '—'}`}
                     />
                     <div className="flex items-center gap-2">
-                        <Badge>{purchase_order.status}</Badge>
+                        <Badge variant={purchase_order.status === 'received' ? 'success' : purchase_order.status === 'cancelled' ? 'cancelled' : 'warning'}>
+                            {purchase_order.status}
+                        </Badge>
                         <Link href={PurchaseOrderRoutes.show(purchase_order.id).url}>
                             <Button variant="outline">Back</Button>
                         </Link>

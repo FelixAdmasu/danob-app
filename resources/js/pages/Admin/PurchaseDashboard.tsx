@@ -115,7 +115,7 @@ export default function PurchaseDashboard({ purchases }: { purchases: Purchases 
     return (
         <>
             <Head title="Purchase Dashboard" />
-            <div className="flex flex-col gap-6 p-4 md:p-6">
+            <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
                 <Heading
                     eyebrow="Purchasing"
                     title="Purchase Dashboard"
@@ -149,64 +149,64 @@ export default function PurchaseDashboard({ purchases }: { purchases: Purchases 
                         <CardTitle>Outstanding Purchases</CardTitle>
                     </CardHeader>
                     <CardContent className="px-0">
-                        {purchases.outstanding.length === 0 ? (
-                            <p className="px-6 text-sm text-muted-foreground">No outstanding purchase orders.</p>
-                        ) : (
-                            <>
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>PO Number</TableHead>
-                                            <TableHead>Supplier</TableHead>
-                                            <TableHead>Ordered</TableHead>
-                                            <TableHead>Expected</TableHead>
-                                            <TableHead className="text-right">Ordered Qty</TableHead>
-                                            <TableHead className="text-right">Received</TableHead>
-                                            <TableHead className="text-right">Remaining</TableHead>
-                                            <TableHead className="text-right">Total</TableHead>
-                                            <TableHead>Status</TableHead>
-                                            <TableHead>Action</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {purchases.outstanding.map((po) => (
-                                            <TableRow key={po.id}>
-                                                <TableCell className="font-mono text-sm">
-                                                    <Link href={PurchaseOrderRoutes.show(po.id).url} className="hover:underline">
-                                                        {po.po_number}
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>PO Number</TableHead>
+                                    <TableHead>Supplier</TableHead>
+                                    <TableHead>Ordered</TableHead>
+                                    <TableHead>Expected</TableHead>
+                                    <TableHead className="text-right">Ordered Qty</TableHead>
+                                    <TableHead className="text-right">Received</TableHead>
+                                    <TableHead className="text-right">Remaining</TableHead>
+                                    <TableHead className="text-right">Total</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead>Action</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {purchases.outstanding.length === 0 ? (
+                                    <TableEmpty colSpan={10}>No outstanding purchase orders.</TableEmpty>
+                                ) : (
+                                    purchases.outstanding.map((po) => (
+                                        <TableRow key={po.id}>
+                                            <TableCell className="font-mono text-sm">
+                                                <Link href={PurchaseOrderRoutes.show(po.id).url} className="hover:underline">
+                                                    {po.po_number}
+                                                </Link>
+                                            </TableCell>
+                                            <TableCell className="text-sm">{po.supplier?.name || '—'}</TableCell>
+                                            <TableCell className="text-xs">{formatDate(po.ordered_at)}</TableCell>
+                                            <TableCell className="text-xs">{formatDate(po.expected_at)}</TableCell>
+                                            <TableCell className="text-right text-sm">{po.ordered_quantity}</TableCell>
+                                            <TableCell className="text-right text-sm">{po.received_quantity}</TableCell>
+                                            <TableCell className="text-right text-sm">{po.remaining_quantity}</TableCell>
+                                            <TableCell className="text-right font-mono text-sm">{po.total}</TableCell>
+                                            <TableCell>
+                                                <StatusBadge status={po.status} />
+                                            </TableCell>
+                                            <TableCell className="text-xs">
+                                                {canReceive(po.status) ? (
+                                                    <Link href={PurchaseOrderRoutes.receive(po.id).url} className="font-medium text-primary hover:underline">
+                                                        Receive
                                                     </Link>
-                                                </TableCell>
-                                                <TableCell className="text-sm">{po.supplier?.name || '—'}</TableCell>
-                                                <TableCell className="text-xs">{formatDate(po.ordered_at)}</TableCell>
-                                                <TableCell className="text-xs">{formatDate(po.expected_at)}</TableCell>
-                                                <TableCell className="text-right text-sm">{po.ordered_quantity}</TableCell>
-                                                <TableCell className="text-right text-sm">{po.received_quantity}</TableCell>
-                                                <TableCell className="text-right text-sm">{po.remaining_quantity}</TableCell>
-                                                <TableCell className="text-right font-mono text-sm">{po.total}</TableCell>
-                                                <TableCell>
-                                                    <StatusBadge status={po.status} />
-                                                </TableCell>
-                                                <TableCell className="text-xs">
-                                                    {canReceive(po.status) ? (
-                                                        <Link href={PurchaseOrderRoutes.receive(po.id).url} className="font-medium text-primary hover:underline">
-                                                            Receive
-                                                        </Link>
-                                                    ) : (
-                                                        <Link href={PurchaseOrderRoutes.show(po.id).url} className="font-medium text-primary hover:underline">
-                                                            View
-                                                        </Link>
-                                                    )}
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                                <div className="px-4 pt-4">
-                                    <Link href={PurchaseOrderRoutes.index().url} className="text-xs font-medium text-primary hover:underline">
-                                        View all purchase orders →
-                                    </Link>
-                                </div>
-                            </>
+                                                ) : (
+                                                    <Link href={PurchaseOrderRoutes.show(po.id).url} className="font-medium text-primary hover:underline">
+                                                        View
+                                                    </Link>
+                                                )}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                        {purchases.outstanding.length > 0 && (
+                            <div className="px-4 pt-4">
+                                <Link href={PurchaseOrderRoutes.index().url} className="text-xs font-medium text-primary hover:underline">
+                                    View all purchase orders →
+                                </Link>
+                            </div>
                         )}
                     </CardContent>
                 </Card>

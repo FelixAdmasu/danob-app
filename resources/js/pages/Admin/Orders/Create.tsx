@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import * as OrderRoutes from '@/routes/admin/orders';
 
 type Customer = { id: number; company_name?: string | null; contact_name?: string | null };
@@ -171,6 +172,7 @@ export default function Create({ search: initialSearch, customers, products }: P
             <Head title="New Order" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
                 <Heading
+                    eyebrow="Sales"
                     title="New Sales Order"
                     description="Creates a pending order — stock is deducted only on confirmation."
                 />
@@ -297,68 +299,66 @@ export default function Create({ search: initialSearch, customers, products }: P
                                 )}
 
                                 {items.length > 0 ? (
-                                    <div className="overflow-x-auto">
-                                        <table className="w-full text-sm">
-                                            <thead className="border-b bg-muted/50">
-                                                <tr className="text-left">
-                                                    <th className="h-10 px-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Product</th>
-                                                    <th className="h-10 px-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">SKU</th>
-                                                    <th className="h-10 px-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Quantity</th>
-                                                    <th className="h-10 px-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Unit Price</th>
-                                                    <th className="h-10 px-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Subtotal</th>
-                                                    <th className="h-10 px-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                                                        <span className="sr-only">Actions</span>
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {items.map((item, idx) => (
-                                                    <Fragment key={item.product_variant_id}>
-                                                        <tr className="border-b">
-                                                            <td className="px-2 py-2">
-                                                                {item.product_name} — {item.variant_name}
-                                                            </td>
-                                                            <td className="px-2 py-2">{item.sku ?? '—'}</td>
-                                                            <td className="px-2 py-2">
-                                                                <Input
-                                                                    aria-label={`Quantity for ${item.variant_name}`}
-                                                                    className="w-20 text-center"
-                                                                    type="number"
-                                                                    min={1}
-                                                                    value={item.quantity}
-                                                                    onChange={(e) => updateItem(idx, 'quantity', e.target.value)}
-                                                                />
-                                                            </td>
-                                                            <td className="px-2 py-2">
-                                                                <Input
-                                                                    aria-label={`Unit price for ${item.variant_name}`}
-                                                                    className="w-28"
-                                                                    type="number"
-                                                                    step="0.01"
-                                                                    min={0}
-                                                                    value={item.unit_price}
-                                                                    onChange={(e) => updateItem(idx, 'unit_price', e.target.value)}
-                                                                />
-                                                            </td>
-                                                            <td className="px-2 py-2 tabular-nums">{lineTotal(item)}</td>
-                                                            <td className="px-2 py-2 text-right">
-                                                                <Button type="button" variant="ghost" size="sm" onClick={() => removeItem(idx)}>
-                                                                    Remove
-                                                                </Button>
-                                                            </td>
-                                                        </tr>
-                                                        {itemError(idx) && (
-                                                            <tr>
-                                                                <td colSpan={6} className="px-2 pb-2">
-                                                                    <p role="alert" className="text-xs text-red-600 dark:text-red-400">{itemError(idx)}</p>
-                                                                </td>
-                                                            </tr>
-                                                        )}
-                                                    </Fragment>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Product</TableHead>
+                                                <TableHead>SKU</TableHead>
+                                                <TableHead>Quantity</TableHead>
+                                                <TableHead>Unit Price</TableHead>
+                                                <TableHead>Subtotal</TableHead>
+                                                <TableHead>
+                                                    <span className="sr-only">Actions</span>
+                                                </TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {items.map((item, idx) => (
+                                                <Fragment key={item.product_variant_id}>
+                                                    <TableRow>
+                                                        <TableCell>
+                                                            {item.product_name} — {item.variant_name}
+                                                        </TableCell>
+                                                        <TableCell>{item.sku ?? '—'}</TableCell>
+                                                        <TableCell>
+                                                            <Input
+                                                                aria-label={`Quantity for ${item.variant_name}`}
+                                                                className="w-20 text-center"
+                                                                type="number"
+                                                                min={1}
+                                                                value={item.quantity}
+                                                                onChange={(e) => updateItem(idx, 'quantity', e.target.value)}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Input
+                                                                aria-label={`Unit price for ${item.variant_name}`}
+                                                                className="w-28"
+                                                                type="number"
+                                                                step="0.01"
+                                                                min={0}
+                                                                value={item.unit_price}
+                                                                onChange={(e) => updateItem(idx, 'unit_price', e.target.value)}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell className="tabular-nums">{lineTotal(item)}</TableCell>
+                                                        <TableCell className="text-right">
+                                                            <Button type="button" variant="ghost" size="sm" onClick={() => removeItem(idx)}>
+                                                                Remove
+                                                            </Button>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                    {itemError(idx) && (
+                                                        <TableRow>
+                                                            <TableCell colSpan={6}>
+                                                                <p role="alert" className="text-xs text-red-600 dark:text-red-400">{itemError(idx)}</p>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    )}
+                                                </Fragment>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
                                 ) : (
                                     <p className="text-sm text-muted-foreground">No items added yet.</p>
                                 )}

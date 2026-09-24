@@ -7,15 +7,35 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { useCurrentUrl } from '@/hooks/use-current-url';
+import { cn } from '@/lib/utils';
 import type { NavItem } from '@/types';
 
-export function NavMain({ items, label = 'Platform' }: { items: NavItem[]; label?: string }) {
+/**
+ * A labeled navigation section. The label carries a trailing hairline rule so
+ * grouped items read as distinct sections; when the sidebar collapses to
+ * icons the label (and rule) hide with it, which is why callers pass an
+ * icon-mode divider class to keep the grouping readable.
+ */
+export function NavMain({
+    items,
+    label = 'Platform',
+    className,
+}: {
+    items: NavItem[];
+    label?: string;
+    className?: string;
+}) {
     const { isCurrentUrl, isCurrentOrParentUrl } = useCurrentUrl();
 
+    if (items.length === 0) {
+        return null;
+    }
+
     return (
-        <SidebarGroup className="px-2 py-0">
-            <SidebarGroupLabel className="px-3 pt-1 pb-2 text-[10px] font-bold uppercase tracking-[0.28em] text-muted-foreground dark:text-primary/80">
-                {label}
+        <SidebarGroup className={cn('px-2 py-0', className)}>
+            <SidebarGroupLabel className="gap-2 px-3 pt-1 pb-2 text-[10px] font-bold uppercase tracking-[0.28em] text-muted-foreground dark:text-primary/80">
+                <span className="whitespace-nowrap">{label}</span>
+                <span aria-hidden="true" className="h-px flex-1 bg-border/70" />
             </SidebarGroupLabel>
             <SidebarMenu className="gap-1">
                 {items.map((item) => (

@@ -88,8 +88,8 @@ export default function Edit({ brand }: Props) {
         <>
             <Head title={`Edit ${brand.name}`} />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <Heading title={`Edit ${brand.name}`} description="Update brand" />
-                <Card>
+                <Heading eyebrow="Catalog" title={`Edit ${brand.name}`} description="Update brand" />
+                <Card className="max-w-3xl">
                     <CardHeader>
                         <CardTitle>Brand Details</CardTitle>
                     </CardHeader>

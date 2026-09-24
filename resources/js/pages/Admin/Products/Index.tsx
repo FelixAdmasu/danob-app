@@ -108,12 +108,7 @@ export default function Index({ products, filters }: Props) {
                             </TableHeader>
                             <TableBody>
                                 {products.data.length === 0 ? (
-                                    <TableEmpty colSpan={7}>
-                                        <span className="flex flex-col items-center gap-2">
-                                            <Package className="h-8 w-8 opacity-20" aria-hidden="true" />
-                                            No products yet.
-                                        </span>
-                                    </TableEmpty>
+                                    <TableEmpty colSpan={7}>No products yet.</TableEmpty>
                                 ) : (
                                     products.data.map((product) => {
                                         const primary = product.images.find((i) => i.is_primary) || product.images[0] || null;
@@ -167,7 +162,7 @@ export default function Index({ products, filters }: Props) {
                                 )}
                             </TableBody>
                         </Table>
-                        {products.last_page > 1 && <Pagination links={products.links} className="px-4 pt-4 pb-2" />}
+                        {products.last_page > 1 && <Pagination links={products.links} className="px-6 pt-4 pb-2" />}
                     </CardContent>
                 </Card>
             </div>

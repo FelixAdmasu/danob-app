@@ -78,7 +78,7 @@ export default function Edit({
         <>
             <Head title={`Edit ${purchase_order.po_number}`} />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <Heading title={`Edit ${purchase_order.po_number}`} description="Only draft orders can be edited" />
+                <Heading eyebrow="Operations" title={`Edit ${purchase_order.po_number}`} description="Only draft orders can be edited" />
                 <Card>
                     <CardHeader>
                         <CardTitle>Order Details</CardTitle>

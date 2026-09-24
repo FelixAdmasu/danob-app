@@ -54,9 +54,9 @@ export default function Create() {
         <>
             <Head title="Create Category" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <Heading title="Create Category" description="Add a new category" />
+                <Heading eyebrow="Catalog" title="Create Category" description="Add a new category" />
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    <Card>
+                    <Card className="max-w-3xl">
                         <CardHeader>
                             <CardTitle>Category Details</CardTitle>
                         </CardHeader>
@@ -89,7 +89,7 @@ export default function Create() {
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="max-w-3xl">
                         <CardHeader>
                             <CardTitle>Image</CardTitle>
                         </CardHeader>

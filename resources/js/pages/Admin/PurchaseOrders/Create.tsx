@@ -56,7 +56,7 @@ export default function Create({ suppliers, products }: { suppliers: Supplier[];
         <>
             <Head title="Create Purchase Order" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <Heading title="Create Purchase Order" description="Add supplier and items" />
+                <Heading eyebrow="Operations" title="Create Purchase Order" description="Add supplier and items" />
                 <Card>
                     <CardHeader>
                         <CardTitle>New PO</CardTitle>

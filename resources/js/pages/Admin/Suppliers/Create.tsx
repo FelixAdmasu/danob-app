@@ -30,8 +30,8 @@ export default function Create() {
         <>
             <Head title="Create Supplier" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <Heading title="Create Supplier" description="Add a new supplier" />
-                <Card>
+                <Heading eyebrow="Operations" title="Create Supplier" description="Add a new supplier" />
+                <Card className="max-w-3xl">
                     <CardHeader>
                         <CardTitle>Supplier Details</CardTitle>
                     </CardHeader>

@@ -91,7 +91,7 @@ export default function Index({ customers, filters }: Props) {
                                 )}
                             </TableBody>
                         </Table>
-                        {customers.last_page > 1 && <Pagination links={customers.links} className="px-4 pt-4 pb-2" />}
+                        {customers.last_page > 1 && <Pagination links={customers.links} className="px-6 pt-4 pb-2" />}
                     </CardContent>
                 </Card>
             </div>

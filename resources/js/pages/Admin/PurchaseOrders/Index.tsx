@@ -38,33 +38,29 @@ export default function Index({ purchase_orders, filters }: { purchase_orders: P
                         </Link>
                     }
                 />
-                <Card>
-                    <CardContent className="p-4">
-                        <form onSubmit={handleSearch} className="flex gap-2 max-w-2xl">
-                            <div className="relative flex-1">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search PO number or supplier..." className="pl-9" />
-                            </div>
-                            <Select value={status} onValueChange={setStatus}>
-                                <SelectTrigger className="w-[160px]">
-                                    <SelectValue placeholder="Status" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Status</SelectItem>
-                                    <SelectItem value="draft">Draft</SelectItem>
-                                    <SelectItem value="submitted">Submitted</SelectItem>
-                                    <SelectItem value="approved">Approved</SelectItem>
-                                    <SelectItem value="partially_received">Partially Received</SelectItem>
-                                    <SelectItem value="received">Received</SelectItem>
-                                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <Button type="submit" variant="outline">
-                                Search
-                            </Button>
-                        </form>
-                    </CardContent>
-                </Card>
+                <form onSubmit={handleSearch} className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search PO number or supplier..." className="pl-9" />
+                    </div>
+                    <Select value={status} onValueChange={setStatus}>
+                        <SelectTrigger className="w-[160px]">
+                            <SelectValue placeholder="Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Status</SelectItem>
+                            <SelectItem value="draft">Draft</SelectItem>
+                            <SelectItem value="submitted">Submitted</SelectItem>
+                            <SelectItem value="approved">Approved</SelectItem>
+                            <SelectItem value="partially_received">Partially Received</SelectItem>
+                            <SelectItem value="received">Received</SelectItem>
+                            <SelectItem value="cancelled">Cancelled</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <Button type="submit" variant="outline">
+                        Search
+                    </Button>
+                </form>
                 <Card>
                     <CardHeader>
                         <CardTitle>All Purchase Orders</CardTitle>
@@ -102,7 +98,7 @@ export default function Index({ purchase_orders, filters }: { purchase_orders: P
                                 )}
                             </TableBody>
                         </Table>
-                        {purchase_orders.last_page > 1 && <Pagination links={purchase_orders.links} className="px-4 pt-4 pb-2" />}
+                        {purchase_orders.last_page > 1 && <Pagination links={purchase_orders.links} className="px-6 pt-4 pb-2" />}
                     </CardContent>
                 </Card>
             </div>

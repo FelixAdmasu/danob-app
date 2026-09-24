@@ -16,11 +16,12 @@ export default function Dashboard() {
     return (
         <>
             <Head title="Account Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6">
+            <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
                 {/* Welcome Section */}
                 <div className="space-y-2">
                     <Heading
                         variant="default"
+                        eyebrow="Account"
                         title="Account Dashboard"
                         description={`Welcome back, ${auth.user?.name ?? 'User'}`}
                     />
@@ -90,19 +91,19 @@ export default function Dashboard() {
                     </CardHeader>
                     <CardContent>
                         <div className="grid gap-4 sm:grid-cols-2">
-                            <div className="rounded-lg border border-dashed border-neutral-300 bg-neutral-50 p-6 text-center dark:border-neutral-700 dark:bg-neutral-900">
-                                <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                            <div className="rounded-lg border border-dashed border-border bg-muted p-6 text-center dark:border-border dark:bg-muted">
+                                <p className="text-sm font-medium text-muted-foreground dark:text-muted-foreground">
                                     Profile
                                 </p>
-                                <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                                <p className="mt-1 text-xs text-muted-foreground dark:text-muted-foreground">
                                     Update your name and email
                                 </p>
                             </div>
-                            <div className="rounded-lg border border-dashed border-neutral-300 bg-neutral-50 p-6 text-center dark:border-neutral-700 dark:bg-neutral-900">
-                                <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                            <div className="rounded-lg border border-dashed border-border bg-muted p-6 text-center dark:border-border dark:bg-muted">
+                                <p className="text-sm font-medium text-muted-foreground dark:text-muted-foreground">
                                     Security
                                 </p>
-                                <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                                <p className="mt-1 text-xs text-muted-foreground dark:text-muted-foreground">
                                     Manage password and 2FA
                                 </p>
                             </div>

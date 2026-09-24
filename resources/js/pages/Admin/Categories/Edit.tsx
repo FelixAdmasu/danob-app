@@ -81,9 +81,9 @@ export default function Edit({ category }: Props) {
         <>
             <Head title={`Edit ${category.name}`} />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <Heading title={`Edit ${category.name}`} description="Update category" />
+                <Heading eyebrow="Catalog" title={`Edit ${category.name}`} description="Update category" />
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    <Card>
+                    <Card className="max-w-3xl">
                         <CardHeader>
                             <CardTitle>Category Details</CardTitle>
                         </CardHeader>
@@ -116,7 +116,7 @@ export default function Edit({ category }: Props) {
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="max-w-3xl">
                         <CardHeader>
                             <CardTitle>Image</CardTitle>
                         </CardHeader>

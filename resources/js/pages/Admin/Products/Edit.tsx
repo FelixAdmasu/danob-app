@@ -142,7 +142,7 @@ export default function Edit({ product, categories, brands }: Props) {
         <>
             <Head title={`Edit ${product.name}`} />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <Heading title={`Edit ${product.name}`} description="Update product details" />
+                <Heading eyebrow="Catalog" title={`Edit ${product.name}`} description="Update product details" />
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <Card>
                         <CardHeader>

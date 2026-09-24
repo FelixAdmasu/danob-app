@@ -13,7 +13,7 @@ export default function Show({ supplier }: { supplier: Supplier }) {
             <Head title={supplier.name} />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
                 <div className="flex items-center justify-between">
-                    <Heading title={supplier.name} description={`Supplier detail`} />
+                    <Heading eyebrow="Operations" title={supplier.name} description={`Supplier detail`} />
                     <div className="flex gap-2">
                         <Link href={SupplierRoutes.edit(supplier.id).url}>
                             <Button variant="outline">Edit</Button>

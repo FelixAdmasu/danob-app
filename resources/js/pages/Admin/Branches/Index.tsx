@@ -87,7 +87,7 @@ export default function Index({ branches, filters }: Props) {
                                 )}
                             </TableBody>
                         </Table>
-                        {branches.last_page > 1 && <Pagination links={branches.links} className="px-4 pt-4 pb-2" />}
+                        {branches.last_page > 1 && <Pagination links={branches.links} className="px-6 pt-4 pb-2" />}
                     </CardContent>
                 </Card>
             </div>

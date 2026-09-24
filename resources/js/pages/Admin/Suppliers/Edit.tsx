@@ -41,8 +41,8 @@ export default function Edit({ supplier }: { supplier: Supplier }) {
         <>
             <Head title={`Edit ${supplier.name}`} />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <Heading title={`Edit ${supplier.name}`} description="Update supplier" />
-                <Card>
+                <Heading eyebrow="Operations" title={`Edit ${supplier.name}`} description="Update supplier" />
+                <Card className="max-w-3xl">
                     <CardHeader>
                         <CardTitle>Supplier Details</CardTitle>
                     </CardHeader>

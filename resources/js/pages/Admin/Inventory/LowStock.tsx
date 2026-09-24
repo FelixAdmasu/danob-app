@@ -82,41 +82,37 @@ export default function LowStock({ variants, counts, filters }: Props) {
                     <StatCard label="Monitored Variants" value={counts.monitored} icon={Layers} />
                 </div>
 
-                <Card>
-                    <CardContent className="p-4">
-                        <form onSubmit={handleFilter} className="grid gap-4 md:grid-cols-3">
-                            <div className="space-y-2">
-                                <Label>Status</Label>
-                                <Select value={status} onValueChange={setStatus}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Needs attention" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="attention">Needs Attention</SelectItem>
-                                        <SelectItem value="low">Low Stock</SelectItem>
-                                        <SelectItem value="out">Out of Stock</SelectItem>
-                                        <SelectItem value="monitored">All Monitored Variants</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2 md:col-span-2">
-                                <Label htmlFor="search">Search</Label>
-                                <Input
-                                    id="search"
-                                    placeholder="Search by product, variant or SKU..."
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                />
-                            </div>
-                            <div className="flex gap-2">
-                                <Button type="submit">Filter</Button>
-                                <Button type="button" variant="outline" onClick={clearFilters}>
-                                    Clear
-                                </Button>
-                            </div>
-                        </form>
-                    </CardContent>
-                </Card>
+                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
+                    <div className="space-y-2">
+                        <Label>Status</Label>
+                        <Select value={status} onValueChange={setStatus}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Needs attention" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="attention">Needs Attention</SelectItem>
+                                <SelectItem value="low">Low Stock</SelectItem>
+                                <SelectItem value="out">Out of Stock</SelectItem>
+                                <SelectItem value="monitored">All Monitored Variants</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2 flex-1">
+                        <Label htmlFor="search">Search</Label>
+                        <Input
+                            id="search"
+                            placeholder="Search by product, variant or SKU..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
+                    <div className="flex gap-2">
+                        <Button type="submit">Filter</Button>
+                        <Button type="button" variant="outline" onClick={clearFilters}>
+                            Clear
+                        </Button>
+                    </div>
+                </form>
 
                 <Card>
                     <CardContent className="px-0">
@@ -166,7 +162,7 @@ export default function LowStock({ variants, counts, filters }: Props) {
                                 )}
                             </TableBody>
                         </Table>
-                        {variants.last_page > 1 && <Pagination links={variants.links} className="px-4 pt-4 pb-2" />}
+                        {variants.last_page > 1 && <Pagination links={variants.links} className="px-6 pt-4 pb-2" />}
                     </CardContent>
                 </Card>
             </div>

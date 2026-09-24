@@ -66,8 +66,8 @@ export default function Create() {
         <>
             <Head title="Create Brand" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <Heading title="Create Brand" description="Add a new brand" />
-                <Card>
+                <Heading eyebrow="Catalog" title="Create Brand" description="Add a new brand" />
+                <Card className="max-w-3xl">
                     <CardHeader>
                         <CardTitle>Brand Details</CardTitle>
                     </CardHeader>

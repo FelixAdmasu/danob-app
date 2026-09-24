@@ -12,7 +12,6 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-    SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import * as productRoutes from '@/routes/admin/products';
@@ -35,6 +34,11 @@ const mainNavItems: NavItem[] = [
     },
 ];
 
+// When the sidebar collapses to icons the section labels hide with them; a
+// hairline top border keeps the grouping readable in that mode.
+const SECTION_DIVIDER =
+    'group-data-[collapsible=icon]:border-t group-data-[collapsible=icon]:border-sidebar-border/70';
+
 const footerNavItems: NavItem[] = [
     {
         title: 'Repository',
@@ -54,15 +58,29 @@ export function AppSidebar() {
     const isAdmin = role === 'super_admin' || role === 'admin' || role === 'manager';
     const isStaffPlus = isAdmin || role === 'staff';
 
-    const adminNavItems: NavItem[] = isAdmin
+    // Sections mirror the page eyebrows (Catalog / Operations / Inventory /
+    // Sales) so the nav, breadcrumbs and page headers tell the same story.
+    // Role gating is unchanged: admins see the admin sections, staff+ see
+    // sales, everyone sees Home. NavMain renders nothing for empty sections.
+    const catalogItems: NavItem[] = isAdmin
         ? [
               { title: 'Products', href: productRoutes.index().url, icon: Package },
               { title: 'Categories', href: categoryRoutes.index().url, icon: Tag },
               { title: 'Brands', href: brandRoutes.index().url, icon: Layers },
+          ]
+        : [];
+
+    const operationsItems: NavItem[] = isAdmin
+        ? [
               { title: 'Branches', href: branchRoutes.index().url, icon: Building2 },
               { title: 'Suppliers', href: supplierRoutes.index().url, icon: Truck },
               { title: 'Purchase Orders', href: purchaseOrderRoutes.index().url, icon: FileText },
               { title: 'Purchase Dashboard', href: '/admin/purchases/dashboard', icon: LayoutDashboard },
+          ]
+        : [];
+
+    const inventoryItems: NavItem[] = isAdmin
+        ? [
               { title: 'Opening Stock', href: inventoryRoutes.openingStock().url, icon: Archive },
               { title: 'Stock Adjustments', href: inventoryRoutes.adjustments().url, icon: ArrowUpDown },
               { title: 'Inventory History', href: inventoryRoutes.history().url, icon: History },
@@ -70,7 +88,7 @@ export function AppSidebar() {
           ]
         : [];
 
-    const orderNavItems: NavItem[] = isStaffPlus
+    const salesItems: NavItem[] = isStaffPlus
         ? [
               { title: 'Orders', href: orderRoutes.index().url, icon: ShoppingCart },
               { title: 'Customers', href: customerRoutes.index().url, icon: Users },
@@ -78,8 +96,6 @@ export function AppSidebar() {
               { title: 'Reports', href: '/admin/reports', icon: BarChart3 },
           ]
         : [];
-
-    const platformItems = [...adminNavItems, ...orderNavItems];
 
     return (
         <Sidebar collapsible="icon" variant="inset">
@@ -101,12 +117,10 @@ export function AppSidebar() {
 
             <SidebarContent>
                 <NavMain items={mainNavItems} label="Home" />
-                {platformItems.length > 0 && (
-                    <>
-                        <SidebarSeparator className="mx-3 my-1 opacity-70" />
-                        <NavMain items={platformItems} label="Platform" />
-                    </>
-                )}
+                <NavMain items={catalogItems} label="Catalog" className={SECTION_DIVIDER} />
+                <NavMain items={operationsItems} label="Operations" className={SECTION_DIVIDER} />
+                <NavMain items={inventoryItems} label="Inventory" className={SECTION_DIVIDER} />
+                <NavMain items={salesItems} label="Sales" className={SECTION_DIVIDER} />
             </SidebarContent>
 
             <SidebarFooter className="border-t border-sidebar-border/70 pt-3">

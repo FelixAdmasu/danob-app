@@ -27,7 +27,7 @@ export default function Heading({
     }
 
     return (
-        <header className="mb-8 flex flex-col gap-4 border-b border-border pb-6 md:flex-row md:items-end md:justify-between">
+        <header className="flex flex-col gap-4 border-b border-border pb-6 md:flex-row md:items-end md:justify-between">
             <div className="space-y-1.5">
                 {eyebrow && (
                     <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground dark:text-primary">

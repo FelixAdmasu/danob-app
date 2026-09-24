@@ -12,8 +12,12 @@ export default function AppSidebarLayout({
         <AppShell variant="sidebar">
             <AppSidebar />
             <AppContent variant="sidebar" className="min-w-0 overflow-x-clip">
-                <AppSidebarHeader breadcrumbs={breadcrumbs} />
-                {children}
+                {/* Shared max-width keeps the top bar, breadcrumbs and page
+                    content on one alignment column on wide screens. */}
+                <div className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col">
+                    <AppSidebarHeader breadcrumbs={breadcrumbs} />
+                    {children}
+                </div>
             </AppContent>
         </AppShell>
     );

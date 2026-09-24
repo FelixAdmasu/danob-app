@@ -75,28 +75,24 @@ export default function CustomersReport({ customers, summary, filters }: Props) 
                     <StatCard label="Delivered Sales Value" value={summary.delivered_sales_value} icon={DollarSign} />
                 </div>
 
-                <Card>
-                    <CardContent className="p-4">
-                        <form onSubmit={handleFilter} className="grid gap-4 md:grid-cols-3">
-                            <div className="space-y-2 md:col-span-2">
-                                <Label htmlFor="search">Search</Label>
-                                <Input
-                                    id="search"
-                                    placeholder="Search by company, contact, email or phone..."
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                />
-                            </div>
-                            <div className="flex gap-2">
-                                <Button type="submit">Filter</Button>
-                                <Button type="button" variant="outline" onClick={clearFilters}>
-                                    Clear
-                                </Button>
-                                <ReportExportButton url={ReportRoutes.customers.export().url} filters={filters} />
-                            </div>
-                        </form>
-                    </CardContent>
-                </Card>
+                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
+                    <div className="space-y-2 flex-1">
+                        <Label htmlFor="search">Search</Label>
+                        <Input
+                            id="search"
+                            placeholder="Search by company, contact, email or phone..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
+                    <div className="flex gap-2">
+                        <Button type="submit">Filter</Button>
+                        <Button type="button" variant="outline" onClick={clearFilters}>
+                            Clear
+                        </Button>
+                        <ReportExportButton url={ReportRoutes.customers.export().url} filters={filters} />
+                    </div>
+                </form>
 
                 <Card>
                     <CardHeader>
@@ -138,7 +134,7 @@ export default function CustomersReport({ customers, summary, filters }: Props) 
                                 )}
                             </TableBody>
                         </Table>
-                        {customers.last_page > 1 && <Pagination links={customers.links} className="px-4 pt-4 pb-2" />}
+                        {customers.last_page > 1 && <Pagination links={customers.links} className="px-6 pt-4 pb-2" />}
                     </CardContent>
                 </Card>
             </div>

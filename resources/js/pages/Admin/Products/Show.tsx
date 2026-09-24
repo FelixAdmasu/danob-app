@@ -3,6 +3,7 @@ import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import * as ProductRoutes from '@/routes/admin/products';
 import { onImageError } from '@/lib/image-fallback';
 
@@ -48,7 +49,7 @@ export default function Show({ product }: Props) {
             <Head title={product.name} />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
                 <div className="flex items-center justify-between">
-                    <Heading title={product.name} description={`Slug: ${product.slug}`} />
+                    <Heading eyebrow="Catalog" title={product.name} description={`Slug: ${product.slug}`} />
                     <div className="flex gap-2">
                         <Link href={ProductRoutes.edit(product.id).url}>
                             <Button variant="outline">Edit</Button>
@@ -95,46 +96,44 @@ export default function Show({ product }: Props) {
                     <CardHeader>
                         <CardTitle>Variants ({product.variants.length})</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                        {product.variants.length === 0 ? (
-                            <p className="text-sm text-muted-foreground">No variants.</p>
-                        ) : (
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-sm">
-                                    <thead className="border-b bg-muted/50 text-xs uppercase tracking-widest text-muted-foreground">
-                                        <tr>
-                                            <th className="px-3 py-2 text-left">Name</th>
-                                            <th className="px-3 py-2 text-left">SKU</th>
-                                            <th className="px-3 py-2 text-left">Unit</th>
-                                            <th className="px-3 py-2 text-left">Qty</th>
-                                            <th className="px-3 py-2 text-left">Price</th>
-                                            <th className="px-3 py-2 text-left">Active</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {product.variants.map((v) => (
-                                            <tr key={v.id} className="border-b">
-                                                <td className="px-3 py-2 font-medium">{v.name}</td>
-                                                <td className="px-3 py-2 font-mono text-xs">{v.sku || '—'}</td>
-                                                <td className="px-3 py-2">{v.unit || '—'}</td>
-                                                <td className="px-3 py-2">
-                                                    <span className={v.is_active && v.stock_status !== 'in_stock' ? 'text-red-600 dark:text-red-400 font-bold' : ''}>{v.quantity}</span>
-                                                    {v.is_active && v.stock_status === 'low_stock' && <Badge variant="destructive" className="ml-2 text-[10px]">Low</Badge>}
-                                                    {v.is_active && v.stock_status === 'out_of_stock' && <Badge variant="destructive" className="ml-2 text-[10px]">Out</Badge>}
-                                                    <div className="text-[10px] text-muted-foreground">Threshold: {v.low_stock_threshold ?? '—'}</div>
-                                                </td>
-                                                <td className="px-3 py-2">{v.public_price ?? '—'}</td>
-                                                <td className="px-3 py-2">
-                                                    <Badge variant={v.is_active ? 'success' : 'secondary'}>
-                                                        {v.is_active ? 'Yes' : 'No'}
-                                                    </Badge>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
+                    <CardContent className="px-0">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Name</TableHead>
+                                    <TableHead>SKU</TableHead>
+                                    <TableHead>Unit</TableHead>
+                                    <TableHead>Qty</TableHead>
+                                    <TableHead>Price</TableHead>
+                                    <TableHead>Active</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {product.variants.length === 0 ? (
+                                    <TableEmpty colSpan={6}>No variants.</TableEmpty>
+                                ) : (
+                                    product.variants.map((v) => (
+                                        <TableRow key={v.id}>
+                                            <TableCell className="font-medium">{v.name}</TableCell>
+                                            <TableCell className="font-mono text-xs">{v.sku || '—'}</TableCell>
+                                            <TableCell>{v.unit || '—'}</TableCell>
+                                            <TableCell>
+                                                <span className={v.is_active && v.stock_status !== 'in_stock' ? 'text-red-600 dark:text-red-400 font-bold' : ''}>{v.quantity}</span>
+                                                {v.is_active && v.stock_status === 'low_stock' && <Badge variant="destructive" className="ml-2 text-[10px]">Low</Badge>}
+                                                {v.is_active && v.stock_status === 'out_of_stock' && <Badge variant="destructive" className="ml-2 text-[10px]">Out</Badge>}
+                                                <div className="text-[10px] text-muted-foreground">Threshold: {v.low_stock_threshold ?? '—'}</div>
+                                            </TableCell>
+                                            <TableCell>{v.public_price ?? '—'}</TableCell>
+                                            <TableCell>
+                                                <Badge variant={v.is_active ? 'success' : 'secondary'}>
+                                                    {v.is_active ? 'Yes' : 'No'}
+                                                </Badge>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
                     </CardContent>
                 </Card>
 

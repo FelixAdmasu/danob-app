@@ -70,36 +70,32 @@ export default function Index({ suppliers, filters }: Props) {
                     }
                 />
 
-                <Card>
-                    <CardContent className="p-4">
-                        <form onSubmit={handleSearch} className="flex gap-2 max-w-2xl">
-                            <div className="relative flex-1">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search name, contact, phone, email..." className="pl-9" />
-                            </div>
-                            <Select value={status} onValueChange={setStatus}>
-                                <SelectTrigger className="w-[160px]">
-                                    <SelectValue placeholder="Status" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Status</SelectItem>
-                                    <SelectItem value="active">Active</SelectItem>
-                                    <SelectItem value="inactive">Inactive</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <Button type="submit" variant="outline">
-                                Search
+                <form onSubmit={handleSearch} className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search name, contact, phone, email..." className="pl-9" />
+                    </div>
+                    <Select value={status} onValueChange={setStatus}>
+                        <SelectTrigger className="w-[160px]">
+                            <SelectValue placeholder="Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Status</SelectItem>
+                            <SelectItem value="active">Active</SelectItem>
+                            <SelectItem value="inactive">Inactive</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <Button type="submit" variant="outline">
+                        Search
+                    </Button>
+                    {filters.search && (
+                        <Link href={SupplierRoutes.index().url}>
+                            <Button type="button" variant="ghost">
+                                Clear
                             </Button>
-                            {filters.search && (
-                                <Link href={SupplierRoutes.index().url}>
-                                    <Button type="button" variant="ghost">
-                                        Clear
-                                    </Button>
-                                </Link>
-                            )}
-                        </form>
-                    </CardContent>
-                </Card>
+                        </Link>
+                    )}
+                </form>
 
                 <Card>
                     <CardHeader>
@@ -152,7 +148,7 @@ export default function Index({ suppliers, filters }: Props) {
                                 )}
                             </TableBody>
                         </Table>
-                        {suppliers.last_page > 1 && <Pagination links={suppliers.links} className="px-4 pt-4 pb-2" />}
+                        {suppliers.last_page > 1 && <Pagination links={suppliers.links} className="px-6 pt-4 pb-2" />}
                     </CardContent>
                 </Card>
             </div>

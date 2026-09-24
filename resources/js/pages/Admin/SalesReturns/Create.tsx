@@ -65,6 +65,7 @@ export default function Create({ order }: { order: Order }) {
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
                 <div className="flex items-center justify-between">
                     <Heading
+                        eyebrow="Sales"
                         title={`Return ${order.reference_number}`}
                         description={`Customer: ${customerName} · Status: ${order.status}`}
                     />

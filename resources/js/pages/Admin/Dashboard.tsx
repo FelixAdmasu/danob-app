@@ -99,7 +99,7 @@ export default function Dashboard({
     return (
         <>
             <Head title="Admin Dashboard" />
-            <div className="flex flex-col gap-6 p-4 md:p-6">
+            <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
                 <Heading
                     eyebrow="Overview"
                     title="Admin Dashboard"
