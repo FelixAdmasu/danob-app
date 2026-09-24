@@ -48,6 +48,19 @@ trait HandlesImageStorage
      */
     private function storeImageOrFail(UploadedFile $file, string $directory, string $disk, string $field): string
     {
+        // Fail fast in production: writing to a local disk means the container's
+        // ephemeral filesystem, which is wiped on every deploy — images would 404
+        // after the next redeploy. Only cloud disks (supabase/s3) are durable.
+        if (config('app.env') === 'production' && config("filesystems.disks.{$disk}.driver") === 'local') {
+            report(new \RuntimeException(
+                "Blocked product image upload to local disk '{$disk}' in production — storage is misconfigured (FILESYSTEM_DISK_PRODUCT_IMAGES must be 'supabase')."
+            ));
+
+            throw ValidationException::withMessages([
+                $field => 'Image storage is not configured for production uploads. Set FILESYSTEM_DISK_PRODUCT_IMAGES=supabase (see docs/storage.md).',
+            ]);
+        }
+
         try {
             $path = $file->store($directory, $disk);
         } catch (\Throwable $e) {

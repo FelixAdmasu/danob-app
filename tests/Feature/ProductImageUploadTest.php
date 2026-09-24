@@ -580,6 +580,63 @@ class ProductImageUploadTest extends TestCase
         $this->assertDatabaseCount('product_images', 0);
     }
 
+    public function test_production_blocks_local_disk_image_uploads(): void
+    {
+        // Render's container disk is wiped on every deploy. In production an
+        // upload landing on a local disk would 404 after the next redeploy, so
+        // it must fail loudly instead of persisting a doomed row.
+        Storage::fake('public');
+        config(['app.env' => 'production', 'filesystems.product_images_disk' => 'public']);
+
+        $admin = $this->admin();
+        $cat = $this->category();
+        $file = $this->fakeImage('test.jpg', 'image/jpeg');
+
+        $response = $this->actingAs($admin)->post(route('admin.products.store'), [
+            'name' => 'P-prod',
+            'slug' => 'p-prod-local',
+            'category_id' => $cat->id,
+            'description' => 'D',
+            'status' => 'active',
+            'images' => [['file' => $file, 'is_primary' => true]],
+        ]);
+
+        $response->assertSessionHasErrors('images.0.file');
+        $this->assertDatabaseMissing('products', ['slug' => 'p-prod-local']);
+        $this->assertDatabaseCount('product_images', 0);
+        Storage::disk('public')->assertEmpty();
+    }
+
+    public function test_production_allows_supabase_disk_image_uploads(): void
+    {
+        $base = 'https://abcdefghijkl.supabase.co/storage/v1/object/public/product-images';
+        Storage::fake('public');
+        Storage::fake('supabase', ['url' => $base]);
+        config([
+            'app.env' => 'production',
+            'filesystems.product_images_disk' => 'supabase',
+        ]);
+
+        $admin = $this->admin();
+        $cat = $this->category();
+        $file = $this->fakeImage('test.jpg', 'image/jpeg');
+
+        $response = $this->actingAs($admin)->post(route('admin.products.store'), [
+            'name' => 'P-prod-sup',
+            'slug' => 'p-prod-sup',
+            'category_id' => $cat->id,
+            'description' => 'D',
+            'status' => 'active',
+            'images' => [['file' => $file, 'is_primary' => true]],
+        ]);
+
+        $response->assertRedirect(route('admin.products.index'));
+        $product = Product::where('slug', 'p-prod-sup')->first();
+        $image = $product->images->first();
+        $this->assertStringStartsWith($base.'/products/'.$product->id.'/', $image->url);
+        Storage::disk('public')->assertEmpty();
+    }
+
     public function test_supabase_endpoint_and_url_derive_from_project_url(): void
     {
         // Setting only SUPABASE_URL must be enough to get a correct S3

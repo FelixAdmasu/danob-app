@@ -24,6 +24,13 @@ and **root-relative** for the local disk (`/storage/products/...`).
 Uploads fail with a validation error (and persist no `product_images` row) if
 storage rejects the write — a failed upload must never look successful.
 
+In **production** an extra guard refuses any upload whose target disk has the
+`local` driver: a local write would land on Render's ephemeral container disk
+and 404 on the next deploy, so it is rejected up front with
+`FILESYSTEM_DISK_PRODUCT_IMAGES must be 'supabase'` (see the `storeImageOrFail`
+helpers in `ProductController` and `HandlesImageStorage`). Local dev and tests
+are unaffected.
+
 ## Render environment (`render.yaml`)
 
 Set by the blueprint (non-secret):
@@ -76,8 +83,9 @@ Then push/deploy again — the image must still load.
 
 Rows created before this fix point at `/storage/products/...` files that no
 longer exist — the containers that held them are gone, so **the files are not
-recoverable**. Re-upload those images. To drop the dead rows in bulk (Supabase
-SQL editor, only after confirming the files 404):
+recoverable** from the server. Re-upload those images (the original uploads
+are still in the local Downloads folder). To drop the dead rows in bulk
+(Supabase SQL editor, only after confirming the files 404):
 
 ```sql
 delete from product_images where url like '%/storage/products/%';
