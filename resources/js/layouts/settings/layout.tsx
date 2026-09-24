@@ -1,13 +1,14 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import type { PropsWithChildren } from 'react';
 import Heading from '@/components/heading';
 import { Separator } from '@/components/ui/separator';
+import { UserInfo } from '@/components/user-info';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn, toUrl } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
 import { edit } from '@/routes/profile';
 import { edit as editSecurity } from '@/routes/security';
-import type { NavItem } from '@/types';
+import type { Auth, NavItem } from '@/types';
 
 const sidebarNavItems: NavItem[] = [
     {
@@ -34,6 +35,7 @@ const sidebarNavItems: NavItem[] = [
  */
 export default function SettingsLayout({ children }: PropsWithChildren) {
     const { isCurrentOrParentUrl } = useCurrentUrl();
+    const { auth } = usePage<{ auth: Auth }>().props;
 
     return (
         <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
@@ -45,6 +47,14 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
 
             <div className="flex flex-col gap-6 lg:flex-row lg:gap-10">
                 <aside className="w-full lg:w-60 lg:shrink-0">
+                    {auth.user && (
+                        <div className="mb-3 flex items-center gap-3 rounded-xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
+                            <UserInfo
+                                user={auth.user}
+                                showEmail
+                            />
+                        </div>
+                    )}
                     <nav
                         className="flex flex-col gap-1 rounded-xl border border-border bg-card p-2 shadow-xs dark:shadow-none"
                         aria-label="Settings"

@@ -24,6 +24,11 @@ and **root-relative** for the local disk (`/storage/products/...`).
 Uploads fail with a validation error (and persist no `product_images` row) if
 storage rejects the write — a failed upload must never look successful.
 
+Profile photos share this disk and this guard: they are stored under the
+`avatars/` prefix on the same configured disk (`/storage/avatars/...` locally,
+`product-images/avatars/...` on Supabase), so one durable location holds every
+uploaded file.
+
 In **production** an extra guard refuses any upload whose target disk has the
 `local` driver: a local write would land on Render's ephemeral container disk
 and 404 on the next deploy, so it is rejected up front with
