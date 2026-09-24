@@ -46,7 +46,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
             <div className="flex flex-col gap-6 lg:flex-row lg:gap-10">
                 <aside className="w-full lg:w-60 lg:shrink-0">
                     <nav
-                        className="flex flex-col gap-1 rounded-2xl border border-border/70 bg-card p-2.5 shadow-[0_1px_2px_rgba(7,14,1,0.04),0_16px_40px_-24px_rgba(7,14,1,0.18)] dark:shadow-none"
+                        className="flex flex-col gap-1 rounded-xl border border-border bg-card p-2 shadow-xs dark:shadow-none"
                         aria-label="Settings"
                     >
                         {sidebarNavItems.map((item, index) => {
@@ -59,7 +59,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                         'flex h-9 items-center gap-2 rounded-lg px-3 text-sm transition-colors duration-200',
                                         active
                                             ? 'bg-primary font-medium text-primary-foreground dark:bg-[#24411B] dark:text-foreground'
-                                            : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                                            : 'text-muted-foreground hover:bg-sidebar-accent/70 hover:text-foreground',
                                     )}
                                 >
                                     {item.icon && (

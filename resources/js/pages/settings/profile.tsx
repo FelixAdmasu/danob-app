@@ -102,7 +102,7 @@ export default function Profile(
                                             <Link
                                                 href={send()}
                                                 as="button"
-                                                className="text-foreground underline decoration-muted-foreground/40 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current!"
+                                                className="text-foreground underline decoration-border underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current!"
                                             >
                                                 Click here to re-send the
                                                 verification email.

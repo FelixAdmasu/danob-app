@@ -110,7 +110,7 @@ export default function InventoryMovements({ movements, summary, filters, produc
                     <StatCard label="Units Out" value={summary.units_out} icon={ArrowUpFromLine} />
                 </div>
 
-                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
+                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-xs transition-colors dark:border-border/60 dark:shadow-none">
                     <div className="space-y-2 flex-1">
                         <Label htmlFor="search">Search</Label>
                         <Input

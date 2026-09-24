@@ -1,7 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
-import { ArrowUpRight, Github, BookOpen, LayoutGrid, LayoutDashboard, Package, Tag, Building2, ShoppingCart, Users, Layers, Store, Archive, ArrowUpDown, History, Truck, FileText, AlertTriangle, BarChart3 } from 'lucide-react';
+import { ArrowUpRight, LayoutGrid, LayoutDashboard, Package, Tag, Building2, ShoppingCart, Users, Layers, Store, Archive, ArrowUpDown, History, Truck, FileText, AlertTriangle, BarChart3 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
-import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import {
@@ -38,19 +37,6 @@ const mainNavItems: NavItem[] = [
 // hairline top border keeps the grouping readable in that mode.
 const SECTION_DIVIDER =
     'group-data-[collapsible=icon]:border-t group-data-[collapsible=icon]:border-sidebar-border/70';
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/FelixAdmasu/danob-app',
-        icon: Github,
-    },
-    {
-        title: 'About',
-        href: '#',
-        icon: BookOpen,
-    },
-];
 
 export function AppSidebar() {
     const page = usePage<{ auth: { user: { role?: string } | null } }>();
@@ -99,7 +85,7 @@ export function AppSidebar() {
 
     return (
         <Sidebar collapsible="icon" variant="inset">
-            <SidebarHeader className="border-b border-sidebar-border/70 pb-3">
+            <SidebarHeader className="border-b border-sidebar-border/60 pb-3">
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton
@@ -123,25 +109,30 @@ export function AppSidebar() {
                 <NavMain items={salesItems} label="Sales" className={SECTION_DIVIDER} />
             </SidebarContent>
 
-            <SidebarFooter className="border-t border-sidebar-border/70 pt-3">
+            <SidebarFooter className="border-t border-sidebar-border/60 pt-3">
                 {isStaffPlus && (
-                    <div className="px-2 pb-2">
-                        <a
-                            href="/products"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="group flex items-center gap-2.5 rounded-lg border border-white/10 bg-white/[0.05] px-3 py-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/70 transition-colors duration-200 hover:border-[#7FB069]/50 hover:bg-[#7FB069] hover:text-[#08110B]"
-                        >
-                            <Store className="h-4 w-4 shrink-0 transition-colors" />
-                            <span className="flex-1 text-left">View Store</span>
-                            <ArrowUpRight
-                                aria-hidden="true"
-                                className="h-3.5 w-3.5 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                            />
-                        </a>
-                    </div>
+                    <SidebarMenu>
+                        <SidebarMenuItem>
+                            {/* Collapses to a clean icon-only square (with a
+                                tooltip) when the sidebar is minimized, so the
+                                label never spills past the panel edge. */}
+                            <SidebarMenuButton
+                                asChild
+                                tooltip="View Store"
+                                className="group h-10 border border-primary/25 bg-primary/[0.06] px-3 text-[11px] font-semibold tracking-[0.15em] text-primary uppercase hover:bg-primary hover:text-primary-foreground dark:border-[#24411B] dark:bg-[#7FB069]/[0.07] dark:text-primary dark:hover:bg-[#24411B] dark:hover:text-foreground group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:border-transparent group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:text-primary"
+                            >
+                                <a href="/products" target="_blank" rel="noopener noreferrer">
+                                    <Store />
+                                    <span className="flex-1 group-data-[collapsible=icon]:hidden">View Store</span>
+                                    <ArrowUpRight
+                                        aria-hidden="true"
+                                        className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-data-[collapsible=icon]:hidden"
+                                    />
+                                </a>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    </SidebarMenu>
                 )}
-                <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

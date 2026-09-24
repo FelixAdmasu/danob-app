@@ -77,7 +77,7 @@ export default function SuppliersReport({ suppliers, summary, filters }: Props) 
                     <StatCard label="Purchase Orders" value={summary.purchase_orders} icon={ClipboardList} />
                 </div>
 
-                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
+                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-xs transition-colors dark:border-border/60 dark:shadow-none">
                     <div className="space-y-2">
                         <Label>Status</Label>
                         <Select value={status} onValueChange={setStatus}>

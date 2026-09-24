@@ -371,7 +371,7 @@ export default function Dashboard({
                                 <Link
                                     key={item.title}
                                     href={item.href}
-                                    className="group flex items-center gap-3 rounded-2xl border border-border/70 bg-card p-4 shadow-[0_1px_2px_rgba(7,14,1,0.04),0_16px_40px_-24px_rgba(7,14,1,0.18)] transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_2px_4px_rgba(7,14,1,0.05),0_24px_48px_-24px_rgba(45,80,22,0.28)] dark:shadow-none"
+                                    className="group flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-sm dark:shadow-none"
                                 >
                                     <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-secondary-foreground transition-colors duration-200 group-hover:bg-primary group-hover:text-primary-foreground">
                                         <item.icon className="size-4.5" aria-hidden="true" />

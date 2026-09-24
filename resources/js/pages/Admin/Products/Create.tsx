@@ -186,7 +186,7 @@ export default function Create({ categories, brands }: Props) {
                                     onChange={(e) => setData({ ...data, description: e.target.value })}
                                     required
                                     rows={4}
-                                    className="flex min-h-[80px] w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
+                                    className="flex min-h-[80px] w-full rounded-lg border border-input bg-background px-3.5 py-2 text-sm shadow-xs transition-[border-color,box-shadow] duration-150 outline-none focus-visible:border-primary/60 focus-visible:ring-4 focus-visible:ring-primary/15"
                                 />
                                 <InputError message={errors.description} />
                             </div>

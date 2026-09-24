@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import * as OrderRoutes from '@/routes/admin/orders';
 
@@ -39,12 +40,15 @@ export default function Create({ search: initialSearch, customers, products }: P
     const [notes, setNotes] = useState('');
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [processing, setProcessing] = useState(false);
+    const [searching, setSearching] = useState(false);
 
     const skipNextSearch = useRef(true);
 
     // Debounced, database-side catalog search: the partial reload swaps only
     // the `products` prop (name / variant name / SKU LIKE, active rows, capped
     // server-side), so form state and the customer list are untouched.
+    // `searching` drives a skeleton shimmer under the field while the
+    // partial reload is in flight.
     useEffect(() => {
         if (skipNextSearch.current) {
             skipNextSearch.current = false;
@@ -54,7 +58,14 @@ export default function Create({ search: initialSearch, customers, products }: P
             router.get(
                 OrderRoutes.create().url,
                 { search: search || undefined },
-                { only: ['products'], preserveState: true, preserveScroll: true, replace: true },
+                {
+                    only: ['products'],
+                    preserveState: true,
+                    preserveScroll: true,
+                    replace: true,
+                    onStart: () => setSearching(true),
+                    onFinish: () => setSearching(false),
+                },
             );
         }, 300);
         return () => clearTimeout(timer);
@@ -220,6 +231,16 @@ export default function Create({ search: initialSearch, customers, products }: P
                                             onChange={(e) => setSearch(e.target.value)}
                                         />
                                     </div>
+                                    {/* Skeleton shimmer while the debounced
+                                        partial reload fetches matching
+                                        variants. */}
+                                    {searching && (
+                                        <div className="flex flex-wrap items-center gap-2 pt-1" role="status" aria-label="Searching catalog">
+                                            <Skeleton className="h-6 w-32 rounded-full" />
+                                            <Skeleton className="h-6 w-40 rounded-full" />
+                                            <Skeleton className="h-6 w-28 rounded-full" />
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="grid gap-3 md:grid-cols-12">
@@ -384,7 +405,7 @@ export default function Create({ search: initialSearch, customers, products }: P
                                     value={notes}
                                     onChange={(e) => setNotes(e.target.value)}
                                     rows={3}
-                                    className="flex min-h-[60px] w-full rounded-lg border border-input bg-background px-3 py-2 text-sm dark:border-[#33452A] dark:bg-[#111B0A]"
+                                    className="flex min-h-[60px] w-full rounded-lg border border-input bg-background px-3.5 py-2 text-sm shadow-xs transition-[border-color,box-shadow] duration-150 outline-none focus-visible:border-primary/60 focus-visible:ring-4 focus-visible:ring-primary/15 dark:border-[#33452A] dark:bg-[#111B0A]"
                                 />
                                 {errors.notes && (
                                     <p role="alert" className="text-xs text-red-600 dark:text-red-400">{errors.notes}</p>

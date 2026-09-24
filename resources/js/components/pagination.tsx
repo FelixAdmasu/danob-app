@@ -11,10 +11,9 @@ type PaginationLink = {
 /**
  * Shared Laravel paginator controls.
  *
- * Replaces the pill-row markup that was duplicated on every index page:
- * active page = solid primary pill, inactive = bordered card pill with a
- * soft accent hover, ellipsis = dimmed. Renders nothing on single-page sets
- * (callers still guard with `last_page > 1`).
+ * Premium treatment: taller transparent pills on the card, a soft primary
+ * tint on hover, and a solid primary pill for the active page. Renders
+ * nothing on single-page sets (callers still guard with `last_page > 1`).
  */
 export function Pagination({
     links,
@@ -31,17 +30,17 @@ export function Pagination({
                         key={i}
                         href={link.url}
                         className={cn(
-                            'inline-flex min-w-8 justify-center rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors duration-200',
+                            'inline-flex min-w-9 justify-center rounded-lg border px-3 py-2 text-[13px] font-medium transition-colors duration-200',
                             link.active
-                                ? 'border-primary bg-primary text-primary-foreground shadow-[0_6px_16px_-8px_rgba(45,80,22,0.5)]'
-                                : 'border-border/80 bg-card text-muted-foreground hover:border-primary/40 hover:bg-accent hover:text-foreground',
+                                ? 'border-primary bg-primary text-primary-foreground shadow-xs'
+                                : 'border-border/70 bg-transparent text-muted-foreground hover:border-primary/40 hover:bg-primary/5 hover:text-foreground',
                         )}
                         dangerouslySetInnerHTML={{ __html: link.label }}
                     />
                 ) : (
                     <span
                         key={i}
-                        className="inline-flex min-w-8 justify-center px-3 py-1.5 text-xs opacity-40"
+                        className="inline-flex min-w-9 justify-center px-3 py-2 text-[13px] opacity-40"
                         dangerouslySetInnerHTML={{ __html: link.label }}
                     />
                 ),

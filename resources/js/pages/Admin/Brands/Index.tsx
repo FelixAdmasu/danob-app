@@ -166,7 +166,7 @@ export default function Index({ brands, filters }: Props) {
 
                 {flashError && <div className="rounded border border-destructive bg-destructive/10 px-4 py-3 text-sm text-destructive">{flashError}</div>}
 
-                <form onSubmit={handleSearch} className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
+                <form onSubmit={handleSearch} className="flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-xs transition-colors dark:border-border/60 dark:shadow-none">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
@@ -283,7 +283,7 @@ export default function Index({ brands, filters }: Props) {
                                     value={form.description}
                                     onChange={(e) => setForm({ ...form, description: e.target.value })}
                                     rows={3}
-                                    className="flex min-h-[60px] w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
+                                    className="flex min-h-[60px] w-full rounded-lg border border-input bg-background px-3.5 py-2 text-sm shadow-xs transition-[border-color,box-shadow] duration-150 outline-none focus-visible:border-primary/60 focus-visible:ring-4 focus-visible:ring-primary/15"
                                 />
                                 {errors.description && <InputError message={errors.description} />}
                             </div>

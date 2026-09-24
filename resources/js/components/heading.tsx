@@ -27,15 +27,14 @@ export default function Heading({
     }
 
     return (
-        <header className="flex flex-col gap-5 border-b border-border/70 pb-6 md:flex-row md:items-end md:justify-between">
-            <div className="space-y-2">
+        <header className="flex flex-col gap-4 border-b border-border pb-6 md:flex-row md:items-end md:justify-between">
+            <div className="space-y-1.5">
                 {eyebrow && (
-                    <p className="flex items-center gap-2.5 text-[11px] font-semibold tracking-[0.3em] text-primary uppercase dark:text-[#7FB069]">
-                        <span aria-hidden="true" className="h-px w-6 bg-current opacity-60" />
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground dark:text-primary">
                         {eyebrow}
                     </p>
                 )}
-                <h2 className="font-serif text-[34px] leading-[1.1] font-medium tracking-tight md:text-[44px]">
+                <h2 className="font-serif text-[28px] leading-tight font-medium tracking-tight md:text-[32px]">
                     {title}
                 </h2>
                 {description && (
@@ -45,7 +44,7 @@ export default function Heading({
                 )}
             </div>
             {actions && (
-                <div className="flex shrink-0 items-center gap-2.5">{actions}</div>
+                <div className="flex shrink-0 items-center gap-2">{actions}</div>
             )}
         </header>
     );

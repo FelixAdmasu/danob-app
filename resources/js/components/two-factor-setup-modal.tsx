@@ -109,7 +109,7 @@ function TwoFactorSetupStep({
                     </div>
 
                     <div className="flex w-full space-x-2">
-                        <div className="border-border flex w-full items-stretch overflow-hidden rounded-2xl border">
+                        <div className="border-border flex w-full items-stretch overflow-hidden rounded-xl border">
                             {!manualSetupKey ? (
                                 <div className="bg-muted flex h-full w-full items-center justify-center p-3">
                                     <Spinner />

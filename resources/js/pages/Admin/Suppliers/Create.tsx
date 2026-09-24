@@ -61,7 +61,7 @@ export default function Create() {
                                 </div>
                                 <div className="space-y-2 md:col-span-2">
                                     <Label htmlFor="address">Address</Label>
-                                    <textarea id="address" value={data.address} onChange={(e) => setData({ ...data, address: e.target.value })} rows={3} className="flex min-h-[60px] w-full rounded-md rounded-lg border border-input bg-background px-3 py-2 text-sm" />
+                                    <textarea id="address" value={data.address} onChange={(e) => setData({ ...data, address: e.target.value })} rows={3} className="flex min-h-[60px] w-full rounded-lg border border-input bg-background px-3.5 py-2 text-sm shadow-xs transition-[border-color,box-shadow] duration-150 outline-none focus-visible:border-primary/60 focus-visible:ring-4 focus-visible:ring-primary/15" />
                                     <InputError message={errors.address} />
                                 </div>
                                 <div className="space-y-2">
@@ -71,7 +71,7 @@ export default function Create() {
                                 </div>
                                 <div className="space-y-2 md:col-span-2">
                                     <Label htmlFor="notes">Notes</Label>
-                                    <textarea id="notes" value={data.notes} onChange={(e) => setData({ ...data, notes: e.target.value })} rows={3} className="flex min-h-[60px] w-full rounded-md rounded-lg border border-input bg-background px-3 py-2 text-sm" />
+                                    <textarea id="notes" value={data.notes} onChange={(e) => setData({ ...data, notes: e.target.value })} rows={3} className="flex min-h-[60px] w-full rounded-lg border border-input bg-background px-3.5 py-2 text-sm shadow-xs transition-[border-color,box-shadow] duration-150 outline-none focus-visible:border-primary/60 focus-visible:ring-4 focus-visible:ring-primary/15" />
                                     <InputError message={errors.notes} />
                                 </div>
                             </div>

@@ -105,7 +105,7 @@ export default function Edit({ category }: Props) {
                                     value={data.description}
                                     onChange={(e) => setData({ ...data, description: e.target.value })}
                                     rows={3}
-                                    className="flex min-h-[60px] w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
+                                    className="flex min-h-[60px] w-full rounded-lg border border-input bg-background px-3.5 py-2 text-sm shadow-xs transition-[border-color,box-shadow] duration-150 outline-none focus-visible:border-primary/60 focus-visible:ring-4 focus-visible:ring-primary/15"
                                 />
                                 <InputError message={errors.description} />
                             </div>
