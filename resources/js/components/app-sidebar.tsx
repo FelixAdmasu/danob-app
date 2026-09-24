@@ -12,7 +12,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
+import { dashboard } from '@/routes/admin';
 import * as productRoutes from '@/routes/admin/products';
 import * as categoryRoutes from '@/routes/admin/categories';
 import * as brandRoutes from '@/routes/admin/brands';
@@ -85,7 +85,7 @@ export function AppSidebar() {
 
     return (
         <Sidebar collapsible="icon" variant="inset">
-            <SidebarHeader className="border-b border-sidebar-border/70 pb-3">
+            <SidebarHeader className="border-b border-sidebar-border/70 pb-4">
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton
@@ -101,7 +101,7 @@ export function AppSidebar() {
                 </SidebarMenu>
             </SidebarHeader>
 
-            <SidebarContent>
+            <SidebarContent className="pt-2">
                 <NavMain items={mainNavItems} label="Home" />
                 <NavMain items={catalogItems} label="Catalog" className={SECTION_DIVIDER} />
                 <NavMain items={operationsItems} label="Operations" className={SECTION_DIVIDER} />
