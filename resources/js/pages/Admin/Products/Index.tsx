@@ -2,6 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import Heading from '@/components/heading';
 import { Pagination } from '@/components/pagination';
+import { StatusBadge } from '@/components/status-badge';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -34,6 +35,7 @@ type PaginatedProducts = {
     links: { url: string | null; label: string; active: boolean }[];
     current_page: number;
     last_page: number;
+    total: number;
 };
 
 type Props = {
@@ -91,7 +93,12 @@ export default function Index({ products, filters }: Props) {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>All Products</CardTitle>
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                            <CardTitle>All Products</CardTitle>
+                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
+                                {products.total.toLocaleString()} record{products.total === 1 ? '' : 's'}
+                            </span>
+                        </div>
                     </CardHeader>
                     <CardContent className="px-0">
                         <Table>
@@ -127,7 +134,7 @@ export default function Index({ products, filters }: Props) {
                                                 <TableCell className="text-sm">{product.category?.name || '—'}</TableCell>
                                                 <TableCell className="text-sm">{product.brand?.name || '—'}</TableCell>
                                                 <TableCell>
-                                                    <Badge variant={product.status === 'active' ? 'success' : 'secondary'}>{product.status}</Badge>
+                                                    <StatusBadge status={product.status} />
                                                 </TableCell>
                                                 <TableCell className="text-right text-sm">
                                                     <div className="flex items-center justify-end gap-2">

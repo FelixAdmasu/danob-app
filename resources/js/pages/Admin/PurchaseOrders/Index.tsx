@@ -2,7 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import Heading from '@/components/heading';
 import { Pagination } from '@/components/pagination';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,10 +10,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Search, Plus } from 'lucide-react';
 import * as PurchaseOrderRoutes from '@/routes/admin/purchase-orders';
+import { formatDate } from '@/lib/format';
 
 type PO = { id: number; po_number: string; status: string; supplier: { name: string } | null; total: string; ordered_at: string };
 
-type Paginated = { data: PO[]; links: { url: string | null; label: string; active: boolean }[]; current_page: number; last_page: number };
+type Paginated = {
+    data: PO[];
+    links: { url: string | null; label: string; active: boolean }[];
+    current_page: number;
+    last_page: number;
+    total: number;
+};
 
 export default function Index({ purchase_orders, filters }: { purchase_orders: Paginated; filters: { search: string | null; status: string | null } }) {
     const [search, setSearch] = useState(filters.search || '');
@@ -63,7 +70,12 @@ export default function Index({ purchase_orders, filters }: { purchase_orders: P
                 </form>
                 <Card>
                     <CardHeader>
-                        <CardTitle>All Purchase Orders</CardTitle>
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                            <CardTitle>All Purchase Orders</CardTitle>
+                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
+                                {purchase_orders.total.toLocaleString()} record{purchase_orders.total === 1 ? '' : 's'}
+                            </span>
+                        </div>
                     </CardHeader>
                     <CardContent className="px-0">
                         <Table>
@@ -89,10 +101,10 @@ export default function Index({ purchase_orders, filters }: { purchase_orders: P
                                             </TableCell>
                                             <TableCell>{po.supplier?.name || '—'}</TableCell>
                                             <TableCell>
-                                                <Badge variant={po.status === 'received' ? 'success' : po.status === 'cancelled' ? 'cancelled' : 'warning'}>{po.status}</Badge>
+                                                <StatusBadge status={po.status} />
                                             </TableCell>
                                             <TableCell className="text-right font-mono tabular-nums">{po.total}</TableCell>
-                                            <TableCell>{po.ordered_at ? new Date(po.ordered_at).toLocaleDateString() : '—'}</TableCell>
+                                            <TableCell>{po.ordered_at ? formatDate(po.ordered_at) : '—'}</TableCell>
                                         </TableRow>
                                     ))
                                 )}

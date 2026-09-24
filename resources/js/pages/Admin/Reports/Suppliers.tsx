@@ -1,18 +1,18 @@
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 import Heading from '@/components/heading';
+import { FilterField, FilterPanel } from '@/components/filter-panel';
 import { Pagination } from '@/components/pagination';
 import { StatCard } from '@/components/stat-card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ReportExportButton } from '@/components/report-export-button';
 import { ClipboardList, ShoppingCart, UserCheck, Users } from 'lucide-react';
 import ReportRoutes from '@/routes/admin/reports';
+import { formatDate } from '@/lib/format';
 
 type SupplierRow = {
     id: number;
@@ -30,6 +30,7 @@ type PaginatedSuppliers = {
     links: { url: string | null; label: string; active: boolean }[];
     current_page: number;
     last_page: number;
+    total: number;
 };
 
 type Props = {
@@ -47,6 +48,11 @@ export default function SuppliersReport({ suppliers, summary, filters }: Props) 
     const [status, setStatus] = useState<string>(filters.status || 'all');
     const [search, setSearch] = useState<string>(filters.search || '');
 
+    const activeCount = [
+        status !== 'all' ? status : '',
+        search.trim(),
+    ].filter((v) => v !== '').length;
+
     const handleFilter = (e: React.FormEvent) => {
         e.preventDefault();
         router.get(
@@ -57,6 +63,8 @@ export default function SuppliersReport({ suppliers, summary, filters }: Props) 
     };
 
     const clearFilters = () => {
+        setStatus('all');
+        setSearch('');
         router.get(ReportRoutes.suppliers().url, {}, { preserveState: true, replace: true });
     };
 
@@ -77,11 +85,15 @@ export default function SuppliersReport({ suppliers, summary, filters }: Props) 
                     <StatCard label="Purchase Orders" value={summary.purchase_orders} icon={ClipboardList} />
                 </div>
 
-                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-xs transition-colors dark:border-border/60 dark:shadow-none">
-                    <div className="space-y-2">
-                        <Label>Status</Label>
+                <FilterPanel
+                    onSubmit={handleFilter}
+                    onClear={clearFilters}
+                    activeCount={activeCount}
+                    actions={<ReportExportButton url={ReportRoutes.suppliers.export().url} filters={filters} />}
+                >
+                    <FilterField label="Status">
                         <Select value={status} onValueChange={setStatus}>
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder="All suppliers" />
                             </SelectTrigger>
                             <SelectContent>
@@ -90,28 +102,25 @@ export default function SuppliersReport({ suppliers, summary, filters }: Props) 
                                 <SelectItem value="inactive">Inactive</SelectItem>
                             </SelectContent>
                         </Select>
-                    </div>
-                    <div className="space-y-2 flex-1">
-                        <Label htmlFor="search">Search</Label>
+                    </FilterField>
+                    <FilterField label="Search" htmlFor="search" className="sm:col-span-2">
                         <Input
                             id="search"
                             placeholder="Search by name, contact, phone or email..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
-                    </div>
-                    <div className="flex gap-2">
-                        <Button type="submit">Filter</Button>
-                        <Button type="button" variant="outline" onClick={clearFilters}>
-                            Clear
-                        </Button>
-                        <ReportExportButton url={ReportRoutes.suppliers.export().url} filters={filters} />
-                    </div>
-                </form>
+                    </FilterField>
+                </FilterPanel>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>All Suppliers</CardTitle>
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                            <CardTitle>All Suppliers</CardTitle>
+                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
+                                {suppliers.total.toLocaleString()} record{suppliers.total === 1 ? '' : 's'}
+                            </span>
+                        </div>
                     </CardHeader>
                     <CardContent className="px-0">
                         <Table>
@@ -146,7 +155,7 @@ export default function SuppliersReport({ suppliers, summary, filters }: Props) 
                                             <TableCell className="text-right font-mono">{supplier.open_purchase_orders_count}</TableCell>
                                             <TableCell className="text-right font-mono">{supplier.purchase_value}</TableCell>
                                             <TableCell>
-                                                {supplier.last_ordered_at ? new Date(supplier.last_ordered_at).toLocaleDateString() : '—'}
+                                                {supplier.last_ordered_at ? formatDate(supplier.last_ordered_at) : '—'}
                                             </TableCell>
                                         </TableRow>
                                     ))

@@ -1,16 +1,17 @@
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 import Heading from '@/components/heading';
+import { FilterField, FilterPanel } from '@/components/filter-panel';
 import { Pagination } from '@/components/pagination';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import * as InventoryRoutes from '@/routes/admin/inventory';
-import { Filter, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { formatDate, formatTime, titleCase } from '@/lib/format';
+import { ArrowDownRight, ArrowUpRight } from 'lucide-react';
 
 type Movement = {
     id: number;
@@ -34,11 +35,13 @@ type PaginatedMovements = {
     links: { url: string | null; label: string; active: boolean }[];
     current_page: number;
     last_page: number;
+    total: number;
 };
 
 type Props = {
     movements: PaginatedMovements;
     filters: {
+        search: string | null;
         product_id: number | null;
         variant_id: number | null;
         movement_type: string | null;
@@ -53,6 +56,7 @@ type Props = {
 };
 
 export default function History({ movements, filters, products, variants, users, movement_types }: Props) {
+    const [search, setSearch] = useState(filters.search || '');
     const [productId, setProductId] = useState<string>(filters.product_id ? String(filters.product_id) : 'all');
     const [variantId, setVariantId] = useState<string>(filters.variant_id ? String(filters.variant_id) : 'all');
     const [movementType, setMovementType] = useState<string>(filters.movement_type || 'all');
@@ -60,11 +64,22 @@ export default function History({ movements, filters, products, variants, users,
     const [dateFrom, setDateFrom] = useState<string>(filters.date_from || '');
     const [dateTo, setDateTo] = useState<string>(filters.date_to || '');
 
-    const handleFilter = (e: React.FormEvent) => {
+    const activeCount = [
+        search.trim(),
+        productId !== 'all' ? productId : '',
+        variantId !== 'all' ? variantId : '',
+        movementType !== 'all' ? movementType : '',
+        userId !== 'all' ? userId : '',
+        dateFrom,
+        dateTo,
+    ].filter((v) => v !== '').length;
+
+    const handleFilter = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         router.get(
             InventoryRoutes.history().url,
             {
+                search: search.trim() || undefined,
                 product_id: productId !== 'all' ? productId : undefined,
                 variant_id: variantId !== 'all' ? variantId : undefined,
                 movement_type: movementType !== 'all' ? movementType : undefined,
@@ -77,6 +92,13 @@ export default function History({ movements, filters, products, variants, users,
     };
 
     const clearFilters = () => {
+        setSearch('');
+        setProductId('all');
+        setVariantId('all');
+        setMovementType('all');
+        setUserId('all');
+        setDateFrom('');
+        setDateTo('');
         router.get(InventoryRoutes.history().url, {}, { preserveState: true, replace: true });
     };
 
@@ -87,14 +109,21 @@ export default function History({ movements, filters, products, variants, users,
                 <Heading
                     eyebrow="Inventory"
                     title="Inventory History"
-                    description="Searchable, filterable, paginated stock movement ledger."
+                    description="Search and filter the full stock movement ledger."
                 />
 
-                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-xs transition-colors dark:border-border/60 dark:shadow-none">
-                    <div className="space-y-2">
-                        <Label>Product</Label>
+                <FilterPanel onSubmit={handleFilter} onClear={clearFilters} activeCount={activeCount}>
+                    <FilterField label="Search" htmlFor="history-search" className="sm:col-span-2">
+                        <Input
+                            id="history-search"
+                            placeholder="Search reason, notes, product or variant..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </FilterField>
+                    <FilterField label="Product">
                         <Select value={productId} onValueChange={setProductId}>
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder="All products" />
                             </SelectTrigger>
                             <SelectContent>
@@ -106,11 +135,10 @@ export default function History({ movements, filters, products, variants, users,
                                 ))}
                             </SelectContent>
                         </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Variant</Label>
+                    </FilterField>
+                    <FilterField label="Variant">
                         <Select value={variantId} onValueChange={setVariantId}>
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder="All variants" />
                             </SelectTrigger>
                             <SelectContent>
@@ -124,27 +152,25 @@ export default function History({ movements, filters, products, variants, users,
                                     ))}
                             </SelectContent>
                         </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Type</Label>
+                    </FilterField>
+                    <FilterField label="Type">
                         <Select value={movementType} onValueChange={setMovementType}>
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder="All types" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">All types</SelectItem>
                                 {movement_types.map((t) => (
                                     <SelectItem key={t} value={t}>
-                                        {t}
+                                        {titleCase(t)}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>User</Label>
+                    </FilterField>
+                    <FilterField label="User">
                         <Select value={userId} onValueChange={setUserId}>
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder="All users" />
                             </SelectTrigger>
                             <SelectContent>
@@ -156,26 +182,34 @@ export default function History({ movements, filters, products, variants, users,
                                 ))}
                             </SelectContent>
                         </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="date_from">From</Label>
-                        <Input id="date_from" type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="date_to">To</Label>
-                        <Input id="date_to" type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
-                    </div>
-                    <div className="flex gap-2">
-                        <Button type="submit">
-                            <Filter className="mr-2 h-4 w-4" /> Filter
-                        </Button>
-                        <Button type="button" variant="outline" onClick={clearFilters}>
-                            <X className="mr-2 h-4 w-4" /> Clear
-                        </Button>
-                    </div>
-                </form>
+                    </FilterField>
+                    <FilterField label="From" htmlFor="history-date-from">
+                        <Input
+                            id="history-date-from"
+                            type="date"
+                            value={dateFrom}
+                            onChange={(e) => setDateFrom(e.target.value)}
+                        />
+                    </FilterField>
+                    <FilterField label="To" htmlFor="history-date-to">
+                        <Input
+                            id="history-date-to"
+                            type="date"
+                            value={dateTo}
+                            onChange={(e) => setDateTo(e.target.value)}
+                        />
+                    </FilterField>
+                </FilterPanel>
 
                 <Card>
+                    <CardHeader>
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                            <CardTitle>Stock movements</CardTitle>
+                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
+                                {movements.total.toLocaleString()} record{movements.total === 1 ? '' : 's'}
+                            </span>
+                        </div>
+                    </CardHeader>
                     <CardContent className="px-0">
                         <Table>
                             <TableHeader>
@@ -183,7 +217,7 @@ export default function History({ movements, filters, products, variants, users,
                                     <TableHead>Date</TableHead>
                                     <TableHead>Product / Variant</TableHead>
                                     <TableHead>Type</TableHead>
-                                    <TableHead className="text-right">Qty</TableHead>
+                                    <TableHead className="text-right">Change</TableHead>
                                     <TableHead>Before → After</TableHead>
                                     <TableHead>Reason</TableHead>
                                     <TableHead>User</TableHead>
@@ -191,31 +225,68 @@ export default function History({ movements, filters, products, variants, users,
                             </TableHeader>
                             <TableBody>
                                 {movements.data.length === 0 ? (
-                                    <TableEmpty colSpan={7}>No movements found. Try adjusting filters.</TableEmpty>
+                                    <TableEmpty colSpan={7}>No movements match these filters.</TableEmpty>
                                 ) : (
-                                    movements.data.map((m) => (
-                                        <TableRow key={m.id}>
-                                            <TableCell>{new Date(m.created_at).toLocaleString()}</TableCell>
-                                            <TableCell>
-                                                <div className="font-medium">{m.variant.product.name}</div>
-                                                <div className="text-xs text-muted-foreground">{m.variant.name}{m.variant.id ? ` — ${m.variant.id}` : ''}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Badge variant={m.movement_type.includes('in') || m.movement_type === 'purchase' || m.movement_type === 'opening_balance' ? 'success' : 'secondary'}>
-                                                    {m.movement_type}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell className="text-right font-mono">{m.quantity}</TableCell>
-                                            <TableCell className="font-mono">
-                                                {m.quantity_before} → {m.quantity_after}
-                                            </TableCell>
-                                            <TableCell className="max-w-[200px] truncate" title={m.reason || ''}>
-                                                {m.reason || '—'}
-                                                {m.notes && <div className="text-[10px] text-muted-foreground">{m.notes}</div>}
-                                            </TableCell>
-                                            <TableCell>{m.user?.name || '—'}</TableCell>
-                                        </TableRow>
-                                    ))
+                                    movements.data.map((m) => {
+                                        const delta = m.quantity_after - m.quantity_before;
+                                        const increase = delta >= 0;
+                                        return (
+                                            <TableRow key={m.id}>
+                                                <TableCell className="whitespace-nowrap">
+                                                    <div className="text-[13px] font-medium tabular-nums">
+                                                        {formatDate(m.created_at)}
+                                                    </div>
+                                                    <div className="text-xs tabular-nums text-muted-foreground">
+                                                        {formatTime(m.created_at)}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="font-medium">{m.variant.product.name}</div>
+                                                    <div className="text-xs text-muted-foreground">{m.variant.name}</div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Badge variant={increase ? 'success' : 'destructive'}>
+                                                        {increase ? (
+                                                            <ArrowUpRight aria-hidden="true" />
+                                                        ) : (
+                                                            <ArrowDownRight aria-hidden="true" />
+                                                        )}
+                                                        {titleCase(m.movement_type)}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell
+                                                    className={cn(
+                                                        'text-right font-mono font-medium tabular-nums',
+                                                        increase
+                                                            ? 'text-[#2D5016] dark:text-[#95E6B6]'
+                                                            : 'text-red-600 dark:text-red-400',
+                                                    )}
+                                                >
+                                                    {increase ? '+' : '−'}
+                                                    {Math.abs(delta)}
+                                                </TableCell>
+                                                <TableCell className="font-mono text-[13px] tabular-nums">
+                                                    <span className="text-muted-foreground">{m.quantity_before}</span>
+                                                    <span className="mx-1.5 text-muted-foreground/60">→</span>
+                                                    <span className="font-medium">{m.quantity_after}</span>
+                                                </TableCell>
+                                                <TableCell className="max-w-[240px]">
+                                                    <div className="truncate" title={m.reason || ''}>
+                                                        {m.reason || '—'}
+                                                    </div>
+                                                    {m.notes && (
+                                                        <div
+                                                            className="truncate text-xs text-muted-foreground"
+                                                            title={m.notes}
+                                                        >
+                                                            {m.notes}
+                                                        </div>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>{m.user?.name || '—'}</TableCell>
+                                            </TableRow>
+                                        );
+                                    })
                                 )}
                             </TableBody>
                         </Table>

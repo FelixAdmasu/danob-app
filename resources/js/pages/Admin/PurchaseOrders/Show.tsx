@@ -1,9 +1,10 @@
 import { Head, Link, router } from '@inertiajs/react';
 import Heading from '@/components/heading';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { formatDate, titleCase } from '@/lib/format';
 import * as PurchaseOrderRoutes from '@/routes/admin/purchase-orders';
 import { ArrowLeft, Ban, CheckCircle2, PackageCheck, Pencil, Send } from 'lucide-react';
 
@@ -43,9 +44,9 @@ export default function Show({ purchase_order }: { purchase_order: PurchaseOrder
                     <Heading
                         eyebrow="Operations"
                         title={purchase_order.po_number}
-                        description={`Supplier: ${purchase_order.supplier?.name || '—'} · Ordered: ${
-                            purchase_order.ordered_at ? new Date(purchase_order.ordered_at).toLocaleDateString() : '—'
-                        } · Status: ${purchase_order.status}`}
+                        description={`Supplier: ${purchase_order.supplier?.name || '—'} · Ordered: ${formatDate(
+                            purchase_order.ordered_at,
+                        )} · Status: ${titleCase(purchase_order.status)}`}
                     />
                     <div className="flex gap-2">
                         {canEdit && (
@@ -133,9 +134,7 @@ export default function Show({ purchase_order }: { purchase_order: PurchaseOrder
                                 <span>{purchase_order.total}</span>
                             </div>
                             <div className="mt-2">
-                                <Badge variant={purchase_order.status === 'received' ? 'success' : purchase_order.status === 'cancelled' ? 'cancelled' : 'warning'}>
-                                    {purchase_order.status}
-                                </Badge>
+                                <StatusBadge status={purchase_order.status} />
                             </div>
                         </div>
                     </CardContent>

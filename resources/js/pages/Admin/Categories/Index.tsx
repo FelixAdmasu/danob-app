@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableR
 import { Image as ImageIcon, Search, Plus, Pencil, Trash2, Upload } from 'lucide-react';
 import * as CategoryRoutes from '@/routes/admin/categories';
 import { onImageError } from '@/lib/image-fallback';
+import { formatDate } from '@/lib/format';
 
 type Category = {
     id: number;
@@ -30,6 +31,7 @@ type PaginatedCategories = {
     links: { url: string | null; label: string; active: boolean }[];
     current_page: number;
     last_page: number;
+    total: number;
 };
 
 type Props = {
@@ -175,7 +177,12 @@ export default function Index({ categories, filters }: Props) {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>All Categories</CardTitle>
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                            <CardTitle>All Categories</CardTitle>
+                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
+                                {categories.total.toLocaleString()} record{categories.total === 1 ? '' : 's'}
+                            </span>
+                        </div>
                     </CardHeader>
                     <CardContent className="px-0">
                         <Table>
@@ -219,7 +226,7 @@ export default function Index({ categories, filters }: Props) {
                                             </TableCell>
                                             <TableCell className="text-right">{category.products_count} products</TableCell>
                                             <TableCell className="text-muted-foreground">
-                                                {new Date(category.created_at).toLocaleDateString()}
+                                                {formatDate(category.created_at)}
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-1">

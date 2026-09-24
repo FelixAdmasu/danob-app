@@ -1,9 +1,10 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import Heading from '@/components/heading';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { formatDate, titleCase } from '@/lib/format';
 import { ArrowLeft } from 'lucide-react';
 import * as OrderRoutes from '@/routes/admin/orders';
 import type { Auth } from '@/types';
@@ -64,9 +65,7 @@ export default function Show({ order }: { order: Order }) {
 
     const customerName =
         order.customer?.company_name || order.customer?.contact_name || '—';
-    const orderedDate = order.ordered_at
-        ? new Date(order.ordered_at).toLocaleDateString()
-        : '—';
+    const orderedDate = formatDate(order.ordered_at);
 
     return (
         <>
@@ -76,7 +75,7 @@ export default function Show({ order }: { order: Order }) {
                     <Heading
                         eyebrow="Sales"
                         title={order.reference_number}
-                        description={`Customer: ${customerName} · Ordered: ${orderedDate} · Source: ${order.order_source} · Status: ${order.status}`}
+                        description={`Customer: ${customerName} · Ordered: ${orderedDate} · Source: ${order.order_source} · Status: ${titleCase(order.status)}`}
                     />
                     <div className="flex gap-2">
                         {canManage && isPending && (
@@ -150,9 +149,7 @@ export default function Show({ order }: { order: Order }) {
                                     <span>{order.total}</span>
                                 </div>
                                 <div className="mt-2">
-                                    <Badge variant={order.status === 'delivered' ? 'success' : order.status === 'cancelled' ? 'cancelled' : 'warning'}>
-                                        {order.status}
-                                    </Badge>
+                                    <StatusBadge status={order.status} />
                                 </div>
                             </div>
                             {order.notes && (
@@ -184,9 +181,7 @@ export default function Show({ order }: { order: Order }) {
                                         <TableRow key={salesReturn.id}>
                                             <TableCell>{salesReturn.return_number}</TableCell>
                                             <TableCell>
-                                                {salesReturn.returned_at
-                                                    ? new Date(salesReturn.returned_at).toLocaleDateString()
-                                                    : '—'}
+                                                {formatDate(salesReturn.returned_at)}
                                             </TableCell>
                                             <TableCell>{salesReturn.items.length}</TableCell>
                                             <TableCell>{salesReturn.total}</TableCell>

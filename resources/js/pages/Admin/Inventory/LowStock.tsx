@@ -1,19 +1,19 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import Heading from '@/components/heading';
+import { FilterField, FilterPanel } from '@/components/filter-panel';
 import { Pagination } from '@/components/pagination';
 import { ProgressBar } from '@/components/progress-bar';
+import { StatusBadge } from '@/components/status-badge';
 import { StatCard } from '@/components/stat-card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import * as InventoryRoutes from '@/routes/admin/inventory';
 import * as ProductRoutes from '@/routes/admin/products';
-import { AlertTriangle, Eye, Filter, Layers, Package, X } from 'lucide-react';
+import { AlertTriangle, Eye, Layers, Package } from 'lucide-react';
 
 type VariantRow = {
     id: number;
@@ -30,6 +30,7 @@ type PaginatedVariants = {
     links: { url: string | null; label: string; active: boolean }[];
     current_page: number;
     last_page: number;
+    total: number;
 };
 
 type Props = {
@@ -38,22 +39,13 @@ type Props = {
     filters: { status: string; search: string | null };
 };
 
-const STATUS_BADGES: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' }> = {
-    in_stock: { label: 'In Stock', variant: 'secondary' },
-    low_stock: { label: 'Low Stock', variant: 'destructive' },
-    out_of_stock: { label: 'Out of Stock', variant: 'destructive' },
-};
-
-function StatusBadge({ status }: { status: string }) {
-    const badge = STATUS_BADGES[status] ?? STATUS_BADGES.in_stock;
-    return <Badge variant={badge.variant}>{badge.label}</Badge>;
-}
-
 export default function LowStock({ variants, counts, filters }: Props) {
     const [status, setStatus] = useState<string>(filters.status || 'attention');
     const [search, setSearch] = useState<string>(filters.search || '');
 
-    const handleFilter = (e: React.FormEvent) => {
+    const activeCount = [status !== 'attention' ? status : '', search.trim()].filter((v) => v !== '').length;
+
+    const handleFilter = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         router.get(
             InventoryRoutes.lowStock().url,
@@ -63,6 +55,8 @@ export default function LowStock({ variants, counts, filters }: Props) {
     };
 
     const clearFilters = () => {
+        setStatus('attention');
+        setSearch('');
         router.get(InventoryRoutes.lowStock().url, {}, { preserveState: true, replace: true });
     };
 
@@ -82,11 +76,18 @@ export default function LowStock({ variants, counts, filters }: Props) {
                     <StatCard label="Monitored Variants" value={counts.monitored} icon={Layers} />
                 </div>
 
-                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-xs transition-colors dark:border-border/60 dark:shadow-none">
-                    <div className="space-y-2">
-                        <Label>Status</Label>
+                <FilterPanel onSubmit={handleFilter} onClear={clearFilters} activeCount={activeCount}>
+                    <FilterField label="Search" htmlFor="search" className="sm:col-span-2">
+                        <Input
+                            id="search"
+                            placeholder="Search by product, variant or SKU..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </FilterField>
+                    <FilterField label="Status">
                         <Select value={status} onValueChange={setStatus}>
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Needs attention" />
                             </SelectTrigger>
                             <SelectContent>
@@ -96,27 +97,18 @@ export default function LowStock({ variants, counts, filters }: Props) {
                                 <SelectItem value="monitored">All Monitored Variants</SelectItem>
                             </SelectContent>
                         </Select>
-                    </div>
-                    <div className="space-y-2 flex-1">
-                        <Label htmlFor="search">Search</Label>
-                        <Input
-                            id="search"
-                            placeholder="Search by product, variant or SKU..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                    </div>
-                    <div className="flex gap-2">
-                        <Button type="submit">
-                            <Filter className="mr-2 h-4 w-4" /> Filter
-                        </Button>
-                        <Button type="button" variant="outline" onClick={clearFilters}>
-                            <X className="mr-2 h-4 w-4" /> Clear
-                        </Button>
-                    </div>
-                </form>
+                    </FilterField>
+                </FilterPanel>
 
                 <Card>
+                    <CardHeader>
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                            <CardTitle>Stock levels</CardTitle>
+                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
+                                {variants.total.toLocaleString()} record{variants.total === 1 ? '' : 's'}
+                            </span>
+                        </div>
+                    </CardHeader>
                     <CardContent className="px-0">
                         <Table>
                             <TableHeader>

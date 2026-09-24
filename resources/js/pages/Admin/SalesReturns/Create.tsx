@@ -1,7 +1,8 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import Heading from '@/components/heading';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/status-badge';
+import { titleCase } from '@/lib/format';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -68,10 +69,10 @@ export default function Create({ order }: { order: Order }) {
                     <Heading
                         eyebrow="Sales"
                         title={`Return ${order.reference_number}`}
-                        description={`Customer: ${customerName} · Status: ${order.status}`}
+                        description={`Customer: ${customerName} · Status: ${titleCase(order.status)}`}
                     />
                     <div className="flex items-center gap-2">
-                        <Badge>{order.status}</Badge>
+                        <StatusBadge status={order.status} />
                         <Link href={OrderRoutes.show(order.id).url}>
                             <Button variant="outline">
                                 <ArrowLeft /> Back

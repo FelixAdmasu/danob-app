@@ -1,6 +1,7 @@
 import { Head, usePage } from '@inertiajs/react';
 import { dashboard } from '@/routes';
 import Heading from '@/components/heading';
+import { formatDate } from '@/lib/format';
 import {
     Card,
     CardContent,
@@ -66,9 +67,7 @@ export default function Dashboard() {
                             </CardTitle>
                             <CardDescription>
                                 {auth.user?.created_at
-                                    ? new Date(
-                                          auth.user.created_at,
-                                      ).toLocaleDateString()
+                                    ? formatDate(auth.user.created_at)
                                     : '—'}
                             </CardDescription>
                         </CardHeader>

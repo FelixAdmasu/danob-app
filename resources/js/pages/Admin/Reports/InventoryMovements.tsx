@@ -1,18 +1,18 @@
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 import Heading from '@/components/heading';
+import { FilterField, FilterPanel } from '@/components/filter-panel';
 import { Pagination } from '@/components/pagination';
 import { StatCard } from '@/components/stat-card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ReportExportButton } from '@/components/report-export-button';
 import { ArrowDownToLine, ArrowUpFromLine, History } from 'lucide-react';
 import ReportRoutes from '@/routes/admin/reports';
+import { formatDateTime, titleCase } from '@/lib/format';
 
 type Movement = {
     id: number;
@@ -36,6 +36,7 @@ type PaginatedMovements = {
     links: { url: string | null; label: string; active: boolean }[];
     current_page: number;
     last_page: number;
+    total: number;
 };
 
 type Props = {
@@ -73,6 +74,16 @@ export default function InventoryMovements({ movements, summary, filters, produc
     const [dateFrom, setDateFrom] = useState<string>(filters.date_from || '');
     const [dateTo, setDateTo] = useState<string>(filters.date_to || '');
 
+    const activeCount = [
+        productId !== 'all' ? productId : '',
+        variantId !== 'all' ? variantId : '',
+        movementType !== 'all' ? movementType : '',
+        userId !== 'all' ? userId : '',
+        search.trim(),
+        dateFrom,
+        dateTo,
+    ].filter((v) => v !== '').length;
+
     const handleFilter = (e: React.FormEvent) => {
         e.preventDefault();
         router.get(
@@ -91,6 +102,13 @@ export default function InventoryMovements({ movements, summary, filters, produc
     };
 
     const clearFilters = () => {
+        setProductId('all');
+        setVariantId('all');
+        setMovementType('all');
+        setUserId('all');
+        setSearch('');
+        setDateFrom('');
+        setDateTo('');
         router.get(ReportRoutes.inventoryMovements().url, {}, { preserveState: true, replace: true });
     };
 
@@ -110,20 +128,23 @@ export default function InventoryMovements({ movements, summary, filters, produc
                     <StatCard label="Units Out" value={summary.units_out} icon={ArrowUpFromLine} />
                 </div>
 
-                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-xs transition-colors dark:border-border/60 dark:shadow-none">
-                    <div className="space-y-2 flex-1">
-                        <Label htmlFor="search">Search</Label>
+                <FilterPanel
+                    onSubmit={handleFilter}
+                    onClear={clearFilters}
+                    activeCount={activeCount}
+                    actions={<ReportExportButton url={ReportRoutes.inventoryMovements.export().url} filters={filters} />}
+                >
+                    <FilterField label="Search" htmlFor="search" className="sm:col-span-2">
                         <Input
                             id="search"
                             placeholder="Search by reason, variant, SKU or product..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Product</Label>
+                    </FilterField>
+                    <FilterField label="Product">
                         <Select value={productId} onValueChange={setProductId}>
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder="All products" />
                             </SelectTrigger>
                             <SelectContent>
@@ -135,11 +156,10 @@ export default function InventoryMovements({ movements, summary, filters, produc
                                 ))}
                             </SelectContent>
                         </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Variant</Label>
+                    </FilterField>
+                    <FilterField label="Variant">
                         <Select value={variantId} onValueChange={setVariantId}>
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder="All variants" />
                             </SelectTrigger>
                             <SelectContent>
@@ -153,11 +173,10 @@ export default function InventoryMovements({ movements, summary, filters, produc
                                     ))}
                             </SelectContent>
                         </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Type</Label>
+                    </FilterField>
+                    <FilterField label="Type">
                         <Select value={movementType} onValueChange={setMovementType}>
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder="All types" />
                             </SelectTrigger>
                             <SelectContent>
@@ -169,11 +188,10 @@ export default function InventoryMovements({ movements, summary, filters, produc
                                 ))}
                             </SelectContent>
                         </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>User</Label>
+                    </FilterField>
+                    <FilterField label="User">
                         <Select value={userId} onValueChange={setUserId}>
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder="All users" />
                             </SelectTrigger>
                             <SelectContent>
@@ -185,27 +203,23 @@ export default function InventoryMovements({ movements, summary, filters, produc
                                 ))}
                             </SelectContent>
                         </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="date_from">From</Label>
+                    </FilterField>
+                    <FilterField label="From" htmlFor="date_from">
                         <Input id="date_from" type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="date_to">To</Label>
+                    </FilterField>
+                    <FilterField label="To" htmlFor="date_to">
                         <Input id="date_to" type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
-                    </div>
-                    <div className="flex gap-2">
-                        <Button type="submit">Filter</Button>
-                        <Button type="button" variant="outline" onClick={clearFilters}>
-                            Clear
-                        </Button>
-                        <ReportExportButton url={ReportRoutes.inventoryMovements.export().url} filters={filters} />
-                    </div>
-                </form>
+                    </FilterField>
+                </FilterPanel>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>All Movements</CardTitle>
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                            <CardTitle>All Movements</CardTitle>
+                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
+                                {movements.total.toLocaleString()} record{movements.total === 1 ? '' : 's'}
+                            </span>
+                        </div>
                     </CardHeader>
                     <CardContent className="px-0">
                         <Table>
@@ -227,13 +241,13 @@ export default function InventoryMovements({ movements, summary, filters, produc
                                 ) : (
                                     movements.data.map((m) => (
                                         <TableRow key={m.id}>
-                                            <TableCell className="text-xs">{new Date(m.created_at).toLocaleString()}</TableCell>
+                                            <TableCell className="text-xs">{formatDateTime(m.created_at)}</TableCell>
                                             <TableCell className="text-sm">
                                                 <div className="font-medium">{m.variant.product.name}</div>
                                                 <div className="text-xs text-muted-foreground">{m.variant.name}</div>
                                             </TableCell>
                                             <TableCell>
-                                                <Badge variant="secondary">{m.movement_type}</Badge>
+                                                <Badge variant="secondary">{titleCase(m.movement_type)}</Badge>
                                             </TableCell>
                                             <TableCell className="text-right text-sm font-mono">{m.quantity}</TableCell>
                                             <TableCell className="text-right text-xs font-mono">

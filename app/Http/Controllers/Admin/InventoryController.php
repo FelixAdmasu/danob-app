@@ -157,6 +157,7 @@ class InventoryController extends Controller
     public function history(Request $request)
     {
         $validated = $request->validate([
+            'search' => 'nullable|string|max:255',
             'product_id' => 'nullable|exists:products,id',
             'variant_id' => 'nullable|exists:product_variants,id',
             'movement_type' => 'nullable|in:'.implode(',', StockMovement::TYPES),
@@ -165,8 +166,21 @@ class InventoryController extends Controller
             'date_to' => 'nullable|date|after_or_equal:date_from',
         ]);
 
+        $search = $validated['search'] ?? null;
+
         $query = StockMovement::with(['variant.product:id,name', 'user:id,name'])
             ->latest('created_at');
+
+        if (! empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('reason', 'like', "%{$search}%")
+                    ->orWhere('notes', 'like', "%{$search}%")
+                    ->orWhereHas('variant', function ($v) use ($search) {
+                        $v->where('name', 'like', "%{$search}%")
+                            ->orWhereHas('product', fn ($p) => $p->where('name', 'like', "%{$search}%"));
+                    });
+            });
+        }
 
         if (! empty($validated['product_id'])) {
             $productId = $validated['product_id'];
@@ -202,6 +216,7 @@ class InventoryController extends Controller
         return Inertia::render('Admin/Inventory/History', [
             'movements' => $movements,
             'filters' => [
+                'search' => $search,
                 'product_id' => $validated['product_id'] ?? null,
                 'variant_id' => $validated['variant_id'] ?? null,
                 'movement_type' => $validated['movement_type'] ?? null,

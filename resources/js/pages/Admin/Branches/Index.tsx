@@ -1,14 +1,14 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import Heading from '@/components/heading';
+import { StatusBadge } from '@/components/status-badge';
 import { Pagination } from '@/components/pagination';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Search } from 'lucide-react';
 import * as BranchRoutes from '@/routes/admin/branches';
+import { Pencil, Search, Trash2 } from 'lucide-react';
 
 type Branch = {
     id: number;
@@ -24,6 +24,7 @@ type PaginatedBranches = {
     links: { url: string | null; label: string; active: boolean }[];
     current_page: number;
     last_page: number;
+    total: number;
 };
 
 type Props = {
@@ -33,10 +34,18 @@ type Props = {
 
 export default function Index({ branches, filters }: Props) {
     const [search, setSearch] = useState(filters.search ?? '');
+
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         router.get(BranchRoutes.index().url, { search: search || undefined }, { preserveState: true, replace: true });
     };
+
+    const handleDelete = (branch: Branch) => {
+        if (confirm(`Delete branch "${branch.name}"?`)) {
+            router.delete(BranchRoutes.destroy(branch.id).url);
+        }
+    };
+
     return (
         <>
             <Head title="Branches" />
@@ -58,7 +67,12 @@ export default function Index({ branches, filters }: Props) {
                 </form>
                 <Card>
                     <CardHeader>
-                        <CardTitle>All Branches</CardTitle>
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                            <CardTitle>All Branches</CardTitle>
+                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
+                                {branches.total.toLocaleString()} record{branches.total === 1 ? '' : 's'}
+                            </span>
+                        </div>
                     </CardHeader>
                     <CardContent className="px-0">
                         <Table>
@@ -69,11 +83,12 @@ export default function Index({ branches, filters }: Props) {
                                     <TableHead>Address</TableHead>
                                     <TableHead>Phone</TableHead>
                                     <TableHead>Active</TableHead>
+                                    <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {branches.data.length === 0 ? (
-                                    <TableEmpty colSpan={5}>No branches.</TableEmpty>
+                                    <TableEmpty colSpan={6}>No branches found.</TableEmpty>
                                 ) : (
                                     branches.data.map((b) => (
                                         <TableRow key={b.id}>
@@ -81,7 +96,21 @@ export default function Index({ branches, filters }: Props) {
                                             <TableCell className="text-sm">{b.city}</TableCell>
                                             <TableCell className="text-sm">{b.address}</TableCell>
                                             <TableCell className="text-sm">{b.phone || '—'}</TableCell>
-                                            <TableCell><Badge variant={b.is_active ? 'success' : 'secondary'}>{b.is_active ? 'Yes' : 'No'}</Badge></TableCell>
+                                            <TableCell>
+                                                <StatusBadge status={b.is_active ? 'active' : 'inactive'} />
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <div className="flex justify-end gap-1">
+                                                    <Link href={BranchRoutes.edit(b.id).url}>
+                                                        <Button variant="ghost" size="icon">
+                                                            <Pencil className="h-4 w-4" />
+                                                        </Button>
+                                                    </Link>
+                                                    <Button variant="ghost" size="icon" onClick={() => handleDelete(b)}>
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
                                         </TableRow>
                                     ))
                                 )}

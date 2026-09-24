@@ -26,6 +26,7 @@ type PaginatedSuppliers = {
     links: { url: string | null; label: string; active: boolean }[];
     current_page: number;
     last_page: number;
+    total: number;
 };
 
 type Props = {
@@ -99,7 +100,12 @@ export default function Index({ suppliers, filters }: Props) {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>All Suppliers</CardTitle>
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                            <CardTitle>All Suppliers</CardTitle>
+                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
+                                {suppliers.total.toLocaleString()} record{suppliers.total === 1 ? '' : 's'}
+                            </span>
+                        </div>
                     </CardHeader>
                     <CardContent className="px-0">
                         <Table>

@@ -1,18 +1,18 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import Heading from '@/components/heading';
+import { FilterField, FilterPanel } from '@/components/filter-panel';
+import { StatusBadge } from '@/components/status-badge';
 import { Pagination } from '@/components/pagination';
 import { StatCard } from '@/components/stat-card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ReportExportButton } from '@/components/report-export-button';
 import * as OrderRoutes from '@/routes/admin/orders';
 import ReportRoutes from '@/routes/admin/reports';
+import { formatDate } from '@/lib/format';
 import { PackageCheck, Receipt, ShoppingBag, Truck, Undo2 } from 'lucide-react';
 
 type OrderRow = {
@@ -31,6 +31,7 @@ type PaginatedOrders = {
     links: { url: string | null; label: string; active: boolean }[];
     current_page: number;
     last_page: number;
+    total: number;
 };
 
 type Props = {
@@ -67,6 +68,14 @@ export default function Sales({ orders, summary, filters, customers, order_statu
     const [dateFrom, setDateFrom] = useState<string>(filters.date_from || '');
     const [dateTo, setDateTo] = useState<string>(filters.date_to || '');
 
+    const activeCount = [
+        search.trim(),
+        status !== 'all' ? status : '',
+        customerId !== 'all' ? customerId : '',
+        dateFrom,
+        dateTo,
+    ].filter((v) => v !== '').length;
+
     const handleFilter = (e: React.FormEvent) => {
         e.preventDefault();
         router.get(
@@ -83,6 +92,11 @@ export default function Sales({ orders, summary, filters, customers, order_statu
     };
 
     const clearFilters = () => {
+        setStatus('all');
+        setCustomerId('all');
+        setSearch('');
+        setDateFrom('');
+        setDateTo('');
         router.get(ReportRoutes.sales().url, {}, { preserveState: true, replace: true });
     };
 
@@ -104,20 +118,23 @@ export default function Sales({ orders, summary, filters, customers, order_statu
                     <StatCard label="Return Value" value={summary.return_value} icon={Receipt} tone="warning" />
                 </div>
 
-                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-xs transition-colors dark:border-border/60 dark:shadow-none">
-                    <div className="space-y-2 flex-1">
-                        <Label htmlFor="search">Search</Label>
+                <FilterPanel
+                    onSubmit={handleFilter}
+                    onClear={clearFilters}
+                    activeCount={activeCount}
+                    actions={<ReportExportButton url={ReportRoutes.sales.export().url} filters={filters} />}
+                >
+                    <FilterField label="Search" htmlFor="search" className="sm:col-span-2">
                         <Input
                             id="search"
                             placeholder="Search by order reference or customer..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Status</Label>
+                    </FilterField>
+                    <FilterField label="Status">
                         <Select value={status} onValueChange={setStatus}>
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder="All statuses" />
                             </SelectTrigger>
                             <SelectContent>
@@ -129,11 +146,10 @@ export default function Sales({ orders, summary, filters, customers, order_statu
                                 ))}
                             </SelectContent>
                         </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Customer</Label>
+                    </FilterField>
+                    <FilterField label="Customer">
                         <Select value={customerId} onValueChange={setCustomerId}>
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder="All customers" />
                             </SelectTrigger>
                             <SelectContent>
@@ -145,27 +161,23 @@ export default function Sales({ orders, summary, filters, customers, order_statu
                                 ))}
                             </SelectContent>
                         </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="date_from">From</Label>
+                    </FilterField>
+                    <FilterField label="From" htmlFor="date_from">
                         <Input id="date_from" type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="date_to">To</Label>
+                    </FilterField>
+                    <FilterField label="To" htmlFor="date_to">
                         <Input id="date_to" type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
-                    </div>
-                    <div className="flex gap-2">
-                        <Button type="submit">Filter</Button>
-                        <Button type="button" variant="outline" onClick={clearFilters}>
-                            Clear
-                        </Button>
-                        <ReportExportButton url={ReportRoutes.sales.export().url} filters={filters} />
-                    </div>
-                </form>
+                    </FilterField>
+                </FilterPanel>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Sales</CardTitle>
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                            <CardTitle>Sales</CardTitle>
+                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
+                                {orders.total.toLocaleString()} record{orders.total === 1 ? '' : 's'}
+                            </span>
+                        </div>
                     </CardHeader>
                     <CardContent className="px-0">
                         <Table>
@@ -192,9 +204,9 @@ export default function Sales({ orders, summary, filters, customers, order_statu
                                                 </Link>
                                             </TableCell>
                                             <TableCell>{customerName(order)}</TableCell>
-                                            <TableCell>{new Date(order.ordered_at).toLocaleDateString()}</TableCell>
+                                            <TableCell>{formatDate(order.ordered_at)}</TableCell>
                                             <TableCell>
-                                                <Badge variant="secondary">{order.status}</Badge>
+                                                <StatusBadge status={order.status} />
                                             </TableCell>
                                             <TableCell className="text-right font-mono">{order.total}</TableCell>
                                             <TableCell className="text-right font-mono">{order.returned_quantity}</TableCell>

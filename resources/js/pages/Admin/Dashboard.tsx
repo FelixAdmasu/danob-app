@@ -3,9 +3,11 @@ import { DonutChart } from '@/components/charts';
 import Heading from '@/components/heading';
 import { ProgressBar } from '@/components/progress-bar';
 import { StatCard } from '@/components/stat-card';
+import { StatusBadge } from '@/components/status-badge';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { formatDate, formatDateTime, titleCase } from '@/lib/format';
 import * as InventoryRoutes from '@/routes/admin/inventory';
 import * as ProductRoutes from '@/routes/admin/products';
 import * as PurchaseOrderRoutes from '@/routes/admin/purchase-orders';
@@ -46,14 +48,6 @@ type Inventory = {
     recent_movements: Movement[];
     recent_purchase_orders: PurchaseOrderRow[];
 };
-
-function orderBadgeVariant(status: string) {
-    return status === 'delivered' ? 'success' : status === 'cancelled' ? 'cancelled' : 'warning';
-}
-
-function poBadgeVariant(status: string) {
-    return status === 'received' ? 'success' : status === 'cancelled' ? 'cancelled' : 'warning';
-}
 
 // Display-only signed quantity derived from the stored before/after ledger values.
 function movementLabel(m: Movement): string {
@@ -237,13 +231,13 @@ export default function Dashboard({
                                                         {mv.variant.product.name} — {mv.variant.name}
                                                     </p>
                                                     <p className="text-xs text-muted-foreground">
-                                                        {new Date(mv.created_at).toLocaleString()} · {mv.quantity_before} → {mv.quantity_after}
+                                                        {formatDateTime(mv.created_at)} · {mv.quantity_before} → {mv.quantity_after}
                                                         {mv.reason ? ` · ${mv.reason}` : ''}
                                                     </p>
                                                 </div>
                                                 <div className="flex shrink-0 items-center gap-2">
-                                                    <Badge variant={mv.quantity_after >= mv.quantity_before ? 'success' : 'secondary'}>
-                                                        {mv.movement_type}
+                                                    <Badge variant={mv.quantity_after >= mv.quantity_before ? 'success' : 'destructive'}>
+                                                        {titleCase(mv.movement_type)}
                                                     </Badge>
                                                     <span className="font-mono text-sm font-semibold">{movementLabel(mv)}</span>
                                                 </div>
@@ -268,12 +262,12 @@ export default function Dashboard({
                                                     <p className="font-mono text-sm">{po.po_number}</p>
                                                     <p className="truncate text-xs text-muted-foreground">
                                                         {po.supplier?.name || 'Unknown supplier'}
-                                                        {po.ordered_at ? ` · ${new Date(po.ordered_at).toLocaleDateString()}` : ''}
+                                                        {po.ordered_at ? ` · ${formatDate(po.ordered_at)}` : ''}
                                                     </p>
                                                 </div>
                                                 <div className="flex shrink-0 items-center gap-2">
                                                     <span className="font-mono text-sm">{po.total}</span>
-                                                    <Badge variant={poBadgeVariant(po.status)}>{po.status}</Badge>
+                                                    <StatusBadge status={po.status} />
                                                 </div>
                                             </li>
                                         ))}
@@ -312,7 +306,7 @@ export default function Dashboard({
                                                 <TableCell className="text-sm">{o.customer?.name || 'Guest'}</TableCell>
                                                 <TableCell className="text-right font-mono text-sm">{o.total}</TableCell>
                                                 <TableCell>
-                                                    <Badge variant={orderBadgeVariant(o.status)}>{o.status}</Badge>
+                                                    <StatusBadge status={o.status} />
                                                 </TableCell>
                                             </TableRow>
                                         ))

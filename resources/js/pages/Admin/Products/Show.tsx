@@ -1,5 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import Heading from '@/components/heading';
+import { StatusBadge } from '@/components/status-badge';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -92,7 +93,7 @@ export default function Show({ product }: Props) {
                         </div>
                         <div>
                             <p className="text-xs uppercase tracking-widest text-muted-foreground">Status</p>
-                            <Badge variant={product.status === 'active' ? 'success' : 'secondary'}>{product.status}</Badge>
+                            <StatusBadge status={product.status} />
                         </div>
                     </CardContent>
                 </Card>
@@ -130,9 +131,7 @@ export default function Show({ product }: Props) {
                                             </TableCell>
                                             <TableCell>{v.public_price ?? '—'}</TableCell>
                                             <TableCell>
-                                                <Badge variant={v.is_active ? 'success' : 'secondary'}>
-                                                    {v.is_active ? 'Yes' : 'No'}
-                                                </Badge>
+                                                <StatusBadge status={v.is_active ? 'active' : 'inactive'} />
                                             </TableCell>
                                         </TableRow>
                                     ))

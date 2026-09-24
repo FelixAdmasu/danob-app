@@ -2,7 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import Heading from '@/components/heading';
 import { Pagination } from '@/components/pagination';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Plus, Search } from 'lucide-react';
 import * as OrderRoutes from '@/routes/admin/orders';
+import { formatDate } from '@/lib/format';
 
 type Order = {
     id: number;
@@ -25,6 +26,7 @@ type PaginatedOrders = {
     links: { url: string | null; label: string; active: boolean }[];
     current_page: number;
     last_page: number;
+    total: number;
 };
 
 type Props = {
@@ -89,7 +91,12 @@ export default function Index({ orders, filters }: Props) {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>All Orders</CardTitle>
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                            <CardTitle>All Orders</CardTitle>
+                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
+                                {orders.total.toLocaleString()} record{orders.total === 1 ? '' : 's'}
+                            </span>
+                        </div>
                     </CardHeader>
                     <CardContent className="px-0">
                         <Table>
@@ -115,10 +122,10 @@ export default function Index({ orders, filters }: Props) {
                                             </TableCell>
                                             <TableCell>{order.customer?.company_name || order.customer?.contact_name || '—'}</TableCell>
                                             <TableCell>
-                                                <Badge variant={order.status === 'delivered' ? 'success' : order.status === 'cancelled' ? 'cancelled' : 'warning'}>{order.status}</Badge>
+                                                <StatusBadge status={order.status} />
                                             </TableCell>
                                             <TableCell className="text-right font-mono tabular-nums">{order.total}</TableCell>
-                                            <TableCell>{order.ordered_at ? new Date(order.ordered_at).toLocaleDateString() : '—'}</TableCell>
+                                            <TableCell>{order.ordered_at ? formatDate(order.ordered_at) : '—'}</TableCell>
                                         </TableRow>
                                     ))
                                 )}

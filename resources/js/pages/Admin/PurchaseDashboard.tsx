@@ -2,8 +2,9 @@ import { Head, Link } from '@inertiajs/react';
 import { BarList, DonutChart } from '@/components/charts';
 import Heading from '@/components/heading';
 import { ProgressBar } from '@/components/progress-bar';
+import { StatusBadge } from '@/components/status-badge';
 import { StatCard } from '@/components/stat-card';
-import { Badge } from '@/components/ui/badge';
+import { formatDate } from '@/lib/format';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -81,11 +82,6 @@ type Purchases = {
     recent_purchase_orders: RecentPurchaseOrderRow[];
 };
 
-// Textual status labels stay readable without relying on colour.
-function StatusBadge({ status }: { status: string }) {
-    return <Badge variant={status === 'received' ? 'success' : status === 'cancelled' ? 'cancelled' : 'warning'}>{status}</Badge>;
-}
-
 const STATUS_COLOR: Record<string, string> = {
     approved: 'var(--viz-warning)',
     partially_received: 'var(--chart-3)',
@@ -93,10 +89,6 @@ const STATUS_COLOR: Record<string, string> = {
     received: 'var(--viz-success)',
     cancelled: 'var(--viz-danger)',
 };
-
-function formatDate(value: string | null): string {
-    return value ? new Date(value).toLocaleDateString() : '—';
-}
 
 // Mirrors PurchaseOrder::canBeReceived() on the Purchase Order Show page.
 function canReceive(status: string): boolean {

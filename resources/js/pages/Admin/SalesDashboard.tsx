@@ -1,7 +1,9 @@
 import { Head, Link } from '@inertiajs/react';
 import { BarList, DonutChart } from '@/components/charts';
 import Heading from '@/components/heading';
+import { StatusBadge } from '@/components/status-badge';
 import { StatCard } from '@/components/stat-card';
+import { formatDate, formatDateTime, titleCase } from '@/lib/format';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -76,22 +78,12 @@ type Sales = {
     movements: Movement[] | null;
 };
 
-// Textual status labels stay readable without relying on colour
-// (same convention as the Orders index).
-function StatusBadge({ status }: { status: string }) {
-    return <Badge variant={status === 'delivered' ? 'success' : status === 'cancelled' ? 'cancelled' : 'warning'}>{status}</Badge>;
-}
-
 const STATUS_COLOR: Record<string, string> = {
     pending: 'var(--viz-warning)',
     confirmed: 'var(--chart-3)',
     delivered: 'var(--viz-success)',
     cancelled: 'var(--viz-danger)',
 };
-
-function formatDate(value: string | null): string {
-    return value ? new Date(value).toLocaleDateString() : '—';
-}
 
 // Display-only signed quantity derived from the stored before/after ledger values.
 function movementLabel(m: Movement): string {
@@ -320,16 +312,16 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
                                                         {movement.variant.product.name} — {movement.variant.name}
                                                     </p>
                                                     <p className="text-xs text-muted-foreground">
-                                                        {new Date(movement.created_at).toLocaleString()} · {movement.quantity_before} →{' '}
+                                                        {formatDateTime(movement.created_at)} · {movement.quantity_before} →{' '}
                                                         {movement.quantity_after}
                                                         {movement.reason ? ` · ${movement.reason}` : ''}
                                                     </p>
                                                 </div>
                                                 <div className="flex shrink-0 items-center gap-2">
                                                     <Badge
-                                                        variant={movement.quantity_after >= movement.quantity_before ? 'success' : 'secondary'}
+                                                        variant={movement.quantity_after >= movement.quantity_before ? 'success' : 'destructive'}
                                                     >
-                                                        {movement.movement_type}
+                                                        {titleCase(movement.movement_type)}
                                                     </Badge>
                                                     <span className="font-mono text-sm font-semibold">{movementLabel(movement)}</span>
                                                 </div>

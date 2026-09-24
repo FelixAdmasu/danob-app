@@ -1,4 +1,4 @@
-import { createInertiaApp } from '@inertiajs/react';
+import { createInertiaApp, router } from '@inertiajs/react';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { initializeTheme } from '@/hooks/use-appearance';
@@ -41,3 +41,10 @@ void createInertiaApp({
 
 // This will set light / dark mode on load...
 initializeTheme();
+
+// Global loading affordance: flag every Inertia visit so tables can show a
+// dimmed shimmer while the next slice of data loads (rule lives in
+// resources/css/app.css). Keeps search/filter interactions feeling alive
+// on every table page without per-page skeleton code.
+router.on('start', () => document.documentElement.setAttribute('data-inertia-pending', ''));
+router.on('finish', () => document.documentElement.removeAttribute('data-inertia-pending'));

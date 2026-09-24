@@ -79,6 +79,22 @@ class InventoryHistoryTest extends TestCase
         $this->assertTrue(true); // filter doesn't error
     }
 
+    public function test_search_filters_movements(): void
+    {
+        $this->createMovement('adjustment_in');
+        $admin = $this->admin();
+
+        $this->actingAs($admin)
+            ->get(route('admin.inventory.history', ['search' => 'V1']))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->component('Admin/Inventory/History')->has('movements.data', 1)->where('filters.search', 'V1'));
+
+        $this->actingAs($admin)
+            ->get(route('admin.inventory.history', ['search' => 'no-such-movement']))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->has('movements.data', 0));
+    }
+
     public function test_pagination(): void
     {
         for ($i = 0; $i < 25; $i++) {

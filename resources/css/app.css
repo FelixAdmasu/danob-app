@@ -321,6 +321,27 @@
 }
 
 /*
+ * Global Inertia visit feedback: every table body dims and shimmers while
+ * the next slice of data loads (the html flag is toggled around each visit
+ * in resources/js/app.tsx). Gives all list/ledger/report tables a loading
+ * affordance without per-page skeleton code.
+ */
+html[data-inertia-pending] [data-slot="table-body"] {
+    pointer-events: none;
+    animation: table-pending-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes table-pending-pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.4;
+    }
+}
+
+/*
  * Broken stored image → placeholder surface (see onImageError in
  * resources/js/lib/image-fallback.ts). The helper swaps the src for a 1×1
  * transparent gif so the element keeps its box; this paints a muted

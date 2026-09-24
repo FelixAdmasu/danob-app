@@ -1,7 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import Heading from '@/components/heading';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -68,9 +68,7 @@ export default function Receive({ purchase_order }: { purchase_order: PurchaseOr
                         description={`Supplier: ${purchase_order.supplier?.name || '—'}`}
                     />
                     <div className="flex items-center gap-2">
-                        <Badge variant={purchase_order.status === 'received' ? 'success' : purchase_order.status === 'cancelled' ? 'cancelled' : 'warning'}>
-                            {purchase_order.status}
-                        </Badge>
+                        <StatusBadge status={purchase_order.status} />
                         <Link href={PurchaseOrderRoutes.show(purchase_order.id).url}>
                             <Button variant="outline">
                                 <ArrowLeft className="mr-2 h-4 w-4" /> Back

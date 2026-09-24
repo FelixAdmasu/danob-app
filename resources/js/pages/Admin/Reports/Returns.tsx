@@ -1,17 +1,17 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import Heading from '@/components/heading';
+import { FilterField, FilterPanel } from '@/components/filter-panel';
 import { Pagination } from '@/components/pagination';
 import { StatCard } from '@/components/stat-card';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ReportExportButton } from '@/components/report-export-button';
 import * as OrderRoutes from '@/routes/admin/orders';
 import ReportRoutes from '@/routes/admin/reports';
+import { formatDate } from '@/lib/format';
 import { Package, Receipt, Undo2 } from 'lucide-react';
 
 type ReturnRow = {
@@ -35,6 +35,7 @@ type PaginatedReturns = {
     links: { url: string | null; label: string; active: boolean }[];
     current_page: number;
     last_page: number;
+    total: number;
 };
 
 type Props = {
@@ -69,6 +70,15 @@ export default function Returns({ returns, summary, filters, customers, products
     const [dateFrom, setDateFrom] = useState<string>(filters.date_from || '');
     const [dateTo, setDateTo] = useState<string>(filters.date_to || '');
 
+    const activeCount = [
+        customerId !== 'all' ? customerId : '',
+        productId !== 'all' ? productId : '',
+        variantId !== 'all' ? variantId : '',
+        search.trim(),
+        dateFrom,
+        dateTo,
+    ].filter((v) => v !== '').length;
+
     const handleFilter = (e: React.FormEvent) => {
         e.preventDefault();
         router.get(
@@ -86,6 +96,12 @@ export default function Returns({ returns, summary, filters, customers, products
     };
 
     const clearFilters = () => {
+        setCustomerId('all');
+        setProductId('all');
+        setVariantId('all');
+        setSearch('');
+        setDateFrom('');
+        setDateTo('');
         router.get(ReportRoutes.returns().url, {}, { preserveState: true, replace: true });
     };
 
@@ -105,20 +121,23 @@ export default function Returns({ returns, summary, filters, customers, products
                     <StatCard label="Return Value" value={summary.return_value} icon={Receipt} tone="warning" />
                 </div>
 
-                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-xs transition-colors dark:border-border/60 dark:shadow-none">
-                    <div className="space-y-2 flex-1">
-                        <Label htmlFor="search">Search</Label>
+                <FilterPanel
+                    onSubmit={handleFilter}
+                    onClear={clearFilters}
+                    activeCount={activeCount}
+                    actions={<ReportExportButton url={ReportRoutes.returns.export().url} filters={filters} />}
+                >
+                    <FilterField label="Search" htmlFor="search" className="sm:col-span-2">
                         <Input
                             id="search"
                             placeholder="Search by return number, order or customer..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Customer</Label>
+                    </FilterField>
+                    <FilterField label="Customer">
                         <Select value={customerId} onValueChange={setCustomerId}>
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder="All customers" />
                             </SelectTrigger>
                             <SelectContent>
@@ -130,11 +149,10 @@ export default function Returns({ returns, summary, filters, customers, products
                                 ))}
                             </SelectContent>
                         </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Product</Label>
+                    </FilterField>
+                    <FilterField label="Product">
                         <Select value={productId} onValueChange={setProductId}>
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder="All products" />
                             </SelectTrigger>
                             <SelectContent>
@@ -146,11 +164,10 @@ export default function Returns({ returns, summary, filters, customers, products
                                 ))}
                             </SelectContent>
                         </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Variant</Label>
+                    </FilterField>
+                    <FilterField label="Variant">
                         <Select value={variantId} onValueChange={setVariantId}>
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder="All variants" />
                             </SelectTrigger>
                             <SelectContent>
@@ -164,27 +181,23 @@ export default function Returns({ returns, summary, filters, customers, products
                                     ))}
                             </SelectContent>
                         </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="date_from">From</Label>
+                    </FilterField>
+                    <FilterField label="From" htmlFor="date_from">
                         <Input id="date_from" type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="date_to">To</Label>
+                    </FilterField>
+                    <FilterField label="To" htmlFor="date_to">
                         <Input id="date_to" type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
-                    </div>
-                    <div className="flex gap-2">
-                        <Button type="submit">Filter</Button>
-                        <Button type="button" variant="outline" onClick={clearFilters}>
-                            Clear
-                        </Button>
-                        <ReportExportButton url={ReportRoutes.returns.export().url} filters={filters} />
-                    </div>
-                </form>
+                    </FilterField>
+                </FilterPanel>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Returns</CardTitle>
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                            <CardTitle>Returns</CardTitle>
+                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
+                                {returns.total.toLocaleString()} record{returns.total === 1 ? '' : 's'}
+                            </span>
+                        </div>
                     </CardHeader>
                     <CardContent className="px-0">
                         <Table>
@@ -218,7 +231,7 @@ export default function Returns({ returns, summary, filters, customers, products
                                                     '—'
                                                 )}
                                             </TableCell>
-                                            <TableCell>{new Date(row.returned_at).toLocaleDateString()}</TableCell>
+                                            <TableCell>{formatDate(row.returned_at)}</TableCell>
                                             <TableCell>{row.returned_by?.name || '—'}</TableCell>
                                             <TableCell className="text-right font-mono">{row.returned_quantity}</TableCell>
                                             <TableCell className="text-right font-mono">{row.total}</TableCell>

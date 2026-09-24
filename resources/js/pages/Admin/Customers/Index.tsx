@@ -2,7 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import Heading from '@/components/heading';
 import { Pagination } from '@/components/pagination';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -25,6 +25,7 @@ type PaginatedCustomers = {
     links: { url: string | null; label: string; active: boolean }[];
     current_page: number;
     last_page: number;
+    total: number;
 };
 
 type Props = {
@@ -60,7 +61,12 @@ export default function Index({ customers, filters }: Props) {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>All Customers</CardTitle>
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                            <CardTitle>All Customers</CardTitle>
+                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
+                                {customers.total.toLocaleString()} record{customers.total === 1 ? '' : 's'}
+                            </span>
+                        </div>
                     </CardHeader>
                     <CardContent className="px-0">
                         <Table>
@@ -84,7 +90,7 @@ export default function Index({ customers, filters }: Props) {
                                             <TableCell>{c.contact_name || '—'}</TableCell>
                                             <TableCell>{c.phone || '—'}</TableCell>
                                             <TableCell>{c.email || '—'}</TableCell>
-                                            <TableCell><Badge variant="secondary">{c.type}</Badge></TableCell>
+                                            <TableCell><StatusBadge status={c.type} /></TableCell>
                                             <TableCell className="text-right tabular-nums">{c.orders_count}</TableCell>
                                         </TableRow>
                                     ))

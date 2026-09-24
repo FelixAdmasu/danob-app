@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Search, Plus, Pencil, Trash2, Image as ImageIcon } from 'lucide-react';
 import { onImageError } from '@/lib/image-fallback';
+import { formatDate } from '@/lib/format';
 import * as BrandRoutes from '@/routes/admin/brands';
 
 type Brand = {
@@ -30,6 +31,7 @@ type PaginatedBrands = {
     links: { url: string | null; label: string; active: boolean }[];
     current_page: number;
     last_page: number;
+    total: number;
 };
 
 type Props = {
@@ -190,7 +192,12 @@ export default function Index({ brands, filters }: Props) {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>All Brands</CardTitle>
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                            <CardTitle>All Brands</CardTitle>
+                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
+                                {brands.total.toLocaleString()} record{brands.total === 1 ? '' : 's'}
+                            </span>
+                        </div>
                     </CardHeader>
                     <CardContent className="px-0">
                         <Table>
@@ -234,7 +241,7 @@ export default function Index({ brands, filters }: Props) {
                                             </TableCell>
                                             <TableCell className="text-right">{brand.products_count} products</TableCell>
                                             <TableCell className="text-muted-foreground">
-                                                {new Date(brand.created_at).toLocaleDateString()}
+                                                {formatDate(brand.created_at)}
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-1">

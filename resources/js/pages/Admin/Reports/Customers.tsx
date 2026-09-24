@@ -1,12 +1,11 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import Heading from '@/components/heading';
+import { FilterField, FilterPanel } from '@/components/filter-panel';
 import { Pagination } from '@/components/pagination';
 import { StatCard } from '@/components/stat-card';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ReportExportButton } from '@/components/report-export-button';
 import { CheckCircle2, DollarSign, ShoppingBag, Users } from 'lucide-react';
@@ -29,6 +28,7 @@ type PaginatedCustomers = {
     links: { url: string | null; label: string; active: boolean }[];
     current_page: number;
     last_page: number;
+    total: number;
 };
 
 type Props = {
@@ -45,6 +45,8 @@ type Props = {
 export default function CustomersReport({ customers, summary, filters }: Props) {
     const [search, setSearch] = useState<string>(filters.search || '');
 
+    const activeCount = [search.trim()].filter((v) => v !== '').length;
+
     const handleFilter = (e: React.FormEvent) => {
         e.preventDefault();
         router.get(
@@ -55,6 +57,7 @@ export default function CustomersReport({ customers, summary, filters }: Props) 
     };
 
     const clearFilters = () => {
+        setSearch('');
         router.get(ReportRoutes.customers().url, {}, { preserveState: true, replace: true });
     };
 
@@ -75,28 +78,30 @@ export default function CustomersReport({ customers, summary, filters }: Props) 
                     <StatCard label="Delivered Sales Value" value={summary.delivered_sales_value} icon={DollarSign} />
                 </div>
 
-                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-xs transition-colors dark:border-border/60 dark:shadow-none">
-                    <div className="space-y-2 flex-1">
-                        <Label htmlFor="search">Search</Label>
+                <FilterPanel
+                    onSubmit={handleFilter}
+                    onClear={clearFilters}
+                    activeCount={activeCount}
+                    actions={<ReportExportButton url={ReportRoutes.customers.export().url} filters={filters} />}
+                >
+                    <FilterField label="Search" htmlFor="search" className="sm:col-span-2">
                         <Input
                             id="search"
                             placeholder="Search by company, contact, email or phone..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
-                    </div>
-                    <div className="flex gap-2">
-                        <Button type="submit">Filter</Button>
-                        <Button type="button" variant="outline" onClick={clearFilters}>
-                            Clear
-                        </Button>
-                        <ReportExportButton url={ReportRoutes.customers.export().url} filters={filters} />
-                    </div>
-                </form>
+                    </FilterField>
+                </FilterPanel>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>All Customers</CardTitle>
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                            <CardTitle>All Customers</CardTitle>
+                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
+                                {customers.total.toLocaleString()} record{customers.total === 1 ? '' : 's'}
+                            </span>
+                        </div>
                     </CardHeader>
                     <CardContent className="px-0">
                         <Table>

@@ -1,18 +1,18 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import Heading from '@/components/heading';
+import { FilterField, FilterPanel } from '@/components/filter-panel';
+import { StatusBadge } from '@/components/status-badge';
 import { Pagination } from '@/components/pagination';
 import { StatCard } from '@/components/stat-card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ReportExportButton } from '@/components/report-export-button';
 import * as PurchaseOrderRoutes from '@/routes/admin/purchase-orders';
 import ReportRoutes from '@/routes/admin/reports';
+import { formatDate } from '@/lib/format';
 import { Clock, FileText, Package, PackageCheck, Receipt, Truck } from 'lucide-react';
 
 type PurchaseOrderRow = {
@@ -32,6 +32,7 @@ type PaginatedPurchaseOrders = {
     links: { url: string | null; label: string; active: boolean }[];
     current_page: number;
     last_page: number;
+    total: number;
 };
 
 type Props = {
@@ -62,6 +63,14 @@ export default function Purchases({ purchase_orders, summary, filters, suppliers
     const [dateFrom, setDateFrom] = useState<string>(filters.date_from || '');
     const [dateTo, setDateTo] = useState<string>(filters.date_to || '');
 
+    const activeCount = [
+        supplierId !== 'all' ? supplierId : '',
+        status !== 'all' ? status : '',
+        search.trim(),
+        dateFrom,
+        dateTo,
+    ].filter((v) => v !== '').length;
+
     const handleFilter = (e: React.FormEvent) => {
         e.preventDefault();
         router.get(
@@ -78,6 +87,11 @@ export default function Purchases({ purchase_orders, summary, filters, suppliers
     };
 
     const clearFilters = () => {
+        setSupplierId('all');
+        setStatus('all');
+        setSearch('');
+        setDateFrom('');
+        setDateTo('');
         router.get(ReportRoutes.purchases().url, {}, { preserveState: true, replace: true });
     };
 
@@ -100,20 +114,23 @@ export default function Purchases({ purchase_orders, summary, filters, suppliers
                     <StatCard label="Purchase Value" value={summary.purchase_value} icon={Receipt} />
                 </div>
 
-                <form onSubmit={handleFilter} className="flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-xs transition-colors dark:border-border/60 dark:shadow-none">
-                    <div className="space-y-2 flex-1">
-                        <Label htmlFor="search">Search</Label>
+                <FilterPanel
+                    onSubmit={handleFilter}
+                    onClear={clearFilters}
+                    activeCount={activeCount}
+                    actions={<ReportExportButton url={ReportRoutes.purchases.export().url} filters={filters} />}
+                >
+                    <FilterField label="Search" htmlFor="search" className="sm:col-span-2">
                         <Input
                             id="search"
                             placeholder="Search by PO number or supplier..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Supplier</Label>
+                    </FilterField>
+                    <FilterField label="Supplier">
                         <Select value={supplierId} onValueChange={setSupplierId}>
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder="All suppliers" />
                             </SelectTrigger>
                             <SelectContent>
@@ -125,11 +142,10 @@ export default function Purchases({ purchase_orders, summary, filters, suppliers
                                 ))}
                             </SelectContent>
                         </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Status</Label>
+                    </FilterField>
+                    <FilterField label="Status">
                         <Select value={status} onValueChange={setStatus}>
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder="All statuses" />
                             </SelectTrigger>
                             <SelectContent>
@@ -141,27 +157,23 @@ export default function Purchases({ purchase_orders, summary, filters, suppliers
                                 ))}
                             </SelectContent>
                         </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="date_from">From</Label>
+                    </FilterField>
+                    <FilterField label="From" htmlFor="date_from">
                         <Input id="date_from" type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="date_to">To</Label>
+                    </FilterField>
+                    <FilterField label="To" htmlFor="date_to">
                         <Input id="date_to" type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
-                    </div>
-                    <div className="flex gap-2">
-                        <Button type="submit">Filter</Button>
-                        <Button type="button" variant="outline" onClick={clearFilters}>
-                            Clear
-                        </Button>
-                        <ReportExportButton url={ReportRoutes.purchases.export().url} filters={filters} />
-                    </div>
-                </form>
+                    </FilterField>
+                </FilterPanel>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Purchases</CardTitle>
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                            <CardTitle>Purchases</CardTitle>
+                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
+                                {purchase_orders.total.toLocaleString()} record{purchase_orders.total === 1 ? '' : 's'}
+                            </span>
+                        </div>
                     </CardHeader>
                     <CardContent className="px-0">
                         <Table>
@@ -190,10 +202,10 @@ export default function Purchases({ purchase_orders, summary, filters, suppliers
                                             </TableCell>
                                             <TableCell>{po.supplier?.name || '—'}</TableCell>
                                             <TableCell>
-                                                {po.ordered_at ? new Date(po.ordered_at).toLocaleDateString() : '—'}
+                                                {po.ordered_at ? formatDate(po.ordered_at) : '—'}
                                             </TableCell>
                                             <TableCell>
-                                                <Badge variant="secondary">{po.status}</Badge>
+                                                <StatusBadge status={po.status} />
                                             </TableCell>
                                             <TableCell className="text-right font-mono">{po.ordered_quantity}</TableCell>
                                             <TableCell className="text-right font-mono">{po.received_quantity}</TableCell>
