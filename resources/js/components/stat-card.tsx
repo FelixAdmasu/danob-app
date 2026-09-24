@@ -42,14 +42,14 @@ export function StatCard({
     return (
         <div
             className={cn(
-                'group relative flex flex-col gap-3 overflow-hidden rounded-2xl border border-border/70 bg-card p-5 shadow-[0_1px_2px_rgb(7_14_1/0.04),0_16px_40px_-28px_rgb(7_14_1/0.22)] transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 dark:shadow-none',
+                'group relative flex flex-col gap-3.5 overflow-hidden rounded-2xl border border-border/70 bg-card p-5 shadow-[0_1px_2px_rgba(7,14,1,0.04),0_16px_40px_-24px_rgba(7,14,1,0.18)] transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_2px_4px_rgba(7,14,1,0.05),0_24px_48px_-24px_rgba(45,80,22,0.28)] dark:shadow-none',
                 className,
             )}
         >
             <div className="flex items-start justify-between gap-3">
                 <p className="text-[11px] font-semibold uppercase leading-4 tracking-[0.18em] text-muted-foreground">{label}</p>
                 {Icon && (
-                    <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary ring-1 ring-primary/15 transition-all duration-200 group-hover:bg-primary group-hover:text-primary-foreground group-hover:ring-primary dark:bg-[#7FB069]/12 dark:text-[#A5D67A] dark:ring-[#7FB069]/20 dark:group-hover:bg-[#7FB069] dark:group-hover:text-[#0B1406]">
+                    <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-secondary text-secondary-foreground transition-colors duration-200 group-hover:bg-primary group-hover:text-primary-foreground">
                         <Icon className="size-4" aria-hidden="true" />
                     </span>
                 )}

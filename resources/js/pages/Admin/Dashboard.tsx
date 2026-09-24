@@ -308,9 +308,9 @@ export default function Dashboard({
                                     ) : (
                                         recent_orders.map((o) => (
                                             <TableRow key={o.id}>
-                                                <TableCell className="font-mono">{o.reference_number}</TableCell>
-                                                <TableCell>{o.customer?.name || 'Guest'}</TableCell>
-                                                <TableCell className="text-right font-mono">{o.total}</TableCell>
+                                                <TableCell className="font-mono text-sm">{o.reference_number}</TableCell>
+                                                <TableCell className="text-sm">{o.customer?.name || 'Guest'}</TableCell>
+                                                <TableCell className="text-right font-mono text-sm">{o.total}</TableCell>
                                                 <TableCell>
                                                     <Badge variant={orderBadgeVariant(o.status)}>{o.status}</Badge>
                                                 </TableCell>
@@ -320,7 +320,7 @@ export default function Dashboard({
                                 </TableBody>
                             </Table>
                             {recent_orders.length > 0 && (
-                                <div className="px-6 pt-4 pb-2">
+                                <div className="px-4 pt-4">
                                     <Link href="/admin/orders" className="text-xs font-medium text-primary hover:underline">
                                         View all orders →
                                     </Link>
@@ -371,9 +371,9 @@ export default function Dashboard({
                                 <Link
                                     key={item.title}
                                     href={item.href}
-                                    className="group flex items-center gap-3 rounded-2xl border border-border/70 bg-card p-4 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-sm dark:shadow-none"
+                                    className="group flex items-center gap-3 rounded-2xl border border-border/70 bg-card p-4 shadow-[0_1px_2px_rgba(7,14,1,0.04),0_16px_40px_-24px_rgba(7,14,1,0.18)] transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_2px_4px_rgba(7,14,1,0.05),0_24px_48px_-24px_rgba(45,80,22,0.28)] dark:shadow-none"
                                 >
-                                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary ring-1 ring-primary/15 transition-all duration-200 group-hover:bg-primary group-hover:text-primary-foreground group-hover:ring-primary dark:bg-[#7FB069]/12 dark:text-[#A5D67A] dark:ring-[#7FB069]/20 dark:group-hover:bg-[#7FB069] dark:group-hover:text-[#0B1406]">
+                                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-secondary-foreground transition-colors duration-200 group-hover:bg-primary group-hover:text-primary-foreground">
                                         <item.icon className="size-4.5" aria-hidden="true" />
                                     </span>
                                     <span className="min-w-0">

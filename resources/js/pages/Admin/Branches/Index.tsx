@@ -46,14 +46,12 @@ export default function Index({ branches, filters }: Props) {
                     title="Branches"
                     description="Manage branch locations and contact information."
                 />
-                <form onSubmit={handleSearch} className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
+                <form onSubmit={handleSearch} className="flex flex-wrap items-center gap-2 rounded-2xl border border-border/70 bg-card p-3 shadow-xs dark:shadow-none">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input placeholder="Search name, city..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
                     </div>
-                    <Button type="submit" variant="outline">
-                        <Search className="mr-2 h-4 w-4" /> Search
-                    </Button>
+                    <Button type="submit" variant="outline">Search</Button>
                     {filters.search && (
                         <Link href={BranchRoutes.index().url}><Button type="button" variant="ghost">Clear</Button></Link>
                     )}
@@ -79,10 +77,10 @@ export default function Index({ branches, filters }: Props) {
                                 ) : (
                                     branches.data.map((b) => (
                                         <TableRow key={b.id}>
-                                            <TableCell className="font-medium">{b.name}</TableCell>
-                                            <TableCell>{b.city}</TableCell>
-                                            <TableCell>{b.address}</TableCell>
-                                            <TableCell>{b.phone || '—'}</TableCell>
+                                            <TableCell className="text-sm font-medium">{b.name}</TableCell>
+                                            <TableCell className="text-sm">{b.city}</TableCell>
+                                            <TableCell className="text-sm">{b.address}</TableCell>
+                                            <TableCell className="text-sm">{b.phone || '—'}</TableCell>
                                             <TableCell><Badge variant={b.is_active ? 'success' : 'secondary'}>{b.is_active ? 'Yes' : 'No'}</Badge></TableCell>
                                         </TableRow>
                                     ))

@@ -5,14 +5,15 @@ import { Inbox } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 /**
- * Premium table primitives (every admin table renders identically):
- * - quiet sticky header: transparent band on the card surface, micro-caps
- *   labels and a single hairline rule (no heavy filled band)
- * - airy rows: 14px vertical padding, hairline rules at 50% border opacity,
- *   soft sage hover wash
- * - card-gutter alignment: first/last cells inset to the card's 24px
- *   padding (pl/pr-6) while columns stay on the 4px grid (px-4)
- * - centered empty state in a rounded icon tile
+ * Foundation-aligned table primitives.
+ *
+ * Styling rules baked in (so every admin table looks identical):
+ * - solid muted header band with uppercase micro labels, sticky while the
+ *   card's scrollport scrolls (tables cap at 70vh with inner scrolling)
+ * - hairline row rules with a soft hover wash and no trailing border
+ * - card-gutter alignment: first/last cells inset to the card's 24px padding
+ *   (pl/pr-6) while the inter-column rhythm stays on the 4px grid (px-4)
+ * - centered empty state with a muted glyph + text
  */
 function Table({ className, children, ...props }: React.ComponentProps<'table'>) {
     return (
@@ -35,7 +36,7 @@ function TableHeader({ className, ...props }: React.ComponentProps<'thead'>) {
     return (
         <thead
             data-slot="table-header"
-            className={cn('bg-card sticky top-0 z-10 [&_tr]:border-b [&_tr]:border-border/70', className)}
+            className={cn('bg-muted/80 supports-[backdrop-filter]:backdrop-blur-sm sticky top-0 z-10 [&_tr]:border-b', className)}
             {...props}
         />
     );
@@ -62,7 +63,7 @@ function TableRow({ className, ...props }: React.ComponentProps<'tr'>) {
     return (
         <tr
             data-slot="table-row"
-            className={cn('border-border/50 border-b transition-colors hover:bg-muted/50', className)}
+            className={cn('border-border/60 border-b transition-colors hover:bg-muted/40', className)}
             {...props}
         />
     );
@@ -73,8 +74,8 @@ function TableCell({ className, ...props }: React.ComponentProps<'td'>) {
 }
 
 /**
- * Centered empty-state cell in a rounded icon tile. Plain-text children get
- * the tile treatment; richer ReactNode children pass through untouched.
+ * Centered empty-state cell. Plain-text children get their own muted glyph;
+ * richer ReactNode children (custom markup) pass through untouched.
  */
 function TableEmpty({ colSpan, className, children, ...props }: React.ComponentProps<'td'> & { colSpan: number }) {
     return (
@@ -82,8 +83,8 @@ function TableEmpty({ colSpan, className, children, ...props }: React.ComponentP
             <td colSpan={colSpan} className={cn('px-6 py-16 text-center text-sm text-muted-foreground', className)} {...props}>
                 {typeof children === 'string' ? (
                     <span className="flex flex-col items-center gap-3">
-                        <span className="flex size-11 items-center justify-center rounded-xl border border-border/60 bg-muted/60">
-                            <Inbox className="size-5 text-muted-foreground/70" aria-hidden="true" />
+                        <span className="grid size-11 place-items-center rounded-full bg-muted/70">
+                            <Inbox className="size-5 opacity-40" aria-hidden="true" />
                         </span>
                         <span>{children}</span>
                     </span>

@@ -227,24 +227,24 @@ export default function InventoryMovements({ movements, summary, filters, produc
                                 ) : (
                                     movements.data.map((m) => (
                                         <TableRow key={m.id}>
-                                            <TableCell>{new Date(m.created_at).toLocaleString()}</TableCell>
-                                            <TableCell>
+                                            <TableCell className="text-xs">{new Date(m.created_at).toLocaleString()}</TableCell>
+                                            <TableCell className="text-sm">
                                                 <div className="font-medium">{m.variant.product.name}</div>
                                                 <div className="text-xs text-muted-foreground">{m.variant.name}</div>
                                             </TableCell>
                                             <TableCell>
                                                 <Badge variant="secondary">{m.movement_type}</Badge>
                                             </TableCell>
-                                            <TableCell className="text-right font-mono">{m.quantity}</TableCell>
-                                            <TableCell className="text-right font-mono">
+                                            <TableCell className="text-right text-sm font-mono">{m.quantity}</TableCell>
+                                            <TableCell className="text-right text-xs font-mono">
                                                 {m.quantity_before} → {m.quantity_after}
                                             </TableCell>
-                                            <TableCell className="max-w-[200px] truncate" title={m.reason || ''}>
+                                            <TableCell className="max-w-[200px] truncate text-xs" title={m.reason || ''}>
                                                 {m.reason || '—'}
                                                 {m.notes && <div className="text-[10px] text-muted-foreground">{m.notes}</div>}
                                             </TableCell>
-                                            <TableCell className="font-mono">{referenceLabel(m)}</TableCell>
-                                            <TableCell>{m.user?.name || '—'}</TableCell>
+                                            <TableCell className="text-xs font-mono">{referenceLabel(m)}</TableCell>
+                                            <TableCell className="text-xs">{m.user?.name || '—'}</TableCell>
                                         </TableRow>
                                     ))
                                 )}

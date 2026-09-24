@@ -72,13 +72,13 @@ export default function Index({ products, filters }: Props) {
                     }
                 />
 
-                <form onSubmit={handleSearch} className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
+                <form onSubmit={handleSearch} className="flex flex-wrap items-center gap-2 rounded-2xl border border-border/70 bg-card p-3 shadow-xs dark:shadow-none">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input placeholder="Search by name, slug..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
                     </div>
                     <Button type="submit" variant="outline">
-                        <Search className="mr-2 h-4 w-4" /> Search
+                        Search
                     </Button>
                     {filters.search && (
                         <Link href={ProductRoutes.index().url}>
@@ -116,20 +116,20 @@ export default function Index({ products, filters }: Props) {
                                             <TableRow key={product.id}>
                                                 <TableCell>
                                                     {primary ? (
-                                                        <img src={primary.url} alt={product.name} onError={onImageError} className="size-9 shrink-0 rounded-lg object-cover ring-1 ring-border/60" />
+                                                        <img src={primary.url} alt={product.name} onError={onImageError} className="h-10 w-10 rounded-lg border border-border object-cover" />
                                                     ) : (
-                                                        <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-dashed border-border bg-muted/60">
+                                                        <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-dashed border-border bg-muted/60">
                                                             <Package className="h-4 w-4 opacity-30" aria-hidden="true" />
                                                         </div>
                                                     )}
                                                 </TableCell>
                                                 <TableCell className="font-medium">{product.name}</TableCell>
-                                                <TableCell>{product.category?.name || '—'}</TableCell>
-                                                <TableCell>{product.brand?.name || '—'}</TableCell>
+                                                <TableCell className="text-sm">{product.category?.name || '—'}</TableCell>
+                                                <TableCell className="text-sm">{product.brand?.name || '—'}</TableCell>
                                                 <TableCell>
                                                     <Badge variant={product.status === 'active' ? 'success' : 'secondary'}>{product.status}</Badge>
                                                 </TableCell>
-                                                <TableCell className="text-right">
+                                                <TableCell className="text-right text-sm">
                                                     <div className="flex items-center justify-end gap-2">
                                                         <span>{product.variants_count}</span>
                                                         {product.low_stock_variants_count > 0 && (
