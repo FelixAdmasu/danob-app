@@ -85,7 +85,7 @@ export function AppSidebar() {
 
     return (
         <Sidebar collapsible="icon" variant="inset">
-            <SidebarHeader className="border-b border-sidebar-border/60 pb-3">
+            <SidebarHeader className="border-b border-sidebar-border/70 pb-3">
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton
@@ -109,7 +109,7 @@ export function AppSidebar() {
                 <NavMain items={salesItems} label="Sales" className={SECTION_DIVIDER} />
             </SidebarContent>
 
-            <SidebarFooter className="border-t border-sidebar-border/60 pt-3">
+            <SidebarFooter className="border-t border-sidebar-border/70 pt-3">
                 {isStaffPlus && (
                     <SidebarMenu>
                         <SidebarMenuItem>
@@ -119,7 +119,7 @@ export function AppSidebar() {
                             <SidebarMenuButton
                                 asChild
                                 tooltip="View Store"
-                                className="group h-10 border border-primary/25 bg-primary/[0.06] px-3 text-[11px] font-semibold tracking-[0.15em] text-primary uppercase hover:bg-primary hover:text-primary-foreground dark:border-[#24411B] dark:bg-[#7FB069]/[0.07] dark:text-primary dark:hover:bg-[#24411B] dark:hover:text-foreground group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:border-transparent group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:text-primary"
+                                className="group h-10 border border-white/10 bg-white/[0.05] px-3 text-[11px] font-semibold tracking-[0.15em] text-white/70 uppercase hover:border-[#7FB069]/50 hover:bg-[#7FB069] hover:text-[#08110B] group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:border-transparent group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:text-[#7FB069]"
                             >
                                 <a href="/products" target="_blank" rel="noopener noreferrer">
                                     <Store />

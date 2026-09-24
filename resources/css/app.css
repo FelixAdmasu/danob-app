@@ -119,14 +119,21 @@
     --viz-info: #2d5016;
 
     --radius: 8px;
+    /*
+     * Sidebar tokens — the rail panel itself is a deep forest surface in BOTH
+     * themes (see the unlayered [data-sidebar="sidebar"] rule below), so its
+     * interior text/border tokens are dark-rail values here in :root.
+     * --sidebar (the frame behind the floating panel) stays sage so the page
+     * canvas remains seamless. Public pages never render sidebar components.
+     */
     --sidebar: #ECF3E5;
-    --sidebar-foreground: #070E01;
-    --sidebar-primary: #2D5016;
-    --sidebar-primary-foreground: #FFFFFF;
-    --sidebar-accent: #D4E8C8;
-    --sidebar-accent-foreground: #070E01;
-    --sidebar-border: rgba(7, 14, 1, 0.1);
-    --sidebar-ring: #2D5016;
+    --sidebar-foreground: #D4E8C8;
+    --sidebar-primary: #7FB069;
+    --sidebar-primary-foreground: #08110B;
+    --sidebar-accent: #1C2B12;
+    --sidebar-accent-foreground: #F4F8EF;
+    --sidebar-border: rgba(255, 255, 255, 0.09);
+    --sidebar-ring: #7FB069;
 }
 
 /*
@@ -330,24 +337,27 @@ img.img-fallback {
 }
 
 /*
- * Admin sidebar — white card floating on the sage canvas (public-site
- * foundation: sage background + white cards). The edge is an intentionally
- * faint hairline (5% ink) so the right-side border reads as a soft seam
- * rather than a hard line; separation comes from the surface contrast.
- * Dark keeps the deep forest-black surface with an even softer delineator.
+ * Admin sidebar — premium dark forest rail floating on the sage canvas in
+ * BOTH themes (light theme mirrors the approved dark palette). A soft top
+ * sheen, a faint light hairline and a deep lift shadow give it the floating
+ * panel presence. Dark theme keeps a slightly deeper black-green.
  * Unlayered, so it intentionally wins over the `bg-sidebar` utility.
  */
 [data-sidebar="sidebar"] {
-    background-color: var(--card);
-    border: 1px solid rgba(7, 14, 1, 0.05);
-    border-radius: 12px;
-    box-shadow: 0 1px 2px rgb(7 14 1 / 0.03);
+    background-image: linear-gradient(180deg, #121e0d 0%, #0a1106 100%);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 14px;
+    box-shadow:
+        0 24px 48px -28px rgb(7 14 1 / 0.5),
+        0 4px 14px -8px rgb(7 14 1 / 0.3);
 }
 
 .dark [data-sidebar="sidebar"] {
-    background-color: var(--sidebar);
-    border-color: #1a2512;
-    box-shadow: none;
+    background-image: linear-gradient(180deg, #0e1709 0%, #070d04 100%);
+    border-color: rgba(255, 255, 255, 0.06);
+    box-shadow:
+        0 24px 48px -30px rgb(0 0 0 / 0.6),
+        0 4px 14px -8px rgb(0 0 0 / 0.4);
 }
 
 /*

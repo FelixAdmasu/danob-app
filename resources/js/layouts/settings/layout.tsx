@@ -59,7 +59,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                         'flex h-9 items-center gap-2 rounded-lg px-3 text-sm transition-colors duration-200',
                                         active
                                             ? 'bg-primary font-medium text-primary-foreground dark:bg-[#24411B] dark:text-foreground'
-                                            : 'text-muted-foreground hover:bg-sidebar-accent/70 hover:text-foreground',
+                                            : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                                     )}
                                 >
                                     {item.icon && (
