@@ -96,6 +96,49 @@ are still in the local Downloads folder). To drop the dead rows in bulk
 delete from product_images where url like '%/storage/products/%';
 ```
 
+## Troubleshooting
+
+### "Image storage is not configured for production uploads. Set FILESYSTEM_DISK_PRODUCT_IMAGES=supabase (see docs/storage.md)."
+
+This is the production guard firing: the **running container does not have**
+`FILESYSTEM_DISK_PRODUCT_IMAGES=supabase`, so the disk resolves to `public`
+(local driver) and the upload is refused before it can land on the ephemeral
+disk. It never fires in local dev (`APP_ENV=local`).
+
+Confirm it from Render → **Logs** — the entrypoint prints at every boot:
+
+```
+WARN: FILESYSTEM_DISK_PRODUCT_IMAGES is 'public' — uploaded images will be LOST on the next deploy. ...
+```
+
+Fix on the Render dashboard → `danob-app` → **Environment** → add and Save
+(Render redeploys automatically):
+
+| Key | Value |
+| --- | --- |
+| `FILESYSTEM_DISK_PRODUCT_IMAGES` | `supabase` |
+| `SUPABASE_URL` | `https://<project-ref>.supabase.co` |
+| `SUPABASE_ACCESS_KEY_ID` | S3-compatible access key |
+| `SUPABASE_SECRET_ACCESS_KEY` | S3-compatible secret key |
+
+`SUPABASE_BUCKET`, `SUPABASE_DEFAULT_REGION` and
+`SUPABASE_USE_PATH_STYLE_ENDPOINT` are blueprint-managed in `render.yaml` and
+have safe defaults in `config/filesystems.php` even if absent.
+
+**Why the blueprint didn't set it:** `render.yaml` already declares
+`FILESYSTEM_DISK_PRODUCT_IMAGES: supabase`, but Render only applies a
+Blueprint's `value:` vars to services it manages (Blueprints page must list
+`danob-app`). For a service created directly in the dashboard, blueprint env
+changes never reach it — set the values above by hand (the `sync: false`
+secrets always live in the dashboard either way).
+
+Also complete the one-time Supabase setup above (public `product-images`
+bucket + S3 keys) before uploading.
+
+**Verify:** the boot-log warning is gone, and an uploaded image's URL starts
+with `https://<project-ref>.supabase.co/storage/v1/object/public/product-images/`.
+Then push/deploy again — the image must still load.
+
 ## Local
 
 ```bash
