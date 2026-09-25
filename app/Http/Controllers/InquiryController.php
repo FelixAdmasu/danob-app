@@ -1,0 +1,83 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\StoreInquiryRequest;
+use App\Models\Inquiry;
+use App\Services\AlertService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\Rule;
+use Inertia\Inertia;
+use Inertia\Response;
+
+class InquiryController extends Controller
+{
+    public function store(StoreInquiryRequest $request): RedirectResponse
+    {
+        $key = 'inquiry:'.$request->ip();
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            return back()->withErrors(['message' => 'Too many inquiries. Please try again later.'])->withInput();
+        }
+        RateLimiter::hit($key, 3600);
+
+        $validated = $request->validated();
+        unset($validated['website']);
+
+        $inquiry = Inquiry::create($validated + ['source' => 'website']);
+
+        app(AlertService::class)->dispatch(
+            'inquiry_created',
+            'info',
+            'New website inquiry',
+            $inquiry->name.' sent a '.$inquiry->interest.'.',
+            route('admin.inquiries.index'),
+            AlertService::SALES_ROLES,
+        );
+
+        return back()->with('success', 'Thank you. Danob will be in touch soon.');
+    }
+
+    public function index(Request $request): Response
+    {
+        $validated = $request->validate([
+            'search' => ['nullable', 'string', 'max:255'],
+            'status' => ['nullable', 'string', Rule::in(Inquiry::STATUSES)],
+        ]);
+
+        $inquiries = Inquiry::with('assignee')
+            ->when($validated['search'] ?? null, function ($query, string $search): void {
+                $query->where(function ($where) use ($search): void {
+                    $where->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('message', 'like', "%{$search}%");
+                });
+            })
+            ->when($validated['status'] ?? null, fn ($query, string $status) => $query->where('status', $status))
+            ->latest()
+            ->paginate(20)
+            ->withQueryString();
+
+        return Inertia::render('Admin/Inquiries/Index', [
+            'inquiries' => $inquiries,
+            'filters' => [
+                'search' => $validated['search'] ?? null,
+                'status' => $validated['status'] ?? null,
+            ],
+            'statuses' => Inquiry::STATUSES,
+        ]);
+    }
+
+    public function update(Request $request, Inquiry $inquiry): RedirectResponse
+    {
+        $validated = $request->validate([
+            'status' => ['required', 'string', Rule::in(Inquiry::STATUSES)],
+            'internal_notes' => ['nullable', 'string', 'max:4000'],
+        ]);
+
+        $inquiry->update($validated + ['assigned_to' => $request->user()->id]);
+
+        return back()->with('success', 'Inquiry updated.');
+    }
+}

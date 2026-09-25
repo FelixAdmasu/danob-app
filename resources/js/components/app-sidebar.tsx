@@ -17,6 +17,7 @@ import {
     FileText,
     AlertTriangle,
     BarChart3,
+    MessageSquareText,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
@@ -144,6 +145,11 @@ export function AppSidebar() {
                   title: 'Customers',
                   href: customerRoutes.index().url,
                   icon: Users,
+              },
+              {
+                  title: 'Inquiries',
+                  href: '/admin/inquiries',
+                  icon: MessageSquareText,
               },
               {
                   title: 'Sales Dashboard',

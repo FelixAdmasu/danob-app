@@ -89,6 +89,8 @@ class ProductController extends Controller
             'brand_id' => 'nullable|exists:brands,id',
             'description' => 'required|string',
             'status' => 'required|string|in:active,inactive',
+            'is_featured' => 'nullable|boolean',
+            'featured_sort_order' => 'nullable|integer|min:0|max:1000000',
             'variants' => 'nullable|array',
             'variants.*.name' => 'required_with:variants|string|max:255',
             'variants.*.sku' => 'nullable|string|max:255|unique:product_variants,sku',
@@ -125,6 +127,8 @@ class ProductController extends Controller
                     'brand_id' => $validated['brand_id'] ?? null,
                     'description' => $validated['description'],
                     'status' => $validated['status'],
+                    'is_featured' => $validated['is_featured'] ?? false,
+                    'featured_sort_order' => $validated['featured_sort_order'] ?? 0,
                 ]);
 
                 foreach ($validated['variants'] ?? [] as $variantData) {
@@ -234,6 +238,8 @@ class ProductController extends Controller
             'brand_id' => 'nullable|exists:brands,id',
             'description' => 'required|string',
             'status' => 'required|string|in:active,inactive',
+            'is_featured' => 'nullable|boolean',
+            'featured_sort_order' => 'nullable|integer|min:0|max:1000000',
             'variants' => 'nullable|array',
             'variants.*.id' => 'nullable|integer|exists:product_variants,id',
             'variants.*.name' => 'required_with:variants|string|max:255',
@@ -293,6 +299,8 @@ class ProductController extends Controller
                     'brand_id' => $validated['brand_id'] ?? null,
                     'description' => $validated['description'],
                     'status' => $validated['status'],
+                    'is_featured' => $validated['is_featured'] ?? false,
+                    'featured_sort_order' => $validated['featured_sort_order'] ?? 0,
                 ]);
 
                 if (array_key_exists('variants', $validated)) {

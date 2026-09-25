@@ -38,6 +38,8 @@ type Product = {
     name: string;
     slug: string;
     status: string;
+    is_featured: boolean;
+    featured_sort_order: number;
     category: { id: number; name: string; slug: string } | null;
     brand: { id: number; name: string; slug: string } | null;
     variants_count: number;
@@ -223,6 +225,7 @@ export default function Index({
                                     <TableHead>Category</TableHead>
                                     <TableHead>Brand</TableHead>
                                     <TableHead>Status</TableHead>
+                                    <TableHead>Featured</TableHead>
                                     <TableHead className="text-right">
                                         Variants
                                     </TableHead>
@@ -233,7 +236,7 @@ export default function Index({
                             </TableHeader>
                             <TableBody>
                                 {products.data.length === 0 ? (
-                                    <TableEmpty colSpan={7}>
+                                    <TableEmpty colSpan={8}>
                                         No products yet.
                                     </TableEmpty>
                                 ) : (
@@ -279,6 +282,11 @@ export default function Index({
                                                     <StatusBadge
                                                         status={product.status}
                                                     />
+                                                </TableCell>
+                                                <TableCell className="text-sm">
+                                                    {product.is_featured
+                                                        ? `Yes · ${product.featured_sort_order}`
+                                                        : '—'}
                                                 </TableCell>
                                                 <TableCell className="text-right text-sm">
                                                     <div className="flex items-center justify-end gap-2">
