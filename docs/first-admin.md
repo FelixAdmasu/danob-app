@@ -9,21 +9,21 @@ New registrations intentionally create `staff` users. This prevents a public vis
 3. In the Render service dashboard, open the service Shell for the production application.
 4. Run the following read-only lookup first:
 
-   ```bash
-   php artisan tinker --execute="echo App\\Models\\User::where('email', 'admin@example.com')->value('id') ?? 'NOT_FOUND';"
-   ```
+    ```bash
+    php artisan tinker --execute="echo App\\Models\\User::where('email', 'admin@example.com')->value('id') ?? 'NOT_FOUND';"
+    ```
 
 5. If the expected user ID is returned, promote that exact account. Prefer the application model so the operation goes through Laravel's configured database connection:
 
-   ```bash
-   php artisan tinker --execute="App\\Models\\User::where('email', 'admin@example.com')->update(['role' => 'super_admin']);"
-   ```
+    ```bash
+    php artisan tinker --execute="App\\Models\\User::where('email', 'admin@example.com')->update(['role' => 'super_admin']);"
+    ```
 
 6. Verify the role without printing the password or other private fields:
 
-   ```bash
-   php artisan tinker --execute="echo App\\Models\\User::where('email', 'admin@example.com')->value('role');"
-   ```
+    ```bash
+    php artisan tinker --execute="echo App\\Models\\User::where('email', 'admin@example.com')->value('role');"
+    ```
 
 7. Sign in with that account, complete email verification and two-factor setup, and confirm access to the admin dashboard.
 8. Keep the account email and promotion date in the organization's internal administrative record.

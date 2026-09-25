@@ -11,12 +11,21 @@ export type ChartDatum = {
     color?: string;
 };
 
-const SERIES = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)', 'var(--chart-5)'];
+const SERIES = [
+    'var(--chart-1)',
+    'var(--chart-2)',
+    'var(--chart-3)',
+    'var(--chart-4)',
+    'var(--chart-5)',
+];
 
 const seriesAt = (i: number) => SERIES[i % SERIES.length];
 
 function totalOf(data: ChartDatum[]) {
-    return data.reduce((sum, d) => sum + (Number.isFinite(d.value) ? d.value : 0), 0);
+    return data.reduce(
+        (sum, d) => sum + (Number.isFinite(d.value) ? d.value : 0),
+        0,
+    );
 }
 
 /**
@@ -52,9 +61,14 @@ export function DonutChart({
 
     if (total <= 0 || visible.length === 0) {
         return (
-            <div className={cn('flex flex-col items-center justify-center gap-2 py-6 text-sm text-muted-foreground', className)}>
+            <div
+                className={cn(
+                    'text-muted-foreground flex flex-col items-center justify-center gap-2 py-6 text-sm',
+                    className,
+                )}
+            >
                 <div
-                    className="rounded-full border-2 border-dashed border-border"
+                    className="border-border rounded-full border-2 border-dashed"
                     style={{ width: size * 0.6, height: size * 0.6 }}
                     aria-hidden="true"
                 />
@@ -67,9 +81,23 @@ export function DonutChart({
     const gap = 1; // percent units of breathing room between slices
 
     return (
-        <div className={cn('flex flex-col items-center gap-5 sm:flex-row sm:items-center sm:gap-6', className)}>
-            <div className="relative shrink-0" style={{ width: size, height: size }}>
-                <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={centerLabel ?? 'Chart'}>
+        <div
+            className={cn(
+                'flex flex-col items-center gap-5 sm:flex-row sm:items-center sm:gap-6',
+                className,
+            )}
+        >
+            <div
+                className="relative shrink-0"
+                style={{ width: size, height: size }}
+            >
+                <svg
+                    width={size}
+                    height={size}
+                    viewBox={`0 0 ${size} ${size}`}
+                    role="img"
+                    aria-label={centerLabel ?? 'Chart'}
+                >
                     <circle
                         cx={size / 2}
                         cy={size / 2}
@@ -110,7 +138,7 @@ export function DonutChart({
                             </span>
                         )}
                         {centerLabel && (
-                            <span className="mt-1.5 max-w-[80%] text-[9px] font-bold uppercase leading-3 tracking-[0.22em] text-muted-foreground">
+                            <span className="text-muted-foreground mt-1.5 max-w-[80%] text-[9px] leading-3 font-bold tracking-[0.22em] uppercase">
                                 {centerLabel}
                             </span>
                         )}
@@ -121,14 +149,21 @@ export function DonutChart({
             {showLegend && (
                 <ul className="flex w-full min-w-0 flex-col gap-2.5">
                     {data.map((d, i) => (
-                        <li key={d.label} className="flex items-center gap-2.5 text-xs">
+                        <li
+                            key={d.label}
+                            className="flex items-center gap-2.5 text-xs"
+                        >
                             <span
-                                className="size-2.5 shrink-0 rounded-full ring-1 ring-border"
+                                className="ring-border size-2.5 shrink-0 rounded-full ring-1"
                                 style={{ background: d.color ?? seriesAt(i) }}
                                 aria-hidden="true"
                             />
-                            <span className="min-w-0 flex-1 truncate text-muted-foreground">{d.label}</span>
-                            <span className="shrink-0 font-medium tabular-nums text-foreground">{d.displayValue ?? d.value}</span>
+                            <span className="text-muted-foreground min-w-0 flex-1 truncate">
+                                {d.label}
+                            </span>
+                            <span className="text-foreground shrink-0 font-medium tabular-nums">
+                                {d.displayValue ?? d.value}
+                            </span>
                         </li>
                     ))}
                 </ul>
@@ -153,34 +188,64 @@ export function BarList({
     emptyText?: string;
     className?: string;
 }) {
-    const peak = max ?? Math.max(1, ...data.map((d) => (Number.isFinite(d.value) ? d.value : 0)));
+    const peak =
+        max ??
+        Math.max(
+            1,
+            ...data.map((d) => (Number.isFinite(d.value) ? d.value : 0)),
+        );
 
     if (data.length === 0) {
-        return <p className={cn('py-6 text-center text-sm text-muted-foreground', className)}>{emptyText}</p>;
+        return (
+            <p
+                className={cn(
+                    'text-muted-foreground py-6 text-center text-sm',
+                    className,
+                )}
+            >
+                {emptyText}
+            </p>
+        );
     }
 
     return (
         <ul className={cn('flex flex-col gap-4', className)}>
             {data.map((d, i) => {
-                const pct = peak > 0 ? Math.min(100, Math.max(0, ((Number.isFinite(d.value) ? d.value : 0) / peak) * 100)) : 0;
+                const pct =
+                    peak > 0
+                        ? Math.min(
+                              100,
+                              Math.max(
+                                  0,
+                                  ((Number.isFinite(d.value) ? d.value : 0) /
+                                      peak) *
+                                      100,
+                              ),
+                          )
+                        : 0;
                 return (
                     <li key={d.label} className="flex flex-col gap-1.5">
                         <div className="flex items-baseline justify-between gap-3 text-xs">
-                            <span className="min-w-0 truncate font-medium text-foreground">
+                            <span className="text-foreground min-w-0 truncate font-medium">
                                 {d.label}
-                                {d.meta && <span className="ml-2 font-normal text-muted-foreground">{d.meta}</span>}
+                                {d.meta && (
+                                    <span className="text-muted-foreground ml-2 font-normal">
+                                        {d.meta}
+                                    </span>
+                                )}
                             </span>
-                            <span className="shrink-0 font-mono tabular-nums text-muted-foreground">
+                            <span className="text-muted-foreground shrink-0 font-mono tabular-nums">
                                 {d.displayValue ?? d.value}
                             </span>
                         </div>
-                        <div className="h-2.5 w-full overflow-hidden rounded-full bg-muted">
+                        <div className="bg-muted h-2.5 w-full overflow-hidden rounded-full">
                             <div
                                 className="h-full rounded-full"
                                 style={{
                                     width: `${pct}%`,
                                     background: d.color ?? seriesAt(i),
-                                    animation: 'bar-grow 0.7s cubic-bezier(0.22, 1, 0.36, 1) both',
+                                    animation:
+                                        'bar-grow 0.7s cubic-bezier(0.22, 1, 0.36, 1) both',
                                     animationDelay: `${i * 60}ms`,
                                 }}
                             />

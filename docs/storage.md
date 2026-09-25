@@ -3,7 +3,7 @@
 ## Why Supabase Storage in production
 
 Render's container filesystem is **ephemeral**: every push to `main` triggers a
-redeploy that replaces the container, wiping `storage/app/public`. Image *rows*
+redeploy that replaces the container, wiping `storage/app/public`. Image _rows_
 live in Postgres (Supabase) and survive, but files written to the local disk do
 not. The classic symptom is "product images 404 after every deploy" — it
 happened here because `FILESYSTEM_DISK_PRODUCT_IMAGES` was never set in
@@ -44,7 +44,7 @@ Set by the blueprint (non-secret):
 FILESYSTEM_DISK_PRODUCT_IMAGES: supabase
 SUPABASE_BUCKET: product-images
 SUPABASE_DEFAULT_REGION: us-east-1
-SUPABASE_USE_PATH_STYLE_ENDPOINT: "true"
+SUPABASE_USE_PATH_STYLE_ENDPOINT: 'true'
 ```
 
 Must be set on the Render dashboard (declared `sync: false`):
@@ -114,12 +114,12 @@ WARN: FILESYSTEM_DISK_PRODUCT_IMAGES is 'public' — uploaded images will be LOS
 Fix on the Render dashboard → `danob-app` → **Environment** → add and Save
 (Render redeploys automatically):
 
-| Key | Value |
-| --- | --- |
-| `FILESYSTEM_DISK_PRODUCT_IMAGES` | `supabase` |
-| `SUPABASE_URL` | `https://<project-ref>.supabase.co` |
-| `SUPABASE_ACCESS_KEY_ID` | S3-compatible access key |
-| `SUPABASE_SECRET_ACCESS_KEY` | S3-compatible secret key |
+| Key                              | Value                               |
+| -------------------------------- | ----------------------------------- |
+| `FILESYSTEM_DISK_PRODUCT_IMAGES` | `supabase`                          |
+| `SUPABASE_URL`                   | `https://<project-ref>.supabase.co` |
+| `SUPABASE_ACCESS_KEY_ID`         | S3-compatible access key            |
+| `SUPABASE_SECRET_ACCESS_KEY`     | S3-compatible secret key            |
 
 `SUPABASE_BUCKET`, `SUPABASE_DEFAULT_REGION` and
 `SUPABASE_USE_PATH_STYLE_ENDPOINT` are blueprint-managed in `render.yaml` and

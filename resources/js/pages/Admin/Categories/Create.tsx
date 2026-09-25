@@ -11,7 +11,12 @@ import { onImageError } from '@/lib/image-fallback';
 import { Image as ImageIcon, Plus, Upload } from 'lucide-react';
 
 export default function Create() {
-    const [data, setData] = useState({ name: '', slug: '', description: '', is_active: true });
+    const [data, setData] = useState({
+        name: '',
+        slug: '',
+        description: '',
+        is_active: true,
+    });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [processing, setProcessing] = useState(false);
     const [imageFile, setImageFile] = useState<File | null>(null);
@@ -19,7 +24,8 @@ export default function Create() {
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null;
-        if (imagePreview?.startsWith('blob:')) URL.revokeObjectURL(imagePreview);
+        if (imagePreview?.startsWith('blob:'))
+            URL.revokeObjectURL(imagePreview);
         if (file) {
             setImageFile(file);
             setImagePreview(URL.createObjectURL(file));
@@ -35,7 +41,10 @@ export default function Create() {
         setErrors({});
         const formData = new FormData();
         formData.append('name', data.name);
-        formData.append('slug', data.slug || data.name.toLowerCase().replace(/\s+/g, '-'));
+        formData.append(
+            'slug',
+            data.slug || data.name.toLowerCase().replace(/\s+/g, '-'),
+        );
         formData.append('description', data.description);
         formData.append('is_active', data.is_active ? '1' : '0');
         if (imageFile) formData.append('image', imageFile);
@@ -54,7 +63,11 @@ export default function Create() {
         <>
             <Head title="Create Category" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <Heading eyebrow="Catalog" title="Create Category" description="Add a new category" />
+                <Heading
+                    eyebrow="Catalog"
+                    title="Create Category"
+                    description="Add a new category"
+                />
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <Card className="max-w-3xl">
                         <CardHeader>
@@ -63,12 +76,32 @@ export default function Create() {
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="name">Name *</Label>
-                                <Input id="name" value={data.name} onChange={(e) => setData({ ...data, name: e.target.value })} required />
+                                <Input
+                                    id="name"
+                                    value={data.name}
+                                    onChange={(e) =>
+                                        setData({
+                                            ...data,
+                                            name: e.target.value,
+                                        })
+                                    }
+                                    required
+                                />
                                 <InputError message={errors.name} />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="slug">Slug *</Label>
-                                <Input id="slug" value={data.slug} onChange={(e) => setData({ ...data, slug: e.target.value })} placeholder="auto-generated if empty" />
+                                <Input
+                                    id="slug"
+                                    value={data.slug}
+                                    onChange={(e) =>
+                                        setData({
+                                            ...data,
+                                            slug: e.target.value,
+                                        })
+                                    }
+                                    placeholder="auto-generated if empty"
+                                />
                                 <InputError message={errors.slug} />
                             </div>
                             <div className="space-y-2">
@@ -76,14 +109,29 @@ export default function Create() {
                                 <textarea
                                     id="description"
                                     value={data.description}
-                                    onChange={(e) => setData({ ...data, description: e.target.value })}
+                                    onChange={(e) =>
+                                        setData({
+                                            ...data,
+                                            description: e.target.value,
+                                        })
+                                    }
                                     rows={3}
-                                    className="flex min-h-[60px] w-full rounded-lg border border-input bg-background px-3.5 py-2 text-sm shadow-xs transition-[border-color,box-shadow] duration-150 outline-none focus-visible:border-primary/60 focus-visible:ring-4 focus-visible:ring-primary/15"
+                                    className="border-input bg-background focus-visible:border-primary/60 focus-visible:ring-primary/15 flex min-h-[60px] w-full rounded-lg border px-3.5 py-2 text-sm shadow-xs transition-[border-color,box-shadow] duration-150 outline-none focus-visible:ring-4"
                                 />
                                 <InputError message={errors.description} />
                             </div>
                             <div className="flex items-center gap-2">
-                                <input type="checkbox" id="is_active" checked={data.is_active} onChange={(e) => setData({ ...data, is_active: e.target.checked })} />
+                                <input
+                                    type="checkbox"
+                                    id="is_active"
+                                    checked={data.is_active}
+                                    onChange={(e) =>
+                                        setData({
+                                            ...data,
+                                            is_active: e.target.checked,
+                                        })
+                                    }
+                                />
                                 <Label htmlFor="is_active">Active</Label>
                             </div>
                         </CardContent>
@@ -95,21 +143,43 @@ export default function Create() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {imagePreview ? (
-                                <div className="h-32 w-full overflow-hidden rounded-md border border-border bg-muted">
-                                    <img src={imagePreview} alt="Image preview" className="h-full w-full object-cover" onError={onImageError} />
+                                <div className="border-border bg-muted h-32 w-full overflow-hidden rounded-md border">
+                                    <img
+                                        src={imagePreview}
+                                        alt="Image preview"
+                                        className="h-full w-full object-cover"
+                                        onError={onImageError}
+                                    />
                                 </div>
                             ) : (
-                                <div className="flex h-32 w-full items-center justify-center rounded-md border border-dashed border-border bg-muted">
-                                    <ImageIcon className="h-8 w-8 opacity-20" aria-hidden="true" />
+                                <div className="border-border bg-muted flex h-32 w-full items-center justify-center rounded-md border border-dashed">
+                                    <ImageIcon
+                                        className="h-8 w-8 opacity-20"
+                                        aria-hidden="true"
+                                    />
                                 </div>
                             )}
                             <div className="space-y-2">
-                                <Label htmlFor="image" className="flex items-center gap-1.5">
-                                    <Upload className="h-4 w-4" aria-hidden="true" /> Upload Image
+                                <Label
+                                    htmlFor="image"
+                                    className="flex items-center gap-1.5"
+                                >
+                                    <Upload
+                                        className="h-4 w-4"
+                                        aria-hidden="true"
+                                    />{' '}
+                                    Upload Image
                                 </Label>
-                                <Input id="image" type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageChange} />
+                                <Input
+                                    id="image"
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    onChange={handleImageChange}
+                                />
                                 <InputError message={errors.image} />
-                                <p className="text-xs text-muted-foreground">JPG, PNG or WEBP up to 5MB.</p>
+                                <p className="text-muted-foreground text-xs">
+                                    JPG, PNG or WEBP up to 5MB.
+                                </p>
                             </div>
                         </CardContent>
                     </Card>

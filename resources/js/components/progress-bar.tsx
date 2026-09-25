@@ -36,15 +36,20 @@ export function ProgressBar({
     barClassName?: string;
 }) {
     const safeMax = max > 0 ? max : 0;
-    const pct = safeMax > 0 ? Math.min(100, Math.max(0, (value / safeMax) * 100)) : 0;
+    const pct =
+        safeMax > 0 ? Math.min(100, Math.max(0, (value / safeMax) * 100)) : 0;
 
     return (
         <div className={cn('flex w-full flex-col gap-1.5', className)}>
             {(label || showValue) && (
-                <div className="flex items-baseline justify-between gap-3 text-[11px] font-semibold uppercase tracking-[0.18em]">
-                    {label && <span className="truncate text-muted-foreground">{label}</span>}
+                <div className="flex items-baseline justify-between gap-3 text-[11px] font-semibold tracking-[0.18em] uppercase">
+                    {label && (
+                        <span className="text-muted-foreground truncate">
+                            {label}
+                        </span>
+                    )}
                     {showValue && (
-                        <span className="shrink-0 tabular-nums text-foreground/80">
+                        <span className="text-foreground/80 shrink-0 tabular-nums">
                             {valueLabel ?? `${Math.round(pct)}%`}
                         </span>
                     )}
@@ -56,11 +61,19 @@ export function ProgressBar({
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-label={label}
-                className="h-2 w-full overflow-hidden rounded-full bg-muted"
+                className="bg-muted h-2 w-full overflow-hidden rounded-full"
             >
                 <div
-                    className={cn('h-full rounded-full', TONE_FILL[tone], barClassName)}
-                    style={{ width: `${pct}%`, animation: 'bar-grow 0.7s cubic-bezier(0.22, 1, 0.36, 1) both' }}
+                    className={cn(
+                        'h-full rounded-full',
+                        TONE_FILL[tone],
+                        barClassName,
+                    )}
+                    style={{
+                        width: `${pct}%`,
+                        animation:
+                            'bar-grow 0.7s cubic-bezier(0.22, 1, 0.36, 1) both',
+                    }}
                 />
             </div>
         </div>

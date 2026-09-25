@@ -6,8 +6,22 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableEmpty,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import { Search, Plus, Pencil, Eye, Power, X } from 'lucide-react';
 import * as SupplierRoutes from '@/routes/admin/suppliers';
 
@@ -42,14 +56,23 @@ export default function Index({ suppliers, filters }: Props) {
         e.preventDefault();
         router.get(
             SupplierRoutes.index().url,
-            { search: search || undefined, status: status !== 'all' ? status : undefined },
+            {
+                search: search || undefined,
+                status: status !== 'all' ? status : undefined,
+            },
             { preserveState: true, replace: true },
         );
     };
 
     const handleToggle = (supplier: Supplier) => {
-        const action = supplier.is_active ? SupplierRoutes.deactivate(supplier.id) : SupplierRoutes.activate(supplier.id);
-        if (confirm(`${supplier.is_active ? 'Deactivate' : 'Activate'} supplier "${supplier.name}"?`)) {
+        const action = supplier.is_active
+            ? SupplierRoutes.deactivate(supplier.id)
+            : SupplierRoutes.activate(supplier.id);
+        if (
+            confirm(
+                `${supplier.is_active ? 'Deactivate' : 'Activate'} supplier "${supplier.name}"?`,
+            )
+        ) {
             router.post(action.url);
         }
     };
@@ -71,10 +94,18 @@ export default function Index({ suppliers, filters }: Props) {
                     }
                 />
 
-                <form onSubmit={handleSearch} className="flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-xs transition-colors dark:border-border/60 dark:shadow-none">
+                <form
+                    onSubmit={handleSearch}
+                    className="border-border/70 bg-card dark:border-border/60 flex flex-wrap items-center gap-2 rounded-xl border p-3 shadow-xs transition-colors dark:shadow-none"
+                >
                     <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search name, contact, phone, email..." className="pl-9" />
+                        <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                        <Input
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Search name, contact, phone, email..."
+                            className="pl-9"
+                        />
                     </div>
                     <Select value={status} onValueChange={setStatus}>
                         <SelectTrigger className="w-[160px]">
@@ -102,8 +133,9 @@ export default function Index({ suppliers, filters }: Props) {
                     <CardHeader>
                         <div className="flex flex-wrap items-center justify-between gap-2">
                             <CardTitle>All Suppliers</CardTitle>
-                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
-                                {suppliers.total.toLocaleString()} record{suppliers.total === 1 ? '' : 's'}
+                            <span className="text-muted-foreground text-xs font-medium tabular-nums">
+                                {suppliers.total.toLocaleString()} record
+                                {suppliers.total === 1 ? '' : 's'}
                             </span>
                         </div>
                     </CardHeader>
@@ -121,30 +153,74 @@ export default function Index({ suppliers, filters }: Props) {
                             </TableHeader>
                             <TableBody>
                                 {suppliers.data.length === 0 ? (
-                                    <TableEmpty colSpan={6}>No suppliers found.</TableEmpty>
+                                    <TableEmpty colSpan={6}>
+                                        No suppliers found.
+                                    </TableEmpty>
                                 ) : (
                                     suppliers.data.map((s) => (
                                         <TableRow key={s.id}>
-                                            <TableCell className="font-medium">{s.name}</TableCell>
-                                            <TableCell>{s.contact_person || '—'}</TableCell>
-                                            <TableCell>{s.phone || '—'}</TableCell>
-                                            <TableCell>{s.email || '—'}</TableCell>
+                                            <TableCell className="font-medium">
+                                                {s.name}
+                                            </TableCell>
                                             <TableCell>
-                                                <Badge variant={s.is_active ? 'success' : 'secondary'}>{s.is_active ? 'Active' : 'Inactive'}</Badge>
+                                                {s.contact_person || '—'}
+                                            </TableCell>
+                                            <TableCell>
+                                                {s.phone || '—'}
+                                            </TableCell>
+                                            <TableCell>
+                                                {s.email || '—'}
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge
+                                                    variant={
+                                                        s.is_active
+                                                            ? 'success'
+                                                            : 'secondary'
+                                                    }
+                                                >
+                                                    {s.is_active
+                                                        ? 'Active'
+                                                        : 'Inactive'}
+                                                </Badge>
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex gap-1">
-                                                    <Link href={SupplierRoutes.show(s.id).url}>
-                                                        <Button variant="ghost" size="icon">
+                                                    <Link
+                                                        href={
+                                                            SupplierRoutes.show(
+                                                                s.id,
+                                                            ).url
+                                                        }
+                                                    >
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                        >
                                                             <Eye className="h-4 w-4" />
                                                         </Button>
                                                     </Link>
-                                                    <Link href={SupplierRoutes.edit(s.id).url}>
-                                                        <Button variant="ghost" size="icon">
+                                                    <Link
+                                                        href={
+                                                            SupplierRoutes.edit(
+                                                                s.id,
+                                                            ).url
+                                                        }
+                                                    >
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                        >
                                                             <Pencil className="h-4 w-4" />
                                                         </Button>
                                                     </Link>
-                                                    <Button variant="ghost" size="icon" onClick={() => handleToggle(s)}>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() =>
+                                                            handleToggle(s)
+                                                        }
+                                                    >
                                                         <Power className="h-4 w-4" />
                                                     </Button>
                                                 </div>
@@ -154,7 +230,12 @@ export default function Index({ suppliers, filters }: Props) {
                                 )}
                             </TableBody>
                         </Table>
-                        {suppliers.last_page > 1 && <Pagination links={suppliers.links} className="px-6 pt-4 pb-2" />}
+                        {suppliers.last_page > 1 && (
+                            <Pagination
+                                links={suppliers.links}
+                                className="px-6 pt-4 pb-2"
+                            />
+                        )}
                     </CardContent>
                 </Card>
             </div>

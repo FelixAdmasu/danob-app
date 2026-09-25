@@ -5,75 +5,82 @@ export default function Contact() {
         <>
             <Head title="Contact" />
 
-            <section className="relative bg-[#ECF3E5] pt-32 md:pt-48 overflow-hidden">
-                <div className="absolute left-6 md:left-12 top-0 bottom-0 w-[1px] bg-[#070E01]/10 hidden md:block">
-                    <div className="absolute w-full h-16 bg-[#A5FFA9]/60 blur-sm animate-trail" />
+            <section className="relative overflow-hidden bg-[#ECF3E5] pt-32 md:pt-48">
+                <div className="absolute top-0 bottom-0 left-6 hidden w-[1px] bg-[#070E01]/10 md:left-12 md:block">
+                    <div className="animate-trail absolute h-16 w-full bg-[#A5FFA9]/60 blur-sm" />
                 </div>
 
-                <div className="max-w-[1920px] mx-auto relative z-10 px-6 md:px-12">
-                    <div className="flex flex-col lg:flex-row gap-24">
+                <div className="relative z-10 mx-auto max-w-[1920px] px-6 md:px-12">
+                    <div className="flex flex-col gap-24 lg:flex-row">
                         <div className="lg:w-1/2">
-                            <span className="inline-block text-[10px] font-bold uppercase tracking-[0.4em] text-[#4A4A4A] mb-8">
+                            <span className="mb-8 inline-block text-[10px] font-bold tracking-[0.4em] text-[#4A4A4A] uppercase">
                                 — Inquire
                             </span>
-                            <h1 className="font-serif text-4xl md:text-5xl lg:text-7xl leading-none tracking-tighter text-[#070E01] mb-12 italic">
+                            <h1 className="mb-12 font-serif text-4xl leading-none tracking-tighter text-[#070E01] italic md:text-5xl lg:text-7xl">
                                 Get in Touch.
                             </h1>
-                            <p className="text-xl max-w-md text-[#4A4A4A] leading-relaxed mb-12">
-                                Reach out for orders, inquiries, or to visit one of our branches.
+                            <p className="mb-12 max-w-md text-xl leading-relaxed text-[#4A4A4A]">
+                                Reach out for orders, inquiries, or to visit one
+                                of our branches.
                             </p>
 
                             <div className="space-y-6">
                                 <div className="border-b border-[#070E01]/10 pb-6">
-                                    <span className="block text-[10px] font-bold uppercase tracking-[0.4em] text-[#A5FFA9] mb-3">
+                                    <span className="mb-3 block text-[10px] font-bold tracking-[0.4em] text-[#A5FFA9] uppercase">
                                         Phone
                                     </span>
-                                    <p className="text-sm font-bold uppercase tracking-widest">Call us for orders and inquiries</p>
+                                    <p className="text-sm font-bold tracking-widest uppercase">
+                                        Call us for orders and inquiries
+                                    </p>
                                 </div>
                                 <div className="border-b border-[#070E01]/10 pb-6">
-                                    <span className="block text-[10px] font-bold uppercase tracking-[0.4em] text-[#A5FFA9] mb-3">
+                                    <span className="mb-3 block text-[10px] font-bold tracking-[0.4em] text-[#A5FFA9] uppercase">
                                         Email
                                     </span>
-                                    <p className="text-sm font-bold uppercase tracking-widest">Send us a message anytime</p>
+                                    <p className="text-sm font-bold tracking-widest uppercase">
+                                        Send us a message anytime
+                                    </p>
                                 </div>
                                 <div className="border-b border-[#070E01]/10 pb-6">
-                                    <span className="block text-[10px] font-bold uppercase tracking-[0.4em] text-[#A5FFA9] mb-3">
+                                    <span className="mb-3 block text-[10px] font-bold tracking-[0.4em] text-[#A5FFA9] uppercase">
                                         Visit Us
                                     </span>
-                                    <p className="text-sm font-bold uppercase tracking-widest">Find a branch near you</p>
+                                    <p className="text-sm font-bold tracking-widest uppercase">
+                                        Find a branch near you
+                                    </p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="lg:w-1/2 bg-white p-12 rounded-[16px] border border-[#070E01]/10">
+                        <div className="rounded-[16px] border border-[#070E01]/10 bg-white p-12 lg:w-1/2">
                             <div className="space-y-12">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                                     <div className="space-y-2 border-b border-[#070E01]/20 pb-2">
-                                        <label className="text-[9px] font-bold uppercase tracking-[0.4em] text-[#4A4A4A]">
+                                        <label className="text-[9px] font-bold tracking-[0.4em] text-[#4A4A4A] uppercase">
                                             Full Name
                                         </label>
                                         <input
                                             type="text"
-                                            className="w-full bg-transparent outline-none font-serif text-xl placeholder:opacity-20"
+                                            className="w-full bg-transparent font-serif text-xl outline-none placeholder:opacity-20"
                                             placeholder="Your name"
                                         />
                                     </div>
                                     <div className="space-y-2 border-b border-[#070E01]/20 pb-2">
-                                        <label className="text-[9px] font-bold uppercase tracking-[0.4em] text-[#4A4A4A]">
+                                        <label className="text-[9px] font-bold tracking-[0.4em] text-[#4A4A4A] uppercase">
                                             Email Address
                                         </label>
                                         <input
                                             type="email"
-                                            className="w-full bg-transparent outline-none font-serif text-xl placeholder:opacity-20"
+                                            className="w-full bg-transparent font-serif text-xl outline-none placeholder:opacity-20"
                                             placeholder="email@address.com"
                                         />
                                     </div>
                                 </div>
                                 <div className="space-y-2 border-b border-[#070E01]/20 pb-2">
-                                    <label className="text-[9px] font-bold uppercase tracking-[0.4em] text-[#4A4A4A]">
+                                    <label className="text-[9px] font-bold tracking-[0.4em] text-[#4A4A4A] uppercase">
                                         Interest
                                     </label>
-                                    <select className="w-full bg-transparent outline-none font-serif text-xl appearance-none cursor-pointer">
+                                    <select className="w-full cursor-pointer appearance-none bg-transparent font-serif text-xl outline-none">
                                         <option>Product Inquiry</option>
                                         <option>Branch Visit</option>
                                         <option>Wholesale Order</option>
@@ -81,22 +88,23 @@ export default function Contact() {
                                     </select>
                                 </div>
                                 <div className="space-y-2 border-b border-[#070E01]/20 pb-2">
-                                    <label className="text-[9px] font-bold uppercase tracking-[0.4em] text-[#4A4A4A]">
+                                    <label className="text-[9px] font-bold tracking-[0.4em] text-[#4A4A4A] uppercase">
                                         Message
                                     </label>
                                     <textarea
-                                        className="w-full bg-transparent outline-none font-serif text-xl h-32 resize-none placeholder:opacity-20"
+                                        className="h-32 w-full resize-none bg-transparent font-serif text-xl outline-none placeholder:opacity-20"
                                         placeholder="Tell us what you need..."
                                     />
                                 </div>
                                 <button
                                     type="button"
-                                    className="w-full py-6 bg-[#070E01] text-[#ECF3E5] text-[10px] font-bold uppercase tracking-[0.5em] hover:bg-[#2D5016] transition-colors duration-500"
+                                    className="w-full bg-[#070E01] py-6 text-[10px] font-bold tracking-[0.5em] text-[#ECF3E5] uppercase transition-colors duration-500 hover:bg-[#2D5016]"
                                 >
                                     Submit Inquiry
                                 </button>
-                                <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.3em] text-[#4A4A4A] text-center">
-                                    Inquiry form coming soon — contact us by phone or email for now.
+                                <p className="mt-4 text-center text-[10px] font-bold tracking-[0.3em] text-[#4A4A4A] uppercase">
+                                    Inquiry form coming soon — contact us by
+                                    phone or email for now.
                                 </p>
                             </div>
                         </div>

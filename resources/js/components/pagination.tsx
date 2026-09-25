@@ -23,7 +23,13 @@ export function Pagination({
     className?: string;
 }) {
     return (
-        <nav aria-label="Pagination" className={cn('flex flex-wrap items-center justify-center gap-1.5', className)}>
+        <nav
+            aria-label="Pagination"
+            className={cn(
+                'flex flex-wrap items-center justify-center gap-1.5',
+                className,
+            )}
+        >
             {links.map((link, i) =>
                 link.url ? (
                     <Link
@@ -33,7 +39,7 @@ export function Pagination({
                             'inline-flex min-w-9 justify-center rounded-lg border px-3 py-2 text-[13px] font-medium transition-colors duration-200',
                             link.active
                                 ? 'border-primary bg-primary text-primary-foreground shadow-xs'
-                                : 'border-border/70 bg-transparent text-muted-foreground hover:border-primary/40 hover:bg-primary/5 hover:text-foreground',
+                                : 'border-border/70 text-muted-foreground hover:border-primary/40 hover:bg-primary/5 hover:text-foreground bg-transparent',
                         )}
                         dangerouslySetInnerHTML={{ __html: link.label }}
                     />

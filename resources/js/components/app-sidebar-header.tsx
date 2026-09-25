@@ -17,8 +17,8 @@ export function AppSidebarHeader({
 }) {
     return (
         <header className="border-border/70 bg-background/85 supports-[backdrop-filter]:bg-background/70 sticky top-0 z-20 flex h-14 shrink-0 items-center gap-3 border-b px-4 backdrop-blur transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:px-6">
-            <SidebarTrigger className="-ml-1 shrink-0 text-muted-foreground" />
-            <span aria-hidden="true" className="h-4 w-px shrink-0 bg-border" />
+            <SidebarTrigger className="text-muted-foreground -ml-1 shrink-0" />
+            <span aria-hidden="true" className="bg-border h-4 w-px shrink-0" />
             <div className="min-w-0 flex-1">
                 <Breadcrumbs breadcrumbs={breadcrumbs} />
             </div>

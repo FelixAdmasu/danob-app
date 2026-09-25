@@ -8,8 +8,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from '@/components/ui/dialog';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableEmpty,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import { Search, Plus, Pencil, Trash2, Image as ImageIcon } from 'lucide-react';
 import { onImageError } from '@/lib/image-fallback';
 import { formatDate } from '@/lib/format';
@@ -71,7 +85,10 @@ export default function Index({ brands, filters }: Props) {
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        router.get(BrandRoutes.index().url, search ? { search } : {}, { preserveState: true, replace: true });
+        router.get(BrandRoutes.index().url, search ? { search } : {}, {
+            preserveState: true,
+            replace: true,
+        });
     };
 
     const revokePreview = (preview: string | null) => {
@@ -89,7 +106,14 @@ export default function Index({ brands, filters }: Props) {
     const openEdit = (brand: Brand) => {
         revokePreview(form.logoPreview);
         setEditing(brand);
-        setForm({ ...emptyForm(), name: brand.name, slug: brand.slug, description: brand.description || '', is_active: brand.is_active, logoPreview: brand.logo_url });
+        setForm({
+            ...emptyForm(),
+            name: brand.name,
+            slug: brand.slug,
+            description: brand.description || '',
+            is_active: brand.is_active,
+            logoPreview: brand.logo_url,
+        });
         setErrors({});
         setDialogOpen(true);
     };
@@ -104,7 +128,9 @@ export default function Index({ brands, filters }: Props) {
         setForm({
             ...form,
             logo: file,
-            logoPreview: file ? URL.createObjectURL(file) : editing?.logo_url ?? null,
+            logoPreview: file
+                ? URL.createObjectURL(file)
+                : (editing?.logo_url ?? null),
             removeLogo: file ? false : form.removeLogo,
         });
     };
@@ -118,11 +144,15 @@ export default function Index({ brands, filters }: Props) {
         // with _method appended to the FormData (mirrors Admin/Products/Edit).
         const formData = new FormData();
         formData.append('name', form.name);
-        formData.append('slug', form.slug || form.name.toLowerCase().replace(/\s+/g, '-'));
+        formData.append(
+            'slug',
+            form.slug || form.name.toLowerCase().replace(/\s+/g, '-'),
+        );
         formData.append('description', form.description);
         formData.append('is_active', form.is_active ? '1' : '0');
         if (form.logo) formData.append('logo', form.logo);
-        if (editing && form.removeLogo && !form.logo) formData.append('remove_logo', '1');
+        if (editing && form.removeLogo && !form.logo)
+            formData.append('remove_logo', '1');
         if (editing) formData.append('_method', 'PUT');
 
         const onError = (err: Record<string, string>) => {
@@ -140,7 +170,11 @@ export default function Index({ brands, filters }: Props) {
             onFinish: () => setProcessing(false),
         };
         if (editing) {
-            router.post(BrandRoutes.update(editing.id).url, formData, options as never);
+            router.post(
+                BrandRoutes.update(editing.id).url,
+                formData,
+                options as never,
+            );
         } else {
             router.post(BrandRoutes.store().url, formData, options as never);
         }
@@ -166,11 +200,18 @@ export default function Index({ brands, filters }: Props) {
                     }
                 />
 
-                {flashError && <div className="rounded border border-destructive bg-destructive/10 px-4 py-3 text-sm text-destructive">{flashError}</div>}
+                {flashError && (
+                    <div className="border-destructive bg-destructive/10 text-destructive rounded border px-4 py-3 text-sm">
+                        {flashError}
+                    </div>
+                )}
 
-                <form onSubmit={handleSearch} className="flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-xs transition-colors dark:border-border/60 dark:shadow-none">
+                <form
+                    onSubmit={handleSearch}
+                    className="border-border/70 bg-card dark:border-border/60 flex flex-wrap items-center gap-2 rounded-xl border p-3 shadow-xs transition-colors dark:shadow-none"
+                >
                     <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                         <Input
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
@@ -194,8 +235,9 @@ export default function Index({ brands, filters }: Props) {
                     <CardHeader>
                         <div className="flex flex-wrap items-center justify-between gap-2">
                             <CardTitle>All Brands</CardTitle>
-                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
-                                {brands.total.toLocaleString()} record{brands.total === 1 ? '' : 's'}
+                            <span className="text-muted-foreground text-xs font-medium tabular-nums">
+                                {brands.total.toLocaleString()} record
+                                {brands.total === 1 ? '' : 's'}
                             </span>
                         </div>
                     </CardHeader>
@@ -207,14 +249,20 @@ export default function Index({ brands, filters }: Props) {
                                     <TableHead>Name</TableHead>
                                     <TableHead>Slug</TableHead>
                                     <TableHead>Status</TableHead>
-                                    <TableHead className="text-right">Products</TableHead>
+                                    <TableHead className="text-right">
+                                        Products
+                                    </TableHead>
                                     <TableHead>Created</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
+                                    <TableHead className="text-right">
+                                        Actions
+                                    </TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {brands.data.length === 0 ? (
-                                    <TableEmpty colSpan={7}>No brands found.</TableEmpty>
+                                    <TableEmpty colSpan={7}>
+                                        No brands found.
+                                    </TableEmpty>
                                 ) : (
                                     brands.data.map((brand) => (
                                         <TableRow key={brand.id}>
@@ -223,32 +271,61 @@ export default function Index({ brands, filters }: Props) {
                                                     <img
                                                         src={brand.logo_url}
                                                         alt={brand.name}
-                                                        className="size-9 shrink-0 rounded-lg object-cover ring-1 ring-border/60"
+                                                        className="ring-border/60 size-9 shrink-0 rounded-lg object-cover ring-1"
                                                         onError={onImageError}
                                                     />
                                                 ) : (
-                                                    <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-dashed bg-muted">
-                                                        <ImageIcon className="h-4 w-4 text-muted-foreground opacity-40" aria-hidden="true" />
+                                                    <div className="bg-muted flex size-9 shrink-0 items-center justify-center rounded-lg border border-dashed">
+                                                        <ImageIcon
+                                                            className="text-muted-foreground h-4 w-4 opacity-40"
+                                                            aria-hidden="true"
+                                                        />
                                                     </div>
                                                 )}
                                             </TableCell>
-                                            <TableCell className="font-medium">{brand.name}</TableCell>
-                                            <TableCell className="font-mono">{brand.slug}</TableCell>
+                                            <TableCell className="font-medium">
+                                                {brand.name}
+                                            </TableCell>
+                                            <TableCell className="font-mono">
+                                                {brand.slug}
+                                            </TableCell>
                                             <TableCell>
-                                                <Badge variant={brand.is_active ? 'success' : 'secondary'}>
-                                                    {brand.is_active ? 'Active' : 'Inactive'}
+                                                <Badge
+                                                    variant={
+                                                        brand.is_active
+                                                            ? 'success'
+                                                            : 'secondary'
+                                                    }
+                                                >
+                                                    {brand.is_active
+                                                        ? 'Active'
+                                                        : 'Inactive'}
                                                 </Badge>
                                             </TableCell>
-                                            <TableCell className="text-right">{brand.products_count} products</TableCell>
+                                            <TableCell className="text-right">
+                                                {brand.products_count} products
+                                            </TableCell>
                                             <TableCell className="text-muted-foreground">
                                                 {formatDate(brand.created_at)}
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-1">
-                                                    <Button variant="ghost" size="icon" onClick={() => openEdit(brand)}>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() =>
+                                                            openEdit(brand)
+                                                        }
+                                                    >
                                                         <Pencil className="h-4 w-4" />
                                                     </Button>
-                                                    <Button variant="ghost" size="icon" onClick={() => handleDelete(brand)}>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() =>
+                                                            handleDelete(brand)
+                                                        }
+                                                    >
                                                         <Trash2 className="h-4 w-4" />
                                                     </Button>
                                                 </div>
@@ -258,41 +335,79 @@ export default function Index({ brands, filters }: Props) {
                                 )}
                             </TableBody>
                         </Table>
-                        {brands.last_page > 1 && <Pagination links={brands.links} className="px-6 pt-4 pb-2" />}
+                        {brands.last_page > 1 && (
+                            <Pagination
+                                links={brands.links}
+                                className="px-6 pt-4 pb-2"
+                            />
+                        )}
                     </CardContent>
                 </Card>
 
-                <Dialog open={dialogOpen} onOpenChange={(open) => (open ? setDialogOpen(true) : closeDialog())}>
+                <Dialog
+                    open={dialogOpen}
+                    onOpenChange={(open) =>
+                        open ? setDialogOpen(true) : closeDialog()
+                    }
+                >
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>{editing ? 'Edit Brand' : 'Add Brand'}</DialogTitle>
+                            <DialogTitle>
+                                {editing ? 'Edit Brand' : 'Add Brand'}
+                            </DialogTitle>
                         </DialogHeader>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="brand-name">Name *</Label>
-                                <Input id="brand-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
-                                {errors.name && <InputError message={errors.name} />}
+                                <Input
+                                    id="brand-name"
+                                    value={form.name}
+                                    onChange={(e) =>
+                                        setForm({
+                                            ...form,
+                                            name: e.target.value,
+                                        })
+                                    }
+                                    required
+                                />
+                                {errors.name && (
+                                    <InputError message={errors.name} />
+                                )}
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="brand-slug">Slug *</Label>
                                 <Input
                                     id="brand-slug"
                                     value={form.slug}
-                                    onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                                    onChange={(e) =>
+                                        setForm({
+                                            ...form,
+                                            slug: e.target.value,
+                                        })
+                                    }
                                     placeholder="auto-generated from name if empty"
                                 />
-                                {errors.slug && <InputError message={errors.slug} />}
+                                {errors.slug && (
+                                    <InputError message={errors.slug} />
+                                )}
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="brand-desc">Description</Label>
                                 <textarea
                                     id="brand-desc"
                                     value={form.description}
-                                    onChange={(e) => setForm({ ...form, description: e.target.value })}
+                                    onChange={(e) =>
+                                        setForm({
+                                            ...form,
+                                            description: e.target.value,
+                                        })
+                                    }
                                     rows={3}
-                                    className="flex min-h-[60px] w-full rounded-lg border border-input bg-background px-3.5 py-2 text-sm shadow-xs transition-[border-color,box-shadow] duration-150 outline-none focus-visible:border-primary/60 focus-visible:ring-4 focus-visible:ring-primary/15"
+                                    className="border-input bg-background focus-visible:border-primary/60 focus-visible:ring-primary/15 flex min-h-[60px] w-full rounded-lg border px-3.5 py-2 text-sm shadow-xs transition-[border-color,box-shadow] duration-150 outline-none focus-visible:ring-4"
                                 />
-                                {errors.description && <InputError message={errors.description} />}
+                                {errors.description && (
+                                    <InputError message={errors.description} />
+                                )}
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="brand-logo">Logo</Label>
@@ -300,9 +415,15 @@ export default function Index({ brands, filters }: Props) {
                                     id="brand-logo"
                                     type="file"
                                     accept="image/jpeg,image/png,image/webp"
-                                    onChange={(e) => handleLogoChange(e.target.files?.[0] ?? null)}
+                                    onChange={(e) =>
+                                        handleLogoChange(
+                                            e.target.files?.[0] ?? null,
+                                        )
+                                    }
                                 />
-                                {errors.logo && <InputError message={errors.logo} />}
+                                {errors.logo && (
+                                    <InputError message={errors.logo} />
+                                )}
                                 {form.logoPreview ? (
                                     <img
                                         src={form.logoPreview}
@@ -311,8 +432,11 @@ export default function Index({ brands, filters }: Props) {
                                         onError={onImageError}
                                     />
                                 ) : (
-                                    <div className="flex h-24 w-24 items-center justify-center rounded-md border border-dashed bg-muted">
-                                        <ImageIcon className="h-6 w-6 text-muted-foreground opacity-40" aria-hidden="true" />
+                                    <div className="bg-muted flex h-24 w-24 items-center justify-center rounded-md border border-dashed">
+                                        <ImageIcon
+                                            className="text-muted-foreground h-6 w-6 opacity-40"
+                                            aria-hidden="true"
+                                        />
                                     </div>
                                 )}
                                 {editing?.logo_url && (
@@ -322,9 +446,17 @@ export default function Index({ brands, filters }: Props) {
                                             id="brand-remove-logo"
                                             checked={form.removeLogo}
                                             disabled={!!form.logo}
-                                            onChange={(e) => setForm({ ...form, removeLogo: e.target.checked })}
+                                            onChange={(e) =>
+                                                setForm({
+                                                    ...form,
+                                                    removeLogo:
+                                                        e.target.checked,
+                                                })
+                                            }
                                         />
-                                        <Label htmlFor="brand-remove-logo">Remove logo</Label>
+                                        <Label htmlFor="brand-remove-logo">
+                                            Remove logo
+                                        </Label>
                                     </div>
                                 )}
                             </div>
@@ -333,12 +465,21 @@ export default function Index({ brands, filters }: Props) {
                                     type="checkbox"
                                     id="brand-active"
                                     checked={form.is_active}
-                                    onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
+                                    onChange={(e) =>
+                                        setForm({
+                                            ...form,
+                                            is_active: e.target.checked,
+                                        })
+                                    }
                                 />
                                 <Label htmlFor="brand-active">Active</Label>
                             </div>
                             <DialogFooter>
-                                <Button type="button" variant="outline" onClick={closeDialog}>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={closeDialog}
+                                >
                                     Cancel
                                 </Button>
                                 <Button type="submit" disabled={processing}>

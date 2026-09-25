@@ -7,8 +7,22 @@ import { StatCard } from '@/components/stat-card';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableEmpty,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import { ReportExportButton } from '@/components/report-export-button';
 import { ClipboardList, ShoppingCart, UserCheck, Users } from 'lucide-react';
 import ReportRoutes from '@/routes/admin/reports';
@@ -44,20 +58,26 @@ type Props = {
     filters: { status: string | null; search: string | null };
 };
 
-export default function SuppliersReport({ suppliers, summary, filters }: Props) {
+export default function SuppliersReport({
+    suppliers,
+    summary,
+    filters,
+}: Props) {
     const [status, setStatus] = useState<string>(filters.status || 'all');
     const [search, setSearch] = useState<string>(filters.search || '');
 
-    const activeCount = [
-        status !== 'all' ? status : '',
-        search.trim(),
-    ].filter((v) => v !== '').length;
+    const activeCount = [status !== 'all' ? status : '', search.trim()].filter(
+        (v) => v !== '',
+    ).length;
 
     const handleFilter = (e: React.FormEvent) => {
         e.preventDefault();
         router.get(
             ReportRoutes.suppliers().url,
-            { status: status !== 'all' ? status : undefined, search: search || undefined },
+            {
+                status: status !== 'all' ? status : undefined,
+                search: search || undefined,
+            },
             { preserveState: true, replace: true },
         );
     };
@@ -65,7 +85,11 @@ export default function SuppliersReport({ suppliers, summary, filters }: Props) 
     const clearFilters = () => {
         setStatus('all');
         setSearch('');
-        router.get(ReportRoutes.suppliers().url, {}, { preserveState: true, replace: true });
+        router.get(
+            ReportRoutes.suppliers().url,
+            {},
+            { preserveState: true, replace: true },
+        );
     };
 
     return (
@@ -79,17 +103,39 @@ export default function SuppliersReport({ suppliers, summary, filters }: Props) 
                 />
 
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <StatCard label="Suppliers" value={summary.suppliers} icon={Users} />
-                    <StatCard label="Active Suppliers" value={summary.active_suppliers} icon={UserCheck} tone="success" />
-                    <StatCard label="Suppliers With Purchases" value={summary.suppliers_with_purchases} icon={ShoppingCart} />
-                    <StatCard label="Purchase Orders" value={summary.purchase_orders} icon={ClipboardList} />
+                    <StatCard
+                        label="Suppliers"
+                        value={summary.suppliers}
+                        icon={Users}
+                    />
+                    <StatCard
+                        label="Active Suppliers"
+                        value={summary.active_suppliers}
+                        icon={UserCheck}
+                        tone="success"
+                    />
+                    <StatCard
+                        label="Suppliers With Purchases"
+                        value={summary.suppliers_with_purchases}
+                        icon={ShoppingCart}
+                    />
+                    <StatCard
+                        label="Purchase Orders"
+                        value={summary.purchase_orders}
+                        icon={ClipboardList}
+                    />
                 </div>
 
                 <FilterPanel
                     onSubmit={handleFilter}
                     onClear={clearFilters}
                     activeCount={activeCount}
-                    actions={<ReportExportButton url={ReportRoutes.suppliers.export().url} filters={filters} />}
+                    actions={
+                        <ReportExportButton
+                            url={ReportRoutes.suppliers.export().url}
+                            filters={filters}
+                        />
+                    }
                 >
                     <FilterField label="Status">
                         <Select value={status} onValueChange={setStatus}>
@@ -97,13 +143,21 @@ export default function SuppliersReport({ suppliers, summary, filters }: Props) 
                                 <SelectValue placeholder="All suppliers" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All suppliers</SelectItem>
+                                <SelectItem value="all">
+                                    All suppliers
+                                </SelectItem>
                                 <SelectItem value="active">Active</SelectItem>
-                                <SelectItem value="inactive">Inactive</SelectItem>
+                                <SelectItem value="inactive">
+                                    Inactive
+                                </SelectItem>
                             </SelectContent>
                         </Select>
                     </FilterField>
-                    <FilterField label="Search" htmlFor="search" className="sm:col-span-2">
+                    <FilterField
+                        label="Search"
+                        htmlFor="search"
+                        className="sm:col-span-2"
+                    >
                         <Input
                             id="search"
                             placeholder="Search by name, contact, phone or email..."
@@ -117,8 +171,9 @@ export default function SuppliersReport({ suppliers, summary, filters }: Props) 
                     <CardHeader>
                         <div className="flex flex-wrap items-center justify-between gap-2">
                             <CardTitle>All Suppliers</CardTitle>
-                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
-                                {suppliers.total.toLocaleString()} record{suppliers.total === 1 ? '' : 's'}
+                            <span className="text-muted-foreground text-xs font-medium tabular-nums">
+                                {suppliers.total.toLocaleString()} record
+                                {suppliers.total === 1 ? '' : 's'}
                             </span>
                         </div>
                     </CardHeader>
@@ -128,41 +183,80 @@ export default function SuppliersReport({ suppliers, summary, filters }: Props) 
                                 <TableRow>
                                     <TableHead>Supplier</TableHead>
                                     <TableHead>Status</TableHead>
-                                    <TableHead className="text-right">Purchase Orders</TableHead>
-                                    <TableHead className="text-right">Open Orders</TableHead>
-                                    <TableHead className="text-right">Purchase Value</TableHead>
+                                    <TableHead className="text-right">
+                                        Purchase Orders
+                                    </TableHead>
+                                    <TableHead className="text-right">
+                                        Open Orders
+                                    </TableHead>
+                                    <TableHead className="text-right">
+                                        Purchase Value
+                                    </TableHead>
                                     <TableHead>Last Order</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {suppliers.data.length === 0 ? (
-                                    <TableEmpty colSpan={6}>No suppliers found.</TableEmpty>
+                                    <TableEmpty colSpan={6}>
+                                        No suppliers found.
+                                    </TableEmpty>
                                 ) : (
                                     suppliers.data.map((supplier) => (
                                         <TableRow key={supplier.id}>
                                             <TableCell>
-                                                <div className="font-medium">{supplier.name}</div>
+                                                <div className="font-medium">
+                                                    {supplier.name}
+                                                </div>
                                                 {supplier.contact_person && (
-                                                    <div className="text-xs text-muted-foreground">{supplier.contact_person}</div>
+                                                    <div className="text-muted-foreground text-xs">
+                                                        {
+                                                            supplier.contact_person
+                                                        }
+                                                    </div>
                                                 )}
                                             </TableCell>
                                             <TableCell>
-                                                <Badge variant={supplier.is_active ? 'success' : 'secondary'}>
-                                                    {supplier.is_active ? 'Active' : 'Inactive'}
+                                                <Badge
+                                                    variant={
+                                                        supplier.is_active
+                                                            ? 'success'
+                                                            : 'secondary'
+                                                    }
+                                                >
+                                                    {supplier.is_active
+                                                        ? 'Active'
+                                                        : 'Inactive'}
                                                 </Badge>
                                             </TableCell>
-                                            <TableCell className="text-right font-mono">{supplier.purchase_orders_count}</TableCell>
-                                            <TableCell className="text-right font-mono">{supplier.open_purchase_orders_count}</TableCell>
-                                            <TableCell className="text-right font-mono">{supplier.purchase_value}</TableCell>
+                                            <TableCell className="text-right font-mono">
+                                                {supplier.purchase_orders_count}
+                                            </TableCell>
+                                            <TableCell className="text-right font-mono">
+                                                {
+                                                    supplier.open_purchase_orders_count
+                                                }
+                                            </TableCell>
+                                            <TableCell className="text-right font-mono">
+                                                {supplier.purchase_value}
+                                            </TableCell>
                                             <TableCell>
-                                                {supplier.last_ordered_at ? formatDate(supplier.last_ordered_at) : '—'}
+                                                {supplier.last_ordered_at
+                                                    ? formatDate(
+                                                          supplier.last_ordered_at,
+                                                      )
+                                                    : '—'}
                                             </TableCell>
                                         </TableRow>
                                     ))
                                 )}
                             </TableBody>
                         </Table>
-                        {suppliers.last_page > 1 && <Pagination links={suppliers.links} className="px-6 pt-4 pb-2" />}
+                        {suppliers.last_page > 1 && (
+                            <Pagination
+                                links={suppliers.links}
+                                className="px-6 pt-4 pb-2"
+                            />
+                        )}
                     </CardContent>
                 </Card>
             </div>

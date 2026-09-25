@@ -26,7 +26,11 @@ type PurchaseOrder = {
     items: ReceiveItem[];
 };
 
-export default function Receive({ purchase_order }: { purchase_order: PurchaseOrder }) {
+export default function Receive({
+    purchase_order,
+}: {
+    purchase_order: PurchaseOrder;
+}) {
     const [quantities, setQuantities] = useState<Record<number, string>>(() =>
         Object.fromEntries(purchase_order.items.map((item) => [item.id, '0'])),
     );
@@ -69,7 +73,11 @@ export default function Receive({ purchase_order }: { purchase_order: PurchaseOr
                     />
                     <div className="flex items-center gap-2">
                         <StatusBadge status={purchase_order.status} />
-                        <Link href={PurchaseOrderRoutes.show(purchase_order.id).url}>
+                        <Link
+                            href={
+                                PurchaseOrderRoutes.show(purchase_order.id).url
+                            }
+                        >
                             <Button variant="outline">
                                 <ArrowLeft className="mr-2 h-4 w-4" /> Back
                             </Button>
@@ -78,7 +86,9 @@ export default function Receive({ purchase_order }: { purchase_order: PurchaseOr
                 </div>
                 {(errors.purchase_order || errors.items || errors.quantity) && (
                     <p className="text-sm text-red-600 dark:text-red-400">
-                        {errors.purchase_order || errors.items || errors.quantity}
+                        {errors.purchase_order ||
+                            errors.items ||
+                            errors.quantity}
                     </p>
                 )}
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -89,7 +99,8 @@ export default function Receive({ purchase_order }: { purchase_order: PurchaseOr
                         <CardContent>
                             <div className="space-y-4">
                                 {purchase_order.items.map((item) => {
-                                    const remaining = item.quantity - item.received_quantity;
+                                    const remaining =
+                                        item.quantity - item.received_quantity;
                                     const value = quantities[item.id] ?? '';
                                     return (
                                         <div
@@ -99,24 +110,36 @@ export default function Receive({ purchase_order }: { purchase_order: PurchaseOr
                                             <div className="space-y-1">
                                                 <Label>Product</Label>
                                                 <p className="text-sm">
-                                                    {item.variant?.product?.name || '—'} — {item.variant?.name || '—'}
+                                                    {item.variant?.product
+                                                        ?.name || '—'}{' '}
+                                                    —{' '}
+                                                    {item.variant?.name || '—'}
                                                 </p>
                                             </div>
                                             <div className="space-y-1">
                                                 <Label>Ordered</Label>
-                                                <p className="text-sm">{item.quantity}</p>
+                                                <p className="text-sm">
+                                                    {item.quantity}
+                                                </p>
                                             </div>
                                             <div className="space-y-1">
                                                 <Label>Already Received</Label>
-                                                <p className="text-sm">{item.received_quantity}</p>
+                                                <p className="text-sm">
+                                                    {item.received_quantity}
+                                                </p>
                                             </div>
                                             <div className="space-y-1">
                                                 <Label>Unit Cost</Label>
-                                                <p className="text-sm">{item.unit_cost}</p>
+                                                <p className="text-sm">
+                                                    {item.unit_cost}
+                                                </p>
                                             </div>
                                             <div className="space-y-2">
-                                                <Label htmlFor={`receive-${item.id}`}>
-                                                    Receive (remaining: {remaining})
+                                                <Label
+                                                    htmlFor={`receive-${item.id}`}
+                                                >
+                                                    Receive (remaining:{' '}
+                                                    {remaining})
                                                 </Label>
                                                 <Input
                                                     id={`receive-${item.id}`}
@@ -124,18 +147,30 @@ export default function Receive({ purchase_order }: { purchase_order: PurchaseOr
                                                     min={0}
                                                     max={remaining}
                                                     value={value}
-                                                    aria-invalid={errors.quantity ? true : undefined}
+                                                    aria-invalid={
+                                                        errors.quantity
+                                                            ? true
+                                                            : undefined
+                                                    }
                                                     onChange={(e) =>
-                                                        setQuantities((prev) => ({
-                                                            ...prev,
-                                                            [item.id]: e.target.value,
-                                                        }))
+                                                        setQuantities(
+                                                            (prev) => ({
+                                                                ...prev,
+                                                                [item.id]:
+                                                                    e.target
+                                                                        .value,
+                                                            }),
+                                                        )
                                                     }
                                                 />
-                                                <p className="text-xs text-muted-foreground">
+                                                <p className="text-muted-foreground text-xs">
                                                     Value:{' '}
                                                     {(
-                                                        (Number(quantities[item.id] ?? 0) || 0) *
+                                                        (Number(
+                                                            quantities[
+                                                                item.id
+                                                            ] ?? 0,
+                                                        ) || 0) *
                                                         Number(item.unit_cost)
                                                     ).toFixed(2)}
                                                 </p>
@@ -152,14 +187,20 @@ export default function Receive({ purchase_order }: { purchase_order: PurchaseOr
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-2">
-                                <Label htmlFor="receive-notes">Receiving notes</Label>
+                                <Label htmlFor="receive-notes">
+                                    Receiving notes
+                                </Label>
                                 <Input
                                     id="receive-notes"
                                     value={notes}
                                     onChange={(e) => setNotes(e.target.value)}
                                     placeholder="Optional"
                                 />
-                                {errors.notes && <p className="text-xs text-red-600 dark:text-red-400">{errors.notes}</p>}
+                                {errors.notes && (
+                                    <p className="text-xs text-red-600 dark:text-red-400">
+                                        {errors.notes}
+                                    </p>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
@@ -169,13 +210,18 @@ export default function Receive({ purchase_order }: { purchase_order: PurchaseOr
                             disabled={
                                 processing ||
                                 purchase_order.items.every(
-                                    (item) => Number(quantities[item.id] ?? 0) <= 0,
+                                    (item) =>
+                                        Number(quantities[item.id] ?? 0) <= 0,
                                 )
                             }
                         >
                             <PackageCheck className="mr-2 h-4 w-4" /> Receive
                         </Button>
-                        <Link href={PurchaseOrderRoutes.show(purchase_order.id).url}>
+                        <Link
+                            href={
+                                PurchaseOrderRoutes.show(purchase_order.id).url
+                            }
+                        >
                             <Button type="button" variant="outline">
                                 Cancel
                             </Button>

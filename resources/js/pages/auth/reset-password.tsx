@@ -30,7 +30,7 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                             <div className="space-y-2">
                                 <Label
                                     htmlFor="email"
-                                    className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#070E01]/50"
+                                    className="text-[11px] font-semibold tracking-[0.2em] text-[#070E01]/50 uppercase"
                                 >
                                     Email
                                 </Label>
@@ -41,7 +41,7 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                                     autoComplete="email"
                                     value={email}
                                     readOnly
-                                    className="h-13 bg-[#070E01]/3 border border-[#070E01]/8 rounded-2xl text-[14px] text-[#070E01]/50 cursor-not-allowed"
+                                    className="h-13 cursor-not-allowed rounded-2xl border border-[#070E01]/8 bg-[#070E01]/3 text-[14px] text-[#070E01]/50"
                                 />
                                 <InputError message={errors.email} />
                             </div>
@@ -49,7 +49,7 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                             <div className="space-y-2">
                                 <Label
                                     htmlFor="password"
-                                    className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#070E01]/50"
+                                    className="text-[11px] font-semibold tracking-[0.2em] text-[#070E01]/50 uppercase"
                                 >
                                     New password
                                 </Label>
@@ -60,7 +60,7 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                                     autoFocus
                                     placeholder="Create a new password"
                                     passwordrules={passwordRules}
-                                    className="h-13 bg-white border border-[#070E01]/15 rounded-2xl text-[14px] text-[#070E01] placeholder:text-[#070E01]/20 focus:outline-none focus:border-[#2D5016]/40 focus:bg-white focus:shadow-[0_0_0_4px_rgba(45,80,22,0.06)] transition-all duration-200"
+                                    className="h-13 rounded-2xl border border-[#070E01]/15 bg-white text-[14px] text-[#070E01] transition-all duration-200 placeholder:text-[#070E01]/20 focus:border-[#2D5016]/40 focus:bg-white focus:shadow-[0_0_0_4px_rgba(45,80,22,0.06)] focus:outline-none"
                                 />
                                 <InputError message={errors.password} />
                             </div>
@@ -68,7 +68,7 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                             <div className="space-y-2">
                                 <Label
                                     htmlFor="password_confirmation"
-                                    className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#070E01]/50"
+                                    className="text-[11px] font-semibold tracking-[0.2em] text-[#070E01]/50 uppercase"
                                 >
                                     Confirm password
                                 </Label>
@@ -78,15 +78,17 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                                     autoComplete="new-password"
                                     placeholder="Repeat password"
                                     passwordrules={passwordRules}
-                                    className="h-13 bg-white border border-[#070E01]/15 rounded-2xl text-[14px] text-[#070E01] placeholder:text-[#070E01]/20 focus:outline-none focus:border-[#2D5016]/40 focus:bg-white focus:shadow-[0_0_0_4px_rgba(45,80,22,0.06)] transition-all duration-200"
+                                    className="h-13 rounded-2xl border border-[#070E01]/15 bg-white text-[14px] text-[#070E01] transition-all duration-200 placeholder:text-[#070E01]/20 focus:border-[#2D5016]/40 focus:bg-white focus:shadow-[0_0_0_4px_rgba(45,80,22,0.06)] focus:outline-none"
                                 />
-                                <InputError message={errors.password_confirmation} />
+                                <InputError
+                                    message={errors.password_confirmation}
+                                />
                             </div>
                         </div>
 
                         <Button
                             type="submit"
-                            className="mt-8 h-13 w-full bg-[#070E01] hover:bg-[#2D5016] text-[#ECF3E5] text-[13px] font-semibold tracking-[0.15em] uppercase rounded-2xl transition-all duration-300 cursor-pointer shadow-[0_2px_12px_rgba(7,14,1,0.12)] hover:shadow-[0_4px_20px_rgba(45,80,22,0.2)]"
+                            className="mt-8 h-13 w-full cursor-pointer rounded-2xl bg-[#070E01] text-[13px] font-semibold tracking-[0.15em] text-[#ECF3E5] uppercase shadow-[0_2px_12px_rgba(7,14,1,0.12)] transition-all duration-300 hover:bg-[#2D5016] hover:shadow-[0_4px_20px_rgba(45,80,22,0.2)]"
                             disabled={processing}
                             data-test="reset-password-button"
                         >

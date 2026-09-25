@@ -9,8 +9,22 @@ import { StatCard } from '@/components/stat-card';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableEmpty,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import * as InventoryRoutes from '@/routes/admin/inventory';
 import * as ProductRoutes from '@/routes/admin/products';
 import { AlertTriangle, Eye, Layers, Package } from 'lucide-react';
@@ -43,7 +57,10 @@ export default function LowStock({ variants, counts, filters }: Props) {
     const [status, setStatus] = useState<string>(filters.status || 'attention');
     const [search, setSearch] = useState<string>(filters.search || '');
 
-    const activeCount = [status !== 'attention' ? status : '', search.trim()].filter((v) => v !== '').length;
+    const activeCount = [
+        status !== 'attention' ? status : '',
+        search.trim(),
+    ].filter((v) => v !== '').length;
 
     const handleFilter = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -57,7 +74,11 @@ export default function LowStock({ variants, counts, filters }: Props) {
     const clearFilters = () => {
         setStatus('attention');
         setSearch('');
-        router.get(InventoryRoutes.lowStock().url, {}, { preserveState: true, replace: true });
+        router.get(
+            InventoryRoutes.lowStock().url,
+            {},
+            { preserveState: true, replace: true },
+        );
     };
 
     return (
@@ -71,13 +92,35 @@ export default function LowStock({ variants, counts, filters }: Props) {
                 />
 
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    <StatCard label="Low Stock" value={counts.low} icon={AlertTriangle} tone="warning" />
-                    <StatCard label="Out of Stock" value={counts.out} icon={Package} tone="danger" />
-                    <StatCard label="Monitored Variants" value={counts.monitored} icon={Layers} />
+                    <StatCard
+                        label="Low Stock"
+                        value={counts.low}
+                        icon={AlertTriangle}
+                        tone="warning"
+                    />
+                    <StatCard
+                        label="Out of Stock"
+                        value={counts.out}
+                        icon={Package}
+                        tone="danger"
+                    />
+                    <StatCard
+                        label="Monitored Variants"
+                        value={counts.monitored}
+                        icon={Layers}
+                    />
                 </div>
 
-                <FilterPanel onSubmit={handleFilter} onClear={clearFilters} activeCount={activeCount}>
-                    <FilterField label="Search" htmlFor="search" className="sm:col-span-2">
+                <FilterPanel
+                    onSubmit={handleFilter}
+                    onClear={clearFilters}
+                    activeCount={activeCount}
+                >
+                    <FilterField
+                        label="Search"
+                        htmlFor="search"
+                        className="sm:col-span-2"
+                    >
                         <Input
                             id="search"
                             placeholder="Search by product, variant or SKU..."
@@ -91,10 +134,16 @@ export default function LowStock({ variants, counts, filters }: Props) {
                                 <SelectValue placeholder="Needs attention" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="attention">Needs Attention</SelectItem>
+                                <SelectItem value="attention">
+                                    Needs Attention
+                                </SelectItem>
                                 <SelectItem value="low">Low Stock</SelectItem>
-                                <SelectItem value="out">Out of Stock</SelectItem>
-                                <SelectItem value="monitored">All Monitored Variants</SelectItem>
+                                <SelectItem value="out">
+                                    Out of Stock
+                                </SelectItem>
+                                <SelectItem value="monitored">
+                                    All Monitored Variants
+                                </SelectItem>
                             </SelectContent>
                         </Select>
                     </FilterField>
@@ -104,8 +153,9 @@ export default function LowStock({ variants, counts, filters }: Props) {
                     <CardHeader>
                         <div className="flex flex-wrap items-center justify-between gap-2">
                             <CardTitle>Stock levels</CardTitle>
-                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
-                                {variants.total.toLocaleString()} record{variants.total === 1 ? '' : 's'}
+                            <span className="text-muted-foreground text-xs font-medium tabular-nums">
+                                {variants.total.toLocaleString()} record
+                                {variants.total === 1 ? '' : 's'}
                             </span>
                         </div>
                     </CardHeader>
@@ -116,40 +166,71 @@ export default function LowStock({ variants, counts, filters }: Props) {
                                     <TableHead>Product</TableHead>
                                     <TableHead>Variant</TableHead>
                                     <TableHead>SKU</TableHead>
-                                    <TableHead className="text-right">Quantity</TableHead>
-                                    <TableHead className="text-right">Threshold</TableHead>
+                                    <TableHead className="text-right">
+                                        Quantity
+                                    </TableHead>
+                                    <TableHead className="text-right">
+                                        Threshold
+                                    </TableHead>
                                     <TableHead>Status</TableHead>
-                                    <TableHead className="text-right">Action</TableHead>
+                                    <TableHead className="text-right">
+                                        Action
+                                    </TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {variants.data.length === 0 ? (
-                                    <TableEmpty colSpan={7}>No variants found. Try adjusting filters.</TableEmpty>
+                                    <TableEmpty colSpan={7}>
+                                        No variants found. Try adjusting
+                                        filters.
+                                    </TableEmpty>
                                 ) : (
                                     variants.data.map((v) => (
                                         <TableRow key={v.id}>
-                                            <TableCell className="font-medium">{v.product.name}</TableCell>
+                                            <TableCell className="font-medium">
+                                                {v.product.name}
+                                            </TableCell>
                                             <TableCell>{v.name}</TableCell>
-                                            <TableCell className="font-mono">{v.sku || '—'}</TableCell>
+                                            <TableCell className="font-mono">
+                                                {v.sku || '—'}
+                                            </TableCell>
                                             <TableCell className="text-right font-mono">
                                                 {v.quantity}
-                                                {(v.low_stock_threshold ?? 0) > 0 && (
+                                                {(v.low_stock_threshold ?? 0) >
+                                                    0 && (
                                                     <ProgressBar
                                                         value={v.quantity}
-                                                        max={v.low_stock_threshold ?? 0}
+                                                        max={
+                                                            v.low_stock_threshold ??
+                                                            0
+                                                        }
                                                         tone="warning"
                                                         className="mt-1.5 ml-auto w-28"
                                                     />
                                                 )}
                                             </TableCell>
-                                            <TableCell className="text-right font-mono">{v.low_stock_threshold ?? '—'}</TableCell>
+                                            <TableCell className="text-right font-mono">
+                                                {v.low_stock_threshold ?? '—'}
+                                            </TableCell>
                                             <TableCell>
-                                                <StatusBadge status={v.stock_status} />
+                                                <StatusBadge
+                                                    status={v.stock_status}
+                                                />
                                             </TableCell>
                                             <TableCell className="text-right">
-                                                <Link href={ProductRoutes.show(v.product.id).url}>
-                                                    <Button variant="ghost" size="sm">
-                                                        <Eye className="mr-2 h-4 w-4" /> View Product
+                                                <Link
+                                                    href={
+                                                        ProductRoutes.show(
+                                                            v.product.id,
+                                                        ).url
+                                                    }
+                                                >
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                    >
+                                                        <Eye className="mr-2 h-4 w-4" />{' '}
+                                                        View Product
                                                     </Button>
                                                 </Link>
                                             </TableCell>
@@ -158,7 +239,12 @@ export default function LowStock({ variants, counts, filters }: Props) {
                                 )}
                             </TableBody>
                         </Table>
-                        {variants.last_page > 1 && <Pagination links={variants.links} className="px-6 pt-4 pb-2" />}
+                        {variants.last_page > 1 && (
+                            <Pagination
+                                links={variants.links}
+                                className="px-6 pt-4 pb-2"
+                            />
+                        )}
                     </CardContent>
                 </Card>
             </div>

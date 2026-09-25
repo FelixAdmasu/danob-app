@@ -28,7 +28,7 @@ export function NavFooter({
                             <SidebarMenuButton
                                 asChild
                                 size="sm"
-                                className="rounded-lg px-2.5 text-xs text-sidebar-foreground/45 transition-colors hover:bg-white/[0.05] hover:text-white"
+                                className="text-sidebar-foreground/45 rounded-lg px-2.5 text-xs transition-colors hover:bg-white/[0.05] hover:text-white"
                             >
                                 <a
                                     href={toUrl(item.href)}

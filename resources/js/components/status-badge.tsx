@@ -49,7 +49,13 @@ export function statusTone(status?: string | null): BadgeVariant {
  * `partially_received` / `active` stop rendering as raw enum strings in
  * mismatched colors.
  */
-export function StatusBadge({ status, className }: { status?: string | null; className?: string }) {
+export function StatusBadge({
+    status,
+    className,
+}: {
+    status?: string | null;
+    className?: string;
+}) {
     if (!status) return <span className="text-muted-foreground">—</span>;
     return (
         <Badge variant={statusTone(status)} className={className}>

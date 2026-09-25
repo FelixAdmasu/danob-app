@@ -37,20 +37,27 @@ export function FilterPanel({
         <form
             onSubmit={onSubmit}
             className={cn(
-                'rounded-xl border border-border/70 bg-card shadow-xs transition-colors dark:border-border/60 dark:shadow-none',
+                'border-border/70 bg-card dark:border-border/60 rounded-xl border shadow-xs transition-colors dark:shadow-none',
                 className,
             )}
         >
-            <div className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">{children}</div>
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/60 px-4 py-3">
-                <p className="text-xs text-muted-foreground">
+            <div className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+                {children}
+            </div>
+            <div className="border-border/60 flex flex-wrap items-center justify-between gap-3 border-t px-4 py-3">
+                <p className="text-muted-foreground text-xs">
                     {activeCount > 0
                         ? `Showing results for ${activeCount} active filter${activeCount === 1 ? '' : 's'}`
                         : 'No filters applied'}
                 </p>
                 <div className="flex items-center gap-2">
                     {actions}
-                    <Button type="button" variant="outline" size="sm" onClick={onClear}>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={onClear}
+                    >
                         Clear
                     </Button>
                     <Button type="submit" size="sm">

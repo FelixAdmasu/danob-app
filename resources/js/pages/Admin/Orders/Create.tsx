@@ -6,13 +6,36 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import * as OrderRoutes from '@/routes/admin/orders';
 
-type Customer = { id: number; company_name?: string | null; contact_name?: string | null };
-type Variant = { id: number; product_id: number; name: string; sku?: string | null; public_price?: string | null };
+type Customer = {
+    id: number;
+    company_name?: string | null;
+    contact_name?: string | null;
+};
+type Variant = {
+    id: number;
+    product_id: number;
+    name: string;
+    sku?: string | null;
+    public_price?: string | null;
+};
 type Product = { id: number; name: string; variants: Variant[] };
 
 type Line = {
@@ -30,7 +53,11 @@ type Props = {
     products: Product[];
 };
 
-export default function Create({ search: initialSearch, customers, products }: Props) {
+export default function Create({
+    search: initialSearch,
+    customers,
+    products,
+}: Props) {
     const [search, setSearch] = useState(initialSearch);
     const [customerId, setCustomerId] = useState('');
     const [variantId, setVariantId] = useState('');
@@ -71,10 +98,14 @@ export default function Create({ search: initialSearch, customers, products }: P
         return () => clearTimeout(timer);
     }, [search]);
 
-    const flatVariants = products.flatMap((p) => p.variants.map((v) => ({ ...v, product_name: p.name })));
+    const flatVariants = products.flatMap((p) =>
+        p.variants.map((v) => ({ ...v, product_name: p.name })),
+    );
     // Variants already on the order are hidden — uniqueness is prevented here
     // and enforced authoritatively by the server (`distinct` + service check).
-    const availableVariants = flatVariants.filter((v) => !items.some((i) => Number(i.product_variant_id) === v.id));
+    const availableVariants = flatVariants.filter(
+        (v) => !items.some((i) => Number(i.product_variant_id) === v.id),
+    );
 
     const selectVariant = (id: string) => {
         setVariantId(id);
@@ -94,21 +125,33 @@ export default function Create({ search: initialSearch, customers, products }: P
     const addItem = () => {
         const variant = flatVariants.find((v) => String(v.id) === variantId);
         if (!variant) {
-            setErrors((prev) => ({ ...prev, items: 'Select a product variant to add.' }));
+            setErrors((prev) => ({
+                ...prev,
+                items: 'Select a product variant to add.',
+            }));
             return;
         }
         if (items.some((i) => Number(i.product_variant_id) === variant.id)) {
-            setErrors((prev) => ({ ...prev, items: 'That variant is already on the order.' }));
+            setErrors((prev) => ({
+                ...prev,
+                items: 'That variant is already on the order.',
+            }));
             return;
         }
         const qty = Number(quantity);
         if (!Number.isInteger(qty) || qty < 1) {
-            setErrors((prev) => ({ ...prev, items: 'Quantity must be at least 1.' }));
+            setErrors((prev) => ({
+                ...prev,
+                items: 'Quantity must be at least 1.',
+            }));
             return;
         }
         const price = Number(unitPrice);
         if (Number.isNaN(price) || price < 0) {
-            setErrors((prev) => ({ ...prev, items: 'Unit price cannot be negative.' }));
+            setErrors((prev) => ({
+                ...prev,
+                items: 'Unit price cannot be negative.',
+            }));
             return;
         }
 
@@ -133,16 +176,30 @@ export default function Create({ search: initialSearch, customers, products }: P
         });
     };
 
-    const updateItem = (idx: number, field: 'quantity' | 'unit_price', value: string) => {
-        setItems((prev) => prev.map((item, i) => (i === idx ? { ...item, [field]: value } : item)));
+    const updateItem = (
+        idx: number,
+        field: 'quantity' | 'unit_price',
+        value: string,
+    ) => {
+        setItems((prev) =>
+            prev.map((item, i) =>
+                i === idx ? { ...item, [field]: value } : item,
+            ),
+        );
     };
-    const removeItem = (idx: number) => setItems((prev) => prev.filter((_, i) => i !== idx));
+    const removeItem = (idx: number) =>
+        setItems((prev) => prev.filter((_, i) => i !== idx));
 
     // Browser-side preview only — the server recalculates authoritatively in
     // integer cents and ignores any totals sent by the client.
     const lineTotal = (item: { quantity: string; unit_price: string }) =>
-        ((Number(item.quantity) || 0) * (Number(item.unit_price) || 0)).toFixed(2);
-    const subtotal = items.reduce((sum, item) => sum + Number(lineTotal(item)), 0);
+        ((Number(item.quantity) || 0) * (Number(item.unit_price) || 0)).toFixed(
+            2,
+        );
+    const subtotal = items.reduce(
+        (sum, item) => sum + Number(lineTotal(item)),
+        0,
+    );
     const itemError = (idx: number) =>
         errors[`items.${idx}.quantity`] ??
         errors[`items.${idx}.unit_price`] ??
@@ -150,7 +207,10 @@ export default function Create({ search: initialSearch, customers, products }: P
 
     const submit = (intent: 'draft' | 'create') => {
         if (!customerId) {
-            setErrors((prev) => ({ ...prev, customer_id: 'Please select a customer.' }));
+            setErrors((prev) => ({
+                ...prev,
+                customer_id: 'Please select a customer.',
+            }));
             return;
         }
         if (items.length === 0) {
@@ -200,42 +260,72 @@ export default function Create({ search: initialSearch, customers, products }: P
                             className="space-y-6"
                         >
                             <div className="space-y-2">
-                                <Label htmlFor="order-customer">Customer *</Label>
-                                <Select value={customerId} onValueChange={setCustomerId}>
-                                    <SelectTrigger id="order-customer" aria-invalid={errors.customer_id ? true : undefined}>
+                                <Label htmlFor="order-customer">
+                                    Customer *
+                                </Label>
+                                <Select
+                                    value={customerId}
+                                    onValueChange={setCustomerId}
+                                >
+                                    <SelectTrigger
+                                        id="order-customer"
+                                        aria-invalid={
+                                            errors.customer_id
+                                                ? true
+                                                : undefined
+                                        }
+                                    >
                                         <SelectValue placeholder="Select customer" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {customers.map((c) => (
-                                            <SelectItem key={c.id} value={String(c.id)}>
-                                                {c.company_name || c.contact_name || `Customer #${c.id}`}
+                                            <SelectItem
+                                                key={c.id}
+                                                value={String(c.id)}
+                                            >
+                                                {c.company_name ||
+                                                    c.contact_name ||
+                                                    `Customer #${c.id}`}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
                                 {errors.customer_id && (
-                                    <p role="alert" className="text-xs text-red-600 dark:text-red-400">{errors.customer_id}</p>
+                                    <p
+                                        role="alert"
+                                        className="text-xs text-red-600 dark:text-red-400"
+                                    >
+                                        {errors.customer_id}
+                                    </p>
                                 )}
                             </div>
 
                             <div className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="catalog-search">Product / SKU</Label>
+                                    <Label htmlFor="catalog-search">
+                                        Product / SKU
+                                    </Label>
                                     <div className="relative">
-                                        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                        <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                                         <Input
                                             id="catalog-search"
                                             className="pl-9"
                                             placeholder="Search products, variants or SKUs..."
                                             value={search}
-                                            onChange={(e) => setSearch(e.target.value)}
+                                            onChange={(e) =>
+                                                setSearch(e.target.value)
+                                            }
                                         />
                                     </div>
                                     {/* Skeleton shimmer while the debounced
                                         partial reload fetches matching
                                         variants. */}
                                     {searching && (
-                                        <div className="flex flex-wrap items-center gap-2 pt-1" role="status" aria-label="Searching catalog">
+                                        <div
+                                            className="flex flex-wrap items-center gap-2 pt-1"
+                                            role="status"
+                                            aria-label="Searching catalog"
+                                        >
                                             <Skeleton className="h-6 w-32 rounded-full" />
                                             <Skeleton className="h-6 w-40 rounded-full" />
                                             <Skeleton className="h-6 w-28 rounded-full" />
@@ -245,29 +335,44 @@ export default function Create({ search: initialSearch, customers, products }: P
 
                                 <div className="grid gap-3 md:grid-cols-12">
                                     <div className="space-y-2 md:col-span-6">
-                                        <Label htmlFor="order-variant">Variant *</Label>
-                                        <Select value={variantId} onValueChange={selectVariant}>
+                                        <Label htmlFor="order-variant">
+                                            Variant *
+                                        </Label>
+                                        <Select
+                                            value={variantId}
+                                            onValueChange={selectVariant}
+                                        >
                                             <SelectTrigger id="order-variant">
                                                 <SelectValue placeholder="Select variant" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {availableVariants.map((v) => (
-                                                    <SelectItem key={v.id} value={String(v.id)}>
-                                                        {v.product_name} — {v.name}
-                                                        {v.sku ? ` (${v.sku})` : ''}
+                                                    <SelectItem
+                                                        key={v.id}
+                                                        value={String(v.id)}
+                                                    >
+                                                        {v.product_name} —{' '}
+                                                        {v.name}
+                                                        {v.sku
+                                                            ? ` (${v.sku})`
+                                                            : ''}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>
                                         {availableVariants.length === 0 && (
-                                            <p className="text-xs text-muted-foreground">
-                                                No matching variants — adjust the search or remove items above.
+                                            <p className="text-muted-foreground text-xs">
+                                                No matching variants — adjust
+                                                the search or remove items
+                                                above.
                                             </p>
                                         )}
                                     </div>
 
                                     <div className="space-y-2 md:col-span-3">
-                                        <Label htmlFor="order-quantity">Quantity</Label>
+                                        <Label htmlFor="order-quantity">
+                                            Quantity
+                                        </Label>
                                         <div className="flex items-center gap-1">
                                             <Button
                                                 type="button"
@@ -284,7 +389,9 @@ export default function Create({ search: initialSearch, customers, products }: P
                                                 type="number"
                                                 min={1}
                                                 value={quantity}
-                                                onChange={(e) => setQuantity(e.target.value)}
+                                                onChange={(e) =>
+                                                    setQuantity(e.target.value)
+                                                }
                                             />
                                             <Button
                                                 type="button"
@@ -299,24 +406,37 @@ export default function Create({ search: initialSearch, customers, products }: P
                                     </div>
 
                                     <div className="space-y-2 md:col-span-3">
-                                        <Label htmlFor="order-unit-price">Unit Price</Label>
+                                        <Label htmlFor="order-unit-price">
+                                            Unit Price
+                                        </Label>
                                         <Input
                                             id="order-unit-price"
                                             type="number"
                                             step="0.01"
                                             min={0}
                                             value={unitPrice}
-                                            onChange={(e) => setUnitPrice(e.target.value)}
+                                            onChange={(e) =>
+                                                setUnitPrice(e.target.value)
+                                            }
                                         />
                                     </div>
                                 </div>
 
-                                <Button type="button" variant="outline" onClick={addItem}>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={addItem}
+                                >
                                     <Plus /> Add Item
                                 </Button>
 
                                 {errors.items && (
-                                    <p role="alert" className="text-xs text-red-600 dark:text-red-400">{errors.items}</p>
+                                    <p
+                                        role="alert"
+                                        className="text-xs text-red-600 dark:text-red-400"
+                                    >
+                                        {errors.items}
+                                    </p>
                                 )}
 
                                 {items.length > 0 ? (
@@ -326,29 +446,50 @@ export default function Create({ search: initialSearch, customers, products }: P
                                                 <TableHead>Product</TableHead>
                                                 <TableHead>SKU</TableHead>
                                                 <TableHead>Quantity</TableHead>
-                                                <TableHead>Unit Price</TableHead>
+                                                <TableHead>
+                                                    Unit Price
+                                                </TableHead>
                                                 <TableHead>Subtotal</TableHead>
                                                 <TableHead>
-                                                    <span className="sr-only">Actions</span>
+                                                    <span className="sr-only">
+                                                        Actions
+                                                    </span>
                                                 </TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
                                             {items.map((item, idx) => (
-                                                <Fragment key={item.product_variant_id}>
+                                                <Fragment
+                                                    key={
+                                                        item.product_variant_id
+                                                    }
+                                                >
                                                     <TableRow>
                                                         <TableCell>
-                                                            {item.product_name} — {item.variant_name}
+                                                            {item.product_name}{' '}
+                                                            —{' '}
+                                                            {item.variant_name}
                                                         </TableCell>
-                                                        <TableCell>{item.sku ?? '—'}</TableCell>
+                                                        <TableCell>
+                                                            {item.sku ?? '—'}
+                                                        </TableCell>
                                                         <TableCell>
                                                             <Input
                                                                 aria-label={`Quantity for ${item.variant_name}`}
                                                                 className="h-8 w-20 rounded-lg text-center"
                                                                 type="number"
                                                                 min={1}
-                                                                value={item.quantity}
-                                                                onChange={(e) => updateItem(idx, 'quantity', e.target.value)}
+                                                                value={
+                                                                    item.quantity
+                                                                }
+                                                                onChange={(e) =>
+                                                                    updateItem(
+                                                                        idx,
+                                                                        'quantity',
+                                                                        e.target
+                                                                            .value,
+                                                                    )
+                                                                }
                                                             />
                                                         </TableCell>
                                                         <TableCell>
@@ -358,21 +499,50 @@ export default function Create({ search: initialSearch, customers, products }: P
                                                                 type="number"
                                                                 step="0.01"
                                                                 min={0}
-                                                                value={item.unit_price}
-                                                                onChange={(e) => updateItem(idx, 'unit_price', e.target.value)}
+                                                                value={
+                                                                    item.unit_price
+                                                                }
+                                                                onChange={(e) =>
+                                                                    updateItem(
+                                                                        idx,
+                                                                        'unit_price',
+                                                                        e.target
+                                                                            .value,
+                                                                    )
+                                                                }
                                                             />
                                                         </TableCell>
-                                                        <TableCell className="tabular-nums">{lineTotal(item)}</TableCell>
+                                                        <TableCell className="tabular-nums">
+                                                            {lineTotal(item)}
+                                                        </TableCell>
                                                         <TableCell className="text-right">
-                                                            <Button type="button" variant="ghost" size="sm" onClick={() => removeItem(idx)}>
+                                                            <Button
+                                                                type="button"
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                onClick={() =>
+                                                                    removeItem(
+                                                                        idx,
+                                                                    )
+                                                                }
+                                                            >
                                                                 Remove
                                                             </Button>
                                                         </TableCell>
                                                     </TableRow>
                                                     {itemError(idx) && (
                                                         <TableRow>
-                                                            <TableCell colSpan={6}>
-                                                                <p role="alert" className="text-xs text-red-600 dark:text-red-400">{itemError(idx)}</p>
+                                                            <TableCell
+                                                                colSpan={6}
+                                                            >
+                                                                <p
+                                                                    role="alert"
+                                                                    className="text-xs text-red-600 dark:text-red-400"
+                                                                >
+                                                                    {itemError(
+                                                                        idx,
+                                                                    )}
+                                                                </p>
                                                             </TableCell>
                                                         </TableRow>
                                                     )}
@@ -381,20 +551,29 @@ export default function Create({ search: initialSearch, customers, products }: P
                                         </TableBody>
                                     </Table>
                                 ) : (
-                                    <p className="text-sm text-muted-foreground">No items added yet.</p>
+                                    <p className="text-muted-foreground text-sm">
+                                        No items added yet.
+                                    </p>
                                 )}
                             </div>
 
                             <div className="space-y-1">
                                 {/* Orders carry no discount/tax columns, so total === subtotal.
                                     Values below are a preview; the server recomputes both. */}
-                                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                                <div className="text-muted-foreground flex items-center justify-between text-sm">
                                     <span>Subtotal</span>
                                     <output>{subtotal.toFixed(2)}</output>
                                 </div>
-                                <div className="flex items-center justify-between border-t border-border pt-3">
-                                    <span className="text-sm font-medium">Total</span>
-                                    <output className="font-serif text-2xl font-semibold tabular-nums" aria-live="polite">{subtotal.toFixed(2)}</output>
+                                <div className="border-border flex items-center justify-between border-t pt-3">
+                                    <span className="text-sm font-medium">
+                                        Total
+                                    </span>
+                                    <output
+                                        className="font-serif text-2xl font-semibold tabular-nums"
+                                        aria-live="polite"
+                                    >
+                                        {subtotal.toFixed(2)}
+                                    </output>
                                 </div>
                             </div>
 
@@ -405,15 +584,25 @@ export default function Create({ search: initialSearch, customers, products }: P
                                     value={notes}
                                     onChange={(e) => setNotes(e.target.value)}
                                     rows={3}
-                                    className="flex min-h-[60px] w-full rounded-lg border border-input bg-background px-3.5 py-2 text-sm shadow-xs transition-[border-color,box-shadow] duration-150 outline-none focus-visible:border-primary/60 focus-visible:ring-4 focus-visible:ring-primary/15 dark:border-[#33452A] dark:bg-[#111B0A]"
+                                    className="border-input bg-background focus-visible:border-primary/60 focus-visible:ring-primary/15 flex min-h-[60px] w-full rounded-lg border px-3.5 py-2 text-sm shadow-xs transition-[border-color,box-shadow] duration-150 outline-none focus-visible:ring-4 dark:border-[#33452A] dark:bg-[#111B0A]"
                                 />
                                 {errors.notes && (
-                                    <p role="alert" className="text-xs text-red-600 dark:text-red-400">{errors.notes}</p>
+                                    <p
+                                        role="alert"
+                                        className="text-xs text-red-600 dark:text-red-400"
+                                    >
+                                        {errors.notes}
+                                    </p>
                                 )}
                             </div>
 
                             <div className="flex flex-wrap gap-2">
-                                <Button type="button" variant="outline" disabled={processing} onClick={() => submit('draft')}>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    disabled={processing}
+                                    onClick={() => submit('draft')}
+                                >
                                     Save Draft
                                 </Button>
                                 <Button type="submit" disabled={processing}>

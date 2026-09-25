@@ -20,12 +20,22 @@ export default defineConfig({
         tailwindcss(),
         wayfinder({
             formVariants: true,
-            command: process.env.WAYFINDER_PHP ?? (process.platform === 'win32' ? 'C:\\PHP85\\php.exe artisan wayfinder:generate' : 'php artisan wayfinder:generate'),
+            command:
+                process.env.WAYFINDER_PHP ??
+                (process.platform === 'win32'
+                    ? 'C:\\PHP85\\php.exe artisan wayfinder:generate'
+                    : 'php artisan wayfinder:generate'),
         }),
     ],
     server: {
         watch: {
-            ignored: ['**/.agents/**', '**/.claude/**', '**/.cursor/**', '**/.junie/**', '**/vendor/**'],
+            ignored: [
+                '**/.agents/**',
+                '**/.claude/**',
+                '**/.cursor/**',
+                '**/.junie/**',
+                '**/vendor/**',
+            ],
         },
     },
 });

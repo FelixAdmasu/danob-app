@@ -6,8 +6,22 @@ import { Pagination } from '@/components/pagination';
 import { StatCard } from '@/components/stat-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableEmpty,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import { ReportExportButton } from '@/components/report-export-button';
 import * as OrderRoutes from '@/routes/admin/orders';
 import ReportRoutes from '@/routes/admin/reports';
@@ -24,7 +38,11 @@ type ReturnRow = {
     order: {
         id: number;
         reference_number: string;
-        customer: { id: number; company_name?: string | null; contact_name?: string | null } | null;
+        customer: {
+            id: number;
+            company_name?: string | null;
+            contact_name?: string | null;
+        } | null;
     } | null;
     // Eloquent serializes relation keys snake_case: returnedBy -> returned_by.
     returned_by: { id: number; name: string } | null;
@@ -40,7 +58,11 @@ type PaginatedReturns = {
 
 type Props = {
     returns: PaginatedReturns;
-    summary: { return_count: number; returned_units: number; return_value: string };
+    summary: {
+        return_count: number;
+        returned_units: number;
+        return_value: string;
+    };
     filters: {
         customer_id: number | null;
         product_id: number | null;
@@ -49,7 +71,11 @@ type Props = {
         date_from: string | null;
         date_to: string | null;
     };
-    customers: { id: number; company_name?: string | null; contact_name?: string | null }[];
+    customers: {
+        id: number;
+        company_name?: string | null;
+        contact_name?: string | null;
+    }[];
     products: { id: number; name: string }[];
     variants: { id: number; name: string; product_id: number }[];
 };
@@ -62,10 +88,23 @@ function orderCustomerName(row: ReturnRow): string {
     return customer.company_name || customer.contact_name || '—';
 }
 
-export default function Returns({ returns, summary, filters, customers, products, variants }: Props) {
-    const [customerId, setCustomerId] = useState<string>(filters.customer_id ? String(filters.customer_id) : 'all');
-    const [productId, setProductId] = useState<string>(filters.product_id ? String(filters.product_id) : 'all');
-    const [variantId, setVariantId] = useState<string>(filters.variant_id ? String(filters.variant_id) : 'all');
+export default function Returns({
+    returns,
+    summary,
+    filters,
+    customers,
+    products,
+    variants,
+}: Props) {
+    const [customerId, setCustomerId] = useState<string>(
+        filters.customer_id ? String(filters.customer_id) : 'all',
+    );
+    const [productId, setProductId] = useState<string>(
+        filters.product_id ? String(filters.product_id) : 'all',
+    );
+    const [variantId, setVariantId] = useState<string>(
+        filters.variant_id ? String(filters.variant_id) : 'all',
+    );
     const [search, setSearch] = useState<string>(filters.search || '');
     const [dateFrom, setDateFrom] = useState<string>(filters.date_from || '');
     const [dateTo, setDateTo] = useState<string>(filters.date_to || '');
@@ -102,7 +141,11 @@ export default function Returns({ returns, summary, filters, customers, products
         setSearch('');
         setDateFrom('');
         setDateTo('');
-        router.get(ReportRoutes.returns().url, {}, { preserveState: true, replace: true });
+        router.get(
+            ReportRoutes.returns().url,
+            {},
+            { preserveState: true, replace: true },
+        );
     };
 
     return (
@@ -116,18 +159,41 @@ export default function Returns({ returns, summary, filters, customers, products
                 />
 
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    <StatCard label="Returns" value={summary.return_count} icon={Undo2} />
-                    <StatCard label="Returned Units" value={summary.returned_units} icon={Package} tone="warning" />
-                    <StatCard label="Return Value" value={summary.return_value} icon={Receipt} tone="warning" />
+                    <StatCard
+                        label="Returns"
+                        value={summary.return_count}
+                        icon={Undo2}
+                    />
+                    <StatCard
+                        label="Returned Units"
+                        value={summary.returned_units}
+                        icon={Package}
+                        tone="warning"
+                    />
+                    <StatCard
+                        label="Return Value"
+                        value={summary.return_value}
+                        icon={Receipt}
+                        tone="warning"
+                    />
                 </div>
 
                 <FilterPanel
                     onSubmit={handleFilter}
                     onClear={clearFilters}
                     activeCount={activeCount}
-                    actions={<ReportExportButton url={ReportRoutes.returns.export().url} filters={filters} />}
+                    actions={
+                        <ReportExportButton
+                            url={ReportRoutes.returns.export().url}
+                            filters={filters}
+                        />
+                    }
                 >
-                    <FilterField label="Search" htmlFor="search" className="sm:col-span-2">
+                    <FilterField
+                        label="Search"
+                        htmlFor="search"
+                        className="sm:col-span-2"
+                    >
                         <Input
                             id="search"
                             placeholder="Search by return number, order or customer..."
@@ -136,15 +202,22 @@ export default function Returns({ returns, summary, filters, customers, products
                         />
                     </FilterField>
                     <FilterField label="Customer">
-                        <Select value={customerId} onValueChange={setCustomerId}>
+                        <Select
+                            value={customerId}
+                            onValueChange={setCustomerId}
+                        >
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="All customers" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All customers</SelectItem>
+                                <SelectItem value="all">
+                                    All customers
+                                </SelectItem>
                                 {customers.map((c) => (
                                     <SelectItem key={c.id} value={String(c.id)}>
-                                        {c.company_name || c.contact_name || `#${c.id}`}
+                                        {c.company_name ||
+                                            c.contact_name ||
+                                            `#${c.id}`}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -156,7 +229,9 @@ export default function Returns({ returns, summary, filters, customers, products
                                 <SelectValue placeholder="All products" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All products</SelectItem>
+                                <SelectItem value="all">
+                                    All products
+                                </SelectItem>
                                 {products.map((p) => (
                                     <SelectItem key={p.id} value={String(p.id)}>
                                         {p.name}
@@ -171,11 +246,20 @@ export default function Returns({ returns, summary, filters, customers, products
                                 <SelectValue placeholder="All variants" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All variants</SelectItem>
+                                <SelectItem value="all">
+                                    All variants
+                                </SelectItem>
                                 {variants
-                                    .filter((v) => productId === 'all' || String(v.product_id) === productId)
+                                    .filter(
+                                        (v) =>
+                                            productId === 'all' ||
+                                            String(v.product_id) === productId,
+                                    )
                                     .map((v) => (
-                                        <SelectItem key={v.id} value={String(v.id)}>
+                                        <SelectItem
+                                            key={v.id}
+                                            value={String(v.id)}
+                                        >
                                             {v.name}
                                         </SelectItem>
                                     ))}
@@ -183,10 +267,20 @@ export default function Returns({ returns, summary, filters, customers, products
                         </Select>
                     </FilterField>
                     <FilterField label="From" htmlFor="date_from">
-                        <Input id="date_from" type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
+                        <Input
+                            id="date_from"
+                            type="date"
+                            value={dateFrom}
+                            onChange={(e) => setDateFrom(e.target.value)}
+                        />
                     </FilterField>
                     <FilterField label="To" htmlFor="date_to">
-                        <Input id="date_to" type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
+                        <Input
+                            id="date_to"
+                            type="date"
+                            value={dateTo}
+                            onChange={(e) => setDateTo(e.target.value)}
+                        />
                     </FilterField>
                 </FilterPanel>
 
@@ -194,8 +288,9 @@ export default function Returns({ returns, summary, filters, customers, products
                     <CardHeader>
                         <div className="flex flex-wrap items-center justify-between gap-2">
                             <CardTitle>Returns</CardTitle>
-                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
-                                {returns.total.toLocaleString()} record{returns.total === 1 ? '' : 's'}
+                            <span className="text-muted-foreground text-xs font-medium tabular-nums">
+                                {returns.total.toLocaleString()} record
+                                {returns.total === 1 ? '' : 's'}
                             </span>
                         </div>
                     </CardHeader>
@@ -207,35 +302,69 @@ export default function Returns({ returns, summary, filters, customers, products
                                     <TableHead>Order / Customer</TableHead>
                                     <TableHead>Returned At</TableHead>
                                     <TableHead>Returned By</TableHead>
-                                    <TableHead className="text-right">Units</TableHead>
-                                    <TableHead className="text-right">Return Value</TableHead>
+                                    <TableHead className="text-right">
+                                        Units
+                                    </TableHead>
+                                    <TableHead className="text-right">
+                                        Return Value
+                                    </TableHead>
                                     <TableHead>Notes</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {returns.data.length === 0 ? (
-                                    <TableEmpty colSpan={7}>No returns found.</TableEmpty>
+                                    <TableEmpty colSpan={7}>
+                                        No returns found.
+                                    </TableEmpty>
                                 ) : (
                                     returns.data.map((row) => (
                                         <TableRow key={row.id}>
-                                            <TableCell>{row.return_number}</TableCell>
+                                            <TableCell>
+                                                {row.return_number}
+                                            </TableCell>
                                             <TableCell>
                                                 {row.order ? (
                                                     <>
-                                                        <Link href={OrderRoutes.show(row.order.id).url} className="font-medium hover:underline">
-                                                            {row.order.reference_number}
+                                                        <Link
+                                                            href={
+                                                                OrderRoutes.show(
+                                                                    row.order
+                                                                        .id,
+                                                                ).url
+                                                            }
+                                                            className="font-medium hover:underline"
+                                                        >
+                                                            {
+                                                                row.order
+                                                                    .reference_number
+                                                            }
                                                         </Link>
-                                                        <div className="text-xs text-muted-foreground">{orderCustomerName(row)}</div>
+                                                        <div className="text-muted-foreground text-xs">
+                                                            {orderCustomerName(
+                                                                row,
+                                                            )}
+                                                        </div>
                                                     </>
                                                 ) : (
                                                     '—'
                                                 )}
                                             </TableCell>
-                                            <TableCell>{formatDate(row.returned_at)}</TableCell>
-                                            <TableCell>{row.returned_by?.name || '—'}</TableCell>
-                                            <TableCell className="text-right font-mono">{row.returned_quantity}</TableCell>
-                                            <TableCell className="text-right font-mono">{row.total}</TableCell>
-                                            <TableCell className="max-w-[200px] truncate" title={row.notes || ''}>
+                                            <TableCell>
+                                                {formatDate(row.returned_at)}
+                                            </TableCell>
+                                            <TableCell>
+                                                {row.returned_by?.name || '—'}
+                                            </TableCell>
+                                            <TableCell className="text-right font-mono">
+                                                {row.returned_quantity}
+                                            </TableCell>
+                                            <TableCell className="text-right font-mono">
+                                                {row.total}
+                                            </TableCell>
+                                            <TableCell
+                                                className="max-w-[200px] truncate"
+                                                title={row.notes || ''}
+                                            >
                                                 {row.notes || '—'}
                                             </TableCell>
                                         </TableRow>
@@ -243,7 +372,12 @@ export default function Returns({ returns, summary, filters, customers, products
                                 )}
                             </TableBody>
                         </Table>
-                        {returns.last_page > 1 && <Pagination links={returns.links} className="px-6 pt-4 pb-2" />}
+                        {returns.last_page > 1 && (
+                            <Pagination
+                                links={returns.links}
+                                className="px-6 pt-4 pb-2"
+                            />
+                        )}
                     </CardContent>
                 </Card>
             </div>

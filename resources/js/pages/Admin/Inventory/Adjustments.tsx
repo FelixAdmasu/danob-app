@@ -3,14 +3,31 @@ import { useState, useMemo } from 'react';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import InventoryRoutes from '@/routes/admin/inventory';
 import { Send } from 'lucide-react';
 
-type Variant = { id: number; name: string; sku: string | null; quantity: number };
+type Variant = {
+    id: number;
+    name: string;
+    sku: string | null;
+    quantity: number;
+};
 type Product = { id: number; name: string; slug: string; variants: Variant[] };
 
 type Props = {
@@ -22,22 +39,32 @@ export default function Adjustments({ products }: Props) {
     const flashSuccess = props.flash?.success;
     const [productId, setProductId] = useState<string>('');
     const [variantId, setVariantId] = useState<string>('');
-    const [adjustmentType, setAdjustmentType] = useState<string>('adjustment_in');
+    const [adjustmentType, setAdjustmentType] =
+        useState<string>('adjustment_in');
     const [quantity, setQuantity] = useState<string>('');
     const [reason, setReason] = useState<string>('');
     const [notes, setNotes] = useState<string>('');
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [processing, setProcessing] = useState(false);
 
-    const selectedProduct = useMemo(() => products.find((p) => String(p.id) === productId) || null, [products, productId]);
-    const selectedVariant = useMemo(() => selectedProduct?.variants.find((v) => String(v.id) === variantId) || null, [selectedProduct, variantId]);
+    const selectedProduct = useMemo(
+        () => products.find((p) => String(p.id) === productId) || null,
+        [products, productId],
+    );
+    const selectedVariant = useMemo(
+        () =>
+            selectedProduct?.variants.find((v) => String(v.id) === variantId) ||
+            null,
+        [selectedProduct, variantId],
+    );
 
     const preview = useMemo(() => {
         if (!selectedVariant || !quantity) return null;
         const qty = Number(quantity);
         if (isNaN(qty) || qty <= 0) return null;
         const before = selectedVariant.quantity;
-        const after = adjustmentType === 'adjustment_in' ? before + qty : before - qty;
+        const after =
+            adjustmentType === 'adjustment_in' ? before + qty : before - qty;
         return { before, qty, after };
     }, [selectedVariant, quantity, adjustmentType]);
 
@@ -81,12 +108,19 @@ export default function Adjustments({ products }: Props) {
                     description="Correct inventory with Adjustment In/Out. Creates an immutable ledger entry."
                 />
 
-                {flashSuccess && <div className="rounded border border-green-200 bg-green-50 dark:border-[#477158] dark:bg-[#15261C] px-4 py-3 text-sm text-green-800 dark:text-[#95E6B6]">{flashSuccess}</div>}
+                {flashSuccess && (
+                    <div className="rounded border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800 dark:border-[#477158] dark:bg-[#15261C] dark:text-[#95E6B6]">
+                        {flashSuccess}
+                    </div>
+                )}
 
                 <Card>
                     <CardHeader>
                         <CardTitle>Adjust Stock</CardTitle>
-                        <CardDescription>Select product/variant, choose Increase or Decrease, enter quantity and reason.</CardDescription>
+                        <CardDescription>
+                            Select product/variant, choose Increase or Decrease,
+                            enter quantity and reason.
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSubmit} className="space-y-6">
@@ -105,8 +139,13 @@ export default function Adjustments({ products }: Props) {
                                         </SelectTrigger>
                                         <SelectContent>
                                             {products.map((p) => (
-                                                <SelectItem key={p.id} value={String(p.id)}>
-                                                    {p.name} ({p.variants.length} variants)
+                                                <SelectItem
+                                                    key={p.id}
+                                                    value={String(p.id)}
+                                                >
+                                                    {p.name} (
+                                                    {p.variants.length}{' '}
+                                                    variants)
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
@@ -115,32 +154,79 @@ export default function Adjustments({ products }: Props) {
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Variant *</Label>
-                                    <Select value={variantId} onValueChange={setVariantId} disabled={!selectedProduct}>
+                                    <Select
+                                        value={variantId}
+                                        onValueChange={setVariantId}
+                                        disabled={!selectedProduct}
+                                    >
                                         <SelectTrigger>
-                                            <SelectValue placeholder={selectedProduct ? 'Select variant' : 'Select product first'} />
+                                            <SelectValue
+                                                placeholder={
+                                                    selectedProduct
+                                                        ? 'Select variant'
+                                                        : 'Select product first'
+                                                }
+                                            />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {selectedProduct?.variants.map((v) => (
-                                                <SelectItem key={v.id} value={String(v.id)}>
-                                                    {v.name} {v.sku ? `(${v.sku})` : ''} — Qty: {v.quantity}
-                                                </SelectItem>
-                                            ))}
+                                            {selectedProduct?.variants.map(
+                                                (v) => (
+                                                    <SelectItem
+                                                        key={v.id}
+                                                        value={String(v.id)}
+                                                    >
+                                                        {v.name}{' '}
+                                                        {v.sku
+                                                            ? `(${v.sku})`
+                                                            : ''}{' '}
+                                                        — Qty: {v.quantity}
+                                                    </SelectItem>
+                                                ),
+                                            )}
                                         </SelectContent>
                                     </Select>
-                                    <InputError message={errors.product_variant_id} />
+                                    <InputError
+                                        message={errors.product_variant_id}
+                                    />
                                 </div>
                             </div>
 
                             {selectedVariant && (
-                                <div className="rounded border bg-muted/30 p-4 text-sm">
+                                <div className="bg-muted/30 rounded border p-4 text-sm">
                                     <p>
-                                        Current stock for <span className="font-medium">{selectedVariant.name}</span>: <span className="font-bold">{selectedVariant.quantity}</span>
+                                        Current stock for{' '}
+                                        <span className="font-medium">
+                                            {selectedVariant.name}
+                                        </span>
+                                        :{' '}
+                                        <span className="font-bold">
+                                            {selectedVariant.quantity}
+                                        </span>
                                     </p>
                                     {preview && (
                                         <p className="mt-2 text-xs">
-                                            Current: {preview.before} | Adjustment: {adjustmentType === 'adjustment_in' ? '+' : '-'}
-                                            {preview.qty} | <span className={preview.after < 0 ? 'text-red-600 dark:text-red-400 font-bold' : 'font-bold'}>New: {preview.after}</span>
-                                            {preview.after < 0 && <span className="text-red-600 dark:text-red-400"> — will be blocked (negative stock)</span>}
+                                            Current: {preview.before} |
+                                            Adjustment:{' '}
+                                            {adjustmentType === 'adjustment_in'
+                                                ? '+'
+                                                : '-'}
+                                            {preview.qty} |{' '}
+                                            <span
+                                                className={
+                                                    preview.after < 0
+                                                        ? 'font-bold text-red-600 dark:text-red-400'
+                                                        : 'font-bold'
+                                                }
+                                            >
+                                                New: {preview.after}
+                                            </span>
+                                            {preview.after < 0 && (
+                                                <span className="text-red-600 dark:text-red-400">
+                                                    {' '}
+                                                    — will be blocked (negative
+                                                    stock)
+                                                </span>
+                                            )}
                                         </p>
                                     )}
                                 </div>
@@ -149,39 +235,81 @@ export default function Adjustments({ products }: Props) {
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
                                     <Label>Adjustment Type *</Label>
-                                    <Select value={adjustmentType} onValueChange={setAdjustmentType}>
+                                    <Select
+                                        value={adjustmentType}
+                                        onValueChange={setAdjustmentType}
+                                    >
                                         <SelectTrigger>
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="adjustment_in">Adjustment In (+)</SelectItem>
-                                            <SelectItem value="adjustment_out">Adjustment Out (-)</SelectItem>
+                                            <SelectItem value="adjustment_in">
+                                                Adjustment In (+)
+                                            </SelectItem>
+                                            <SelectItem value="adjustment_out">
+                                                Adjustment Out (-)
+                                            </SelectItem>
                                         </SelectContent>
                                     </Select>
-                                    <InputError message={errors.adjustment_type} />
+                                    <InputError
+                                        message={errors.adjustment_type}
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="quantity">Quantity *</Label>
-                                    <Input id="quantity" type="number" min={1} value={quantity} onChange={(e) => setQuantity(e.target.value)} required placeholder="e.g. 25" />
+                                    <Input
+                                        id="quantity"
+                                        type="number"
+                                        min={1}
+                                        value={quantity}
+                                        onChange={(e) =>
+                                            setQuantity(e.target.value)
+                                        }
+                                        required
+                                        placeholder="e.g. 25"
+                                    />
                                     <InputError message={errors.quantity} />
                                 </div>
                             </div>
 
                             <div className="space-y-2">
                                 <Label htmlFor="reason">Reason *</Label>
-                                <Input id="reason" value={reason} onChange={(e) => setReason(e.target.value)} required placeholder="e.g. Physical count correction" />
+                                <Input
+                                    id="reason"
+                                    value={reason}
+                                    onChange={(e) => setReason(e.target.value)}
+                                    required
+                                    placeholder="e.g. Physical count correction"
+                                />
                                 <InputError message={errors.reason} />
                             </div>
 
                             <div className="space-y-2">
                                 <Label htmlFor="notes">Notes (optional)</Label>
-                                <Input id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Optional details" />
+                                <Input
+                                    id="notes"
+                                    value={notes}
+                                    onChange={(e) => setNotes(e.target.value)}
+                                    placeholder="Optional details"
+                                />
                                 <InputError message={errors.notes} />
                             </div>
 
                             <div className="flex gap-2">
-                                <Button type="submit" disabled={processing || !productId || !variantId || !quantity || !reason}>
-                                    <Send className="mr-2 h-4 w-4" /> {processing ? 'Saving...' : 'Submit Adjustment'}
+                                <Button
+                                    type="submit"
+                                    disabled={
+                                        processing ||
+                                        !productId ||
+                                        !variantId ||
+                                        !quantity ||
+                                        !reason
+                                    }
+                                >
+                                    <Send className="mr-2 h-4 w-4" />{' '}
+                                    {processing
+                                        ? 'Saving...'
+                                        : 'Submit Adjustment'}
                                 </Button>
                                 <Link href="/admin">
                                     <Button type="button" variant="outline">

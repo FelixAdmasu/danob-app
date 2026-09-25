@@ -1,5 +1,23 @@
 import { Link, usePage } from '@inertiajs/react';
-import { ArrowUpRight, LayoutGrid, LayoutDashboard, Package, Tag, Building2, ShoppingCart, Users, Layers, Store, Archive, ArrowUpDown, History, Truck, FileText, AlertTriangle, BarChart3 } from 'lucide-react';
+import {
+    ArrowUpRight,
+    LayoutGrid,
+    LayoutDashboard,
+    Package,
+    Tag,
+    Building2,
+    ShoppingCart,
+    Users,
+    Layers,
+    Store,
+    Archive,
+    ArrowUpDown,
+    History,
+    Truck,
+    FileText,
+    AlertTriangle,
+    BarChart3,
+} from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -41,7 +59,8 @@ const SECTION_DIVIDER =
 export function AppSidebar() {
     const page = usePage<{ auth: { user: { role?: string } | null } }>();
     const role = (page.props.auth?.user as { role?: string } | null)?.role;
-    const isAdmin = role === 'super_admin' || role === 'admin' || role === 'manager';
+    const isAdmin =
+        role === 'super_admin' || role === 'admin' || role === 'manager';
     const isStaffPlus = isAdmin || role === 'staff';
 
     // Sections mirror the page eyebrows (Catalog / Operations / Inventory /
@@ -50,42 +69,94 @@ export function AppSidebar() {
     // sales, everyone sees Home. NavMain renders nothing for empty sections.
     const catalogItems: NavItem[] = isAdmin
         ? [
-              { title: 'Products', href: productRoutes.index().url, icon: Package },
-              { title: 'Categories', href: categoryRoutes.index().url, icon: Tag },
+              {
+                  title: 'Products',
+                  href: productRoutes.index().url,
+                  icon: Package,
+              },
+              {
+                  title: 'Categories',
+                  href: categoryRoutes.index().url,
+                  icon: Tag,
+              },
               { title: 'Brands', href: brandRoutes.index().url, icon: Layers },
           ]
         : [];
 
     const operationsItems: NavItem[] = isAdmin
         ? [
-              { title: 'Branches', href: branchRoutes.index().url, icon: Building2 },
-              { title: 'Suppliers', href: supplierRoutes.index().url, icon: Truck },
-              { title: 'Purchase Orders', href: purchaseOrderRoutes.index().url, icon: FileText },
-              { title: 'Purchase Dashboard', href: '/admin/purchases/dashboard', icon: LayoutDashboard },
+              {
+                  title: 'Branches',
+                  href: branchRoutes.index().url,
+                  icon: Building2,
+              },
+              {
+                  title: 'Suppliers',
+                  href: supplierRoutes.index().url,
+                  icon: Truck,
+              },
+              {
+                  title: 'Purchase Orders',
+                  href: purchaseOrderRoutes.index().url,
+                  icon: FileText,
+              },
+              {
+                  title: 'Purchase Dashboard',
+                  href: '/admin/purchases/dashboard',
+                  icon: LayoutDashboard,
+              },
           ]
         : [];
 
     const inventoryItems: NavItem[] = isAdmin
         ? [
-              { title: 'Opening Stock', href: inventoryRoutes.openingStock().url, icon: Archive },
-              { title: 'Stock Adjustments', href: inventoryRoutes.adjustments().url, icon: ArrowUpDown },
-              { title: 'Inventory History', href: inventoryRoutes.history().url, icon: History },
-              { title: 'Low Stock', href: inventoryRoutes.lowStock().url, icon: AlertTriangle },
+              {
+                  title: 'Opening Stock',
+                  href: inventoryRoutes.openingStock().url,
+                  icon: Archive,
+              },
+              {
+                  title: 'Stock Adjustments',
+                  href: inventoryRoutes.adjustments().url,
+                  icon: ArrowUpDown,
+              },
+              {
+                  title: 'Inventory History',
+                  href: inventoryRoutes.history().url,
+                  icon: History,
+              },
+              {
+                  title: 'Low Stock',
+                  href: inventoryRoutes.lowStock().url,
+                  icon: AlertTriangle,
+              },
           ]
         : [];
 
     const salesItems: NavItem[] = isStaffPlus
         ? [
-              { title: 'Orders', href: orderRoutes.index().url, icon: ShoppingCart },
-              { title: 'Customers', href: customerRoutes.index().url, icon: Users },
-              { title: 'Sales Dashboard', href: '/admin/sales/dashboard', icon: LayoutDashboard },
+              {
+                  title: 'Orders',
+                  href: orderRoutes.index().url,
+                  icon: ShoppingCart,
+              },
+              {
+                  title: 'Customers',
+                  href: customerRoutes.index().url,
+                  icon: Users,
+              },
+              {
+                  title: 'Sales Dashboard',
+                  href: '/admin/sales/dashboard',
+                  icon: LayoutDashboard,
+              },
               { title: 'Reports', href: '/admin/reports', icon: BarChart3 },
           ]
         : [];
 
     return (
         <Sidebar collapsible="icon" variant="inset">
-            <SidebarHeader className="border-b border-sidebar-border/70 pb-4">
+            <SidebarHeader className="border-sidebar-border/70 border-b pb-4">
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton
@@ -103,13 +174,29 @@ export function AppSidebar() {
 
             <SidebarContent className="pt-2">
                 <NavMain items={mainNavItems} label="Home" />
-                <NavMain items={catalogItems} label="Catalog" className={SECTION_DIVIDER} />
-                <NavMain items={operationsItems} label="Operations" className={SECTION_DIVIDER} />
-                <NavMain items={inventoryItems} label="Inventory" className={SECTION_DIVIDER} />
-                <NavMain items={salesItems} label="Sales" className={SECTION_DIVIDER} />
+                <NavMain
+                    items={catalogItems}
+                    label="Catalog"
+                    className={SECTION_DIVIDER}
+                />
+                <NavMain
+                    items={operationsItems}
+                    label="Operations"
+                    className={SECTION_DIVIDER}
+                />
+                <NavMain
+                    items={inventoryItems}
+                    label="Inventory"
+                    className={SECTION_DIVIDER}
+                />
+                <NavMain
+                    items={salesItems}
+                    label="Sales"
+                    className={SECTION_DIVIDER}
+                />
             </SidebarContent>
 
-            <SidebarFooter className="border-t border-sidebar-border/70 pt-3">
+            <SidebarFooter className="border-sidebar-border/70 border-t pt-3">
                 {isStaffPlus && (
                     <SidebarMenu>
                         <SidebarMenuItem>
@@ -119,11 +206,17 @@ export function AppSidebar() {
                             <SidebarMenuButton
                                 asChild
                                 tooltip="View Store"
-                                className="group h-10 border border-white/10 bg-white/[0.05] px-3 text-[11px] font-semibold tracking-[0.15em] text-white/70 uppercase hover:border-[#7FB069]/50 hover:bg-[#7FB069] hover:text-[#08110B] group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:border-transparent group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:text-[#7FB069]"
+                                className="group h-10 border border-white/10 bg-white/[0.05] px-3 text-[11px] font-semibold tracking-[0.15em] text-white/70 uppercase group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:border-transparent group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:text-[#7FB069] hover:border-[#7FB069]/50 hover:bg-[#7FB069] hover:text-[#08110B]"
                             >
-                                <a href="/products" target="_blank" rel="noopener noreferrer">
+                                <a
+                                    href="/products"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
                                     <Store />
-                                    <span className="flex-1 group-data-[collapsible=icon]:hidden">View Store</span>
+                                    <span className="flex-1 group-data-[collapsible=icon]:hidden">
+                                        View Store
+                                    </span>
                                     <ArrowUpRight
                                         aria-hidden="true"
                                         className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-data-[collapsible=icon]:hidden"

@@ -8,9 +8,30 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Image as ImageIcon, Search, Plus, Pencil, Trash2, Upload } from 'lucide-react';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from '@/components/ui/dialog';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableEmpty,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
+import {
+    Image as ImageIcon,
+    Search,
+    Plus,
+    Pencil,
+    Trash2,
+    Upload,
+} from 'lucide-react';
 import * as CategoryRoutes from '@/routes/admin/categories';
 import { onImageError } from '@/lib/image-fallback';
 import { formatDate } from '@/lib/format';
@@ -45,7 +66,12 @@ export default function Index({ categories, filters }: Props) {
     const [search, setSearch] = useState(filters.search || '');
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editing, setEditing] = useState<Category | null>(null);
-    const [form, setForm] = useState({ name: '', slug: '', description: '', is_active: true });
+    const [form, setForm] = useState({
+        name: '',
+        slug: '',
+        description: '',
+        is_active: true,
+    });
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
@@ -55,7 +81,10 @@ export default function Index({ categories, filters }: Props) {
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        router.get(CategoryRoutes.index().url, search ? { search } : {}, { preserveState: true, replace: true });
+        router.get(CategoryRoutes.index().url, search ? { search } : {}, {
+            preserveState: true,
+            replace: true,
+        });
     };
 
     const openCreate = () => {
@@ -71,7 +100,12 @@ export default function Index({ categories, filters }: Props) {
 
     const openEdit = (category: Category) => {
         setEditing(category);
-        setForm({ name: category.name, slug: category.slug, description: category.description || '', is_active: category.is_active });
+        setForm({
+            name: category.name,
+            slug: category.slug,
+            description: category.description || '',
+            is_active: category.is_active,
+        });
         setImageFile(null);
         setImagePreview(category.image_url);
         setCurrentImageUrl(category.image_url);
@@ -82,7 +116,8 @@ export default function Index({ categories, filters }: Props) {
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null;
-        if (imagePreview?.startsWith('blob:')) URL.revokeObjectURL(imagePreview);
+        if (imagePreview?.startsWith('blob:'))
+            URL.revokeObjectURL(imagePreview);
         if (file) {
             setImageFile(file);
             setImagePreview(URL.createObjectURL(file));
@@ -94,7 +129,8 @@ export default function Index({ categories, filters }: Props) {
     };
 
     const handleDialogOpenChange = (open: boolean) => {
-        if (!open && imagePreview?.startsWith('blob:')) URL.revokeObjectURL(imagePreview);
+        if (!open && imagePreview?.startsWith('blob:'))
+            URL.revokeObjectURL(imagePreview);
         setDialogOpen(open);
     };
 
@@ -104,7 +140,10 @@ export default function Index({ categories, filters }: Props) {
         setErrors({});
         const formData = new FormData();
         formData.append('name', form.name);
-        formData.append('slug', form.slug || form.name.toLowerCase().replace(/\s+/g, '-'));
+        formData.append(
+            'slug',
+            form.slug || form.name.toLowerCase().replace(/\s+/g, '-'),
+        );
         formData.append('description', form.description);
         formData.append('is_active', form.is_active ? '1' : '0');
         if (imageFile) formData.append('image', imageFile);
@@ -125,7 +164,11 @@ export default function Index({ categories, filters }: Props) {
         if (editing) {
             formData.append('_method', 'PUT');
             if (removeImage && !imageFile) formData.append('remove_image', '1');
-            router.post(CategoryRoutes.update(editing.id).url, formData, options);
+            router.post(
+                CategoryRoutes.update(editing.id).url,
+                formData,
+                options,
+            );
         } else {
             router.post(CategoryRoutes.store().url, formData, options);
         }
@@ -151,11 +194,18 @@ export default function Index({ categories, filters }: Props) {
                     }
                 />
 
-                {flashError && <div className="rounded border border-destructive bg-destructive/10 px-4 py-3 text-sm text-destructive">{flashError}</div>}
+                {flashError && (
+                    <div className="border-destructive bg-destructive/10 text-destructive rounded border px-4 py-3 text-sm">
+                        {flashError}
+                    </div>
+                )}
 
-                <form onSubmit={handleSearch} className="flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-xs transition-colors dark:border-border/60 dark:shadow-none">
+                <form
+                    onSubmit={handleSearch}
+                    className="border-border/70 bg-card dark:border-border/60 flex flex-wrap items-center gap-2 rounded-xl border p-3 shadow-xs transition-colors dark:shadow-none"
+                >
                     <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                         <Input
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
@@ -179,8 +229,9 @@ export default function Index({ categories, filters }: Props) {
                     <CardHeader>
                         <div className="flex flex-wrap items-center justify-between gap-2">
                             <CardTitle>All Categories</CardTitle>
-                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
-                                {categories.total.toLocaleString()} record{categories.total === 1 ? '' : 's'}
+                            <span className="text-muted-foreground text-xs font-medium tabular-nums">
+                                {categories.total.toLocaleString()} record
+                                {categories.total === 1 ? '' : 's'}
                             </span>
                         </div>
                     </CardHeader>
@@ -192,14 +243,20 @@ export default function Index({ categories, filters }: Props) {
                                     <TableHead>Name</TableHead>
                                     <TableHead>Slug</TableHead>
                                     <TableHead>Status</TableHead>
-                                    <TableHead className="text-right">Products</TableHead>
+                                    <TableHead className="text-right">
+                                        Products
+                                    </TableHead>
                                     <TableHead>Created</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
+                                    <TableHead className="text-right">
+                                        Actions
+                                    </TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {categories.data.length === 0 ? (
-                                    <TableEmpty colSpan={7}>No categories found.</TableEmpty>
+                                    <TableEmpty colSpan={7}>
+                                        No categories found.
+                                    </TableEmpty>
                                 ) : (
                                     categories.data.map((category) => (
                                         <TableRow key={category.id}>
@@ -208,32 +265,66 @@ export default function Index({ categories, filters }: Props) {
                                                     <img
                                                         src={category.image_url}
                                                         alt={category.name}
-                                                        className="size-9 shrink-0 rounded-lg object-cover ring-1 ring-border/60"
+                                                        className="ring-border/60 size-9 shrink-0 rounded-lg object-cover ring-1"
                                                         onError={onImageError}
                                                     />
                                                 ) : (
-                                                    <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-dashed border-border bg-muted/60">
-                                                        <ImageIcon className="h-4 w-4 opacity-30" aria-hidden="true" />
+                                                    <div className="border-border bg-muted/60 flex size-9 shrink-0 items-center justify-center rounded-lg border border-dashed">
+                                                        <ImageIcon
+                                                            className="h-4 w-4 opacity-30"
+                                                            aria-hidden="true"
+                                                        />
                                                     </div>
                                                 )}
                                             </TableCell>
-                                            <TableCell className="font-medium">{category.name}</TableCell>
-                                            <TableCell className="font-mono">{category.slug}</TableCell>
+                                            <TableCell className="font-medium">
+                                                {category.name}
+                                            </TableCell>
+                                            <TableCell className="font-mono">
+                                                {category.slug}
+                                            </TableCell>
                                             <TableCell>
-                                                <Badge variant={category.is_active ? 'success' : 'secondary'}>
-                                                    {category.is_active ? 'Active' : 'Inactive'}
+                                                <Badge
+                                                    variant={
+                                                        category.is_active
+                                                            ? 'success'
+                                                            : 'secondary'
+                                                    }
+                                                >
+                                                    {category.is_active
+                                                        ? 'Active'
+                                                        : 'Inactive'}
                                                 </Badge>
                                             </TableCell>
-                                            <TableCell className="text-right">{category.products_count} products</TableCell>
+                                            <TableCell className="text-right">
+                                                {category.products_count}{' '}
+                                                products
+                                            </TableCell>
                                             <TableCell className="text-muted-foreground">
-                                                {formatDate(category.created_at)}
+                                                {formatDate(
+                                                    category.created_at,
+                                                )}
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-1">
-                                                    <Button variant="ghost" size="icon" onClick={() => openEdit(category)}>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() =>
+                                                            openEdit(category)
+                                                        }
+                                                    >
                                                         <Pencil className="h-4 w-4" />
                                                     </Button>
-                                                    <Button variant="ghost" size="icon" onClick={() => handleDelete(category)}>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() =>
+                                                            handleDelete(
+                                                                category,
+                                                            )
+                                                        }
+                                                    >
                                                         <Trash2 className="h-4 w-4" />
                                                     </Button>
                                                 </div>
@@ -243,48 +334,88 @@ export default function Index({ categories, filters }: Props) {
                                 )}
                             </TableBody>
                         </Table>
-                        {categories.last_page > 1 && <Pagination links={categories.links} className="px-6 pt-4 pb-2" />}
+                        {categories.last_page > 1 && (
+                            <Pagination
+                                links={categories.links}
+                                className="px-6 pt-4 pb-2"
+                            />
+                        )}
                     </CardContent>
                 </Card>
 
                 <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>{editing ? 'Edit Category' : 'Add Category'}</DialogTitle>
+                            <DialogTitle>
+                                {editing ? 'Edit Category' : 'Add Category'}
+                            </DialogTitle>
                         </DialogHeader>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="cat-name">Name *</Label>
-                                <Input id="cat-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
-                                {errors.name && <InputError message={errors.name} />}
+                                <Input
+                                    id="cat-name"
+                                    value={form.name}
+                                    onChange={(e) =>
+                                        setForm({
+                                            ...form,
+                                            name: e.target.value,
+                                        })
+                                    }
+                                    required
+                                />
+                                {errors.name && (
+                                    <InputError message={errors.name} />
+                                )}
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="cat-slug">Slug *</Label>
                                 <Input
                                     id="cat-slug"
                                     value={form.slug}
-                                    onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                                    onChange={(e) =>
+                                        setForm({
+                                            ...form,
+                                            slug: e.target.value,
+                                        })
+                                    }
                                     placeholder="auto-generated from name if empty"
                                 />
-                                {errors.slug && <InputError message={errors.slug} />}
+                                {errors.slug && (
+                                    <InputError message={errors.slug} />
+                                )}
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="cat-desc">Description</Label>
                                 <textarea
                                     id="cat-desc"
                                     value={form.description}
-                                    onChange={(e) => setForm({ ...form, description: e.target.value })}
+                                    onChange={(e) =>
+                                        setForm({
+                                            ...form,
+                                            description: e.target.value,
+                                        })
+                                    }
                                     rows={3}
-                                    className="flex min-h-[60px] w-full rounded-lg border border-input bg-background px-3.5 py-2 text-sm shadow-xs transition-[border-color,box-shadow] duration-150 outline-none focus-visible:border-primary/60 focus-visible:ring-4 focus-visible:ring-primary/15"
+                                    className="border-input bg-background focus-visible:border-primary/60 focus-visible:ring-primary/15 flex min-h-[60px] w-full rounded-lg border px-3.5 py-2 text-sm shadow-xs transition-[border-color,box-shadow] duration-150 outline-none focus-visible:ring-4"
                                 />
-                                {errors.description && <InputError message={errors.description} />}
+                                {errors.description && (
+                                    <InputError message={errors.description} />
+                                )}
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="cat-image" className="flex items-center gap-1.5">
-                                    <Upload className="h-4 w-4" aria-hidden="true" /> Image
+                                <Label
+                                    htmlFor="cat-image"
+                                    className="flex items-center gap-1.5"
+                                >
+                                    <Upload
+                                        className="h-4 w-4"
+                                        aria-hidden="true"
+                                    />{' '}
+                                    Image
                                 </Label>
                                 {!removeImage && imagePreview ? (
-                                    <div className="h-32 w-full overflow-hidden rounded-md border border-border bg-muted">
+                                    <div className="border-border bg-muted h-32 w-full overflow-hidden rounded-md border">
                                         <img
                                             src={imagePreview}
                                             alt="Category image preview"
@@ -293,21 +424,35 @@ export default function Index({ categories, filters }: Props) {
                                         />
                                     </div>
                                 ) : (
-                                    <div className="flex h-32 w-full items-center justify-center rounded-md border border-dashed border-border bg-muted">
-                                        <ImageIcon className="h-8 w-8 opacity-20" aria-hidden="true" />
+                                    <div className="border-border bg-muted flex h-32 w-full items-center justify-center rounded-md border border-dashed">
+                                        <ImageIcon
+                                            className="h-8 w-8 opacity-20"
+                                            aria-hidden="true"
+                                        />
                                     </div>
                                 )}
-                                <Input id="cat-image" type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageChange} />
-                                {errors.image && <InputError message={errors.image} />}
+                                <Input
+                                    id="cat-image"
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    onChange={handleImageChange}
+                                />
+                                {errors.image && (
+                                    <InputError message={errors.image} />
+                                )}
                                 {currentImageUrl && !imageFile && (
                                     <div className="flex items-center gap-2">
                                         <input
                                             type="checkbox"
                                             id="cat-remove-image"
                                             checked={removeImage}
-                                            onChange={(e) => setRemoveImage(e.target.checked)}
+                                            onChange={(e) =>
+                                                setRemoveImage(e.target.checked)
+                                            }
                                         />
-                                        <Label htmlFor="cat-remove-image">Remove image</Label>
+                                        <Label htmlFor="cat-remove-image">
+                                            Remove image
+                                        </Label>
                                     </div>
                                 )}
                             </div>
@@ -316,12 +461,21 @@ export default function Index({ categories, filters }: Props) {
                                     type="checkbox"
                                     id="cat-active"
                                     checked={form.is_active}
-                                    onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
+                                    onChange={(e) =>
+                                        setForm({
+                                            ...form,
+                                            is_active: e.target.checked,
+                                        })
+                                    }
                                 />
                                 <Label htmlFor="cat-active">Active</Label>
                             </div>
                             <DialogFooter>
-                                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => setDialogOpen(false)}
+                                >
                                     Cancel
                                 </Button>
                                 <Button type="submit" disabled={processing}>
