@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
     Select,
     SelectContent,
@@ -168,7 +167,7 @@ export default function Index({ inquiries, filters, statuses }: Props) {
                                             >
                                                 Internal notes
                                             </Label>
-                                            <Textarea
+                                            <textarea
                                                 id={`notes-${inquiry.id}`}
                                                 value={
                                                     notes[inquiry.id] ??
@@ -184,6 +183,7 @@ export default function Index({ inquiries, filters, statuses }: Props) {
                                                 }
                                                 placeholder="Add follow-up notes..."
                                                 rows={2}
+                                                className="border-input bg-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 flex min-h-16 w-full rounded-md border px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-[3px]"
                                             />
                                         </div>
                                     </div>
