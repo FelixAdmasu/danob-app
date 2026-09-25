@@ -11,6 +11,7 @@ type Branch = {
     phone: string | null;
     opening_hours: string | null;
     services: string | null;
+    image_url: string | null;
 };
 
 type Props = {
@@ -53,10 +54,16 @@ export default function BranchesIndex({ branches }: Props) {
                                             <MapPin className="h-16 w-16 text-[#070E01]/15" />
                                         </div>
                                         <img
-                                            src="/images/branches.jpg"
-                                            alt=""
+                                            src={branch.image_url || '/images/branches.jpg'}
+                                            alt={branch.name}
                                             onError={(e) => {
-                                                e.currentTarget.style.display = 'none';
+                                                const img = e.currentTarget;
+                                                if (img.dataset.fallback !== 'true') {
+                                                    img.dataset.fallback = 'true';
+                                                    img.src = '/images/branches.jpg';
+                                                } else {
+                                                    img.style.display = 'none';
+                                                }
                                             }}
                                             className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                                         />

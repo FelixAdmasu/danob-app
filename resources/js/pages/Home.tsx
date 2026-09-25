@@ -41,6 +41,7 @@ type Branch = {
     phone: string | null;
     opening_hours: string | null;
     services: string | null;
+    image_url: string | null;
 };
 
 type Props = {
@@ -490,10 +491,16 @@ export default function Home({ featuredProducts, categories, brands, branches }:
                                     <div className="aspect-[4/5] overflow-hidden mb-8 relative bg-gradient-to-br from-[#D4E8C8] to-[#ECF3E5] flex items-center justify-center">
                                         <MapPin className="w-12 h-12 text-[#070E01]/10" strokeWidth={1} />
                                         <img
-                                            src="/images/branches.jpg"
-                                            alt=""
+                                            src={branch.image_url || '/images/branches.jpg'}
+                                            alt={branch.name}
                                             onError={(e) => {
-                                                e.currentTarget.style.display = 'none';
+                                                const img = e.currentTarget;
+                                                if (img.dataset.fallback !== 'true') {
+                                                    img.dataset.fallback = 'true';
+                                                    img.src = '/images/branches.jpg';
+                                                } else {
+                                                    img.style.display = 'none';
+                                                }
                                             }}
                                             className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                                         />

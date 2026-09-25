@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['name', 'address', 'city', 'sub_city', 'kebele', 'phone', 'opening_hours', 'services', 'is_active'])]
+#[Fillable(['name', 'address', 'city', 'sub_city', 'kebele', 'phone', 'opening_hours', 'services', 'image_url', 'is_active'])]
 class Branch extends Model
 {
     use HasFactory;
