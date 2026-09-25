@@ -41,6 +41,13 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            // Phase 28: only the badge count travels with every page (one
+            // indexed COUNT, resolved lazily and skipped for guests). The
+            // list itself is fetched when the bell is opened, so the shared
+            // payload stays small.
+            'notifications' => [
+                'unread_count' => fn (): int => $request->user()?->notifications()->unread()->count() ?? 0,
+            ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }

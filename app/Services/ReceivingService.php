@@ -74,6 +74,18 @@ class ReceivingService
                 $lockedPo->update(['status' => PurchaseOrder::STATUS_PARTIALLY_RECEIVED]);
             }
 
+            // Phase 28: receiving already happened above — this only records
+            // the outcome for purchasing users, after the commit. Receipt
+            // quantities and the PO status logic above stay untouched.
+            app(AlertService::class)->dispatch(
+                $hasPartial ? 'purchase_order_partially_received' : 'purchase_order_received',
+                $hasPartial ? 'warning' : 'success',
+                $hasPartial ? 'PO partially received' : 'PO received',
+                $lockedPo->po_number.($hasPartial ? ' has new goods received ('.$receipt->receipt_number.').' : ' was fully received ('.$receipt->receipt_number.').'),
+                route('admin.purchase-orders.show', $lockedPo),
+                AlertService::PURCHASING_ROLES,
+            );
+
             return $receipt->load('items');
         });
     }

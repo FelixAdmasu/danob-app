@@ -92,6 +92,17 @@ class SalesReturnService
 
             $return->update(['total' => number_format($total, 2, '.', '')]);
 
+            // Phase 28: the return is complete; alert every user who can open
+            // the order page. Stock restoration above is unchanged.
+            app(AlertService::class)->dispatch(
+                'sales_return_processed',
+                'warning',
+                'Sales return processed',
+                $return->return_number.' for '.$locked->reference_number.' was processed and stock was restored.',
+                route('admin.orders.show', $locked),
+                AlertService::SALES_ROLES,
+            );
+
             return $return->load('items');
         });
     }

@@ -25,6 +25,7 @@ class InventoryService
         return DB::transaction(function () use ($variant, $quantity, $userId) {
             $locked = ProductVariant::where('id', $variant->id)->lockForUpdate()->firstOrFail();
             $before = $locked->quantity;
+            $beforeStatus = $locked->stockStatus();
             $after = $quantity;
             if ($quantity < 0) {
                 throw ValidationException::withMessages(['quantity' => 'Opening balance cannot be negative.']);
@@ -32,7 +33,7 @@ class InventoryService
             $locked->quantity = $after;
             $locked->save();
 
-            return StockMovement::create([
+            $movement = StockMovement::create([
                 'product_variant_id' => $locked->id,
                 'movement_type' => StockMovement::TYPE_OPENING_BALANCE,
                 'quantity' => abs($quantity - $before),
@@ -41,6 +42,13 @@ class InventoryService
                 'reason' => 'Opening balance',
                 'user_id' => $userId ?? Auth::id(),
             ]);
+
+            // Phase 28: an opening balance is a real stock event, so it may
+            // transition a variant into low/out of stock. Delegated to
+            // AlertService, which only alerts on the transition itself.
+            app(AlertService::class)->stockTransition($locked->id, $beforeStatus, $locked->stockStatus());
+
+            return $movement;
         });
     }
 
@@ -56,6 +64,7 @@ class InventoryService
         return DB::transaction(function () use ($variant, $quantity, $type, $direction, $reason, $notes, $referenceType, $referenceId, $userId) {
             $locked = ProductVariant::where('id', $variant->id)->lockForUpdate()->firstOrFail();
             $before = $locked->quantity;
+            $beforeStatus = $locked->stockStatus();
             $after = $before + ($quantity * $direction);
 
             if ($after < 0) {
@@ -78,16 +87,11 @@ class InventoryService
                 'user_id' => $userId ?? Auth::id(),
             ]);
 
-            // Low stock check
-            if ($after <= 5 && $before > 5) {
-                // dispatch low stock alert if needed
-                try {
-                    if ($locked->product) {
-                        // Could dispatch mail here, but keep service silent for tests
-                    }
-                } catch (\Throwable $e) {
-                }
-            }
+            // Phase 28: threshold-aware stock alert. The old hardcoded
+            // "quantity <= 5" stub is gone — stock status is decided solely
+            // by ProductVariant::stockStatus(), and only a genuine
+            // transition into low/out of stock produces an alert.
+            app(AlertService::class)->stockTransition($locked->id, $beforeStatus, $locked->stockStatus());
 
             return $movement;
         });
@@ -98,6 +102,7 @@ class InventoryService
         return DB::transaction(function () use ($variant, $targetQuantity, $reason, $userId) {
             $locked = ProductVariant::where('id', $variant->id)->lockForUpdate()->firstOrFail();
             $before = $locked->quantity;
+            $beforeStatus = $locked->stockStatus();
             if ($targetQuantity < 0) {
                 throw ValidationException::withMessages(['quantity' => 'Target quantity cannot be negative.']);
             }
@@ -109,7 +114,7 @@ class InventoryService
             $locked->quantity = $targetQuantity;
             $locked->save();
 
-            return StockMovement::create([
+            $movement = StockMovement::create([
                 'product_variant_id' => $locked->id,
                 'movement_type' => $type,
                 'quantity' => $diff,
@@ -118,6 +123,11 @@ class InventoryService
                 'reason' => $reason,
                 'user_id' => $userId ?? Auth::id(),
             ]);
+
+            // Phase 28: an explicit adjustment is a real stock event too.
+            app(AlertService::class)->stockTransition($locked->id, $beforeStatus, $locked->stockStatus());
+
+            return $movement;
         });
     }
 }

@@ -1,5 +1,6 @@
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { GlobalSearch } from '@/components/global-search';
+import { NotificationCenter } from '@/components/notification-center';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import type { BreadcrumbItem as BreadcrumbItemType } from '@/types';
 
@@ -25,6 +26,10 @@ export function AppSidebarHeader({
                 the approved shell layout is untouched. Hidden below md where
                 the breadcrumbs need the full width. */}
             <GlobalSearch className="hidden w-56 shrink-0 md:block lg:w-72" />
+            {/* Notification bell (Phase 28): trailing icon button after the
+                search box, always visible (including mobile) and sized like
+                any other header control so the shell stays as it was. */}
+            <NotificationCenter />
         </header>
     );
 }

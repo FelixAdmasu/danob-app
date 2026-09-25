@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\InventoryController;
+use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\PurchaseDashboardController;
@@ -46,6 +47,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', DashboardController::class)->name('dashboard');
+
+    // Notification center (Phase 28): bounded JSON behind the same
+    // auth+verified gate as the rest of the shell. No role group — the bell
+    // belongs to every shell user, and every query is scoped to the
+    // requester's own notifications, so ownership is the only authority
+    // needed (a staff member can never read, count or mark someone else's).
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('notifications/{notification}/read', [NotificationController::class, 'read'])->name('notifications.read');
+    Route::post('notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
 
     Route::middleware('role:admin,manager,staff')->group(function () {
         // Order entry creates pending orders only — no stock effect — so it

@@ -57,6 +57,17 @@ class OrderService
                 ]);
             }
 
+            // Phase 28: side effect only — delivered after the commit, to
+            // everyone authorized to open admin.orders.show.
+            app(AlertService::class)->dispatch(
+                'order_created',
+                'info',
+                'Order created',
+                $order->reference_number.' was created and is awaiting confirmation.',
+                route('admin.orders.show', $order),
+                AlertService::SALES_ROLES,
+            );
+
             return $order->load('items');
         });
     }
@@ -96,6 +107,18 @@ class OrderService
 
             $locked->update(['status' => Order::STATUS_CONFIRMED]);
 
+            // Phase 28: the confirmation itself is the event. Stock changes
+            // already happened above; this alert is deferred past the commit
+            // and can never roll the confirmation back.
+            app(AlertService::class)->dispatch(
+                'order_confirmed',
+                'success',
+                'Order confirmed',
+                $locked->reference_number.' was confirmed and stock was deducted.',
+                route('admin.orders.show', $locked),
+                AlertService::SALES_ROLES,
+            );
+
             return $locked;
         });
     }
@@ -125,6 +148,15 @@ class OrderService
                 // No stock was ever deducted for a pending order.
                 $locked->update(['status' => Order::STATUS_CANCELLED]);
 
+                app(AlertService::class)->dispatch(
+                    'order_cancelled',
+                    'warning',
+                    'Order cancelled',
+                    $locked->reference_number.' was cancelled.',
+                    route('admin.orders.show', $locked),
+                    AlertService::SALES_ROLES,
+                );
+
                 return $locked;
             }
 
@@ -151,6 +183,15 @@ class OrderService
 
             $locked->update(['status' => Order::STATUS_CANCELLED]);
 
+            app(AlertService::class)->dispatch(
+                'order_cancelled',
+                'warning',
+                'Order cancelled',
+                $locked->reference_number.' was cancelled and its stock was restored.',
+                route('admin.orders.show', $locked),
+                AlertService::SALES_ROLES,
+            );
+
             return $locked;
         });
     }
@@ -162,7 +203,20 @@ class OrderService
      */
     public function deliver(Order $order): Order
     {
-        return $this->transition($order, Order::STATUS_CONFIRMED, Order::STATUS_DELIVERED, 'Only confirmed orders can be delivered.');
+        $delivered = $this->transition($order, Order::STATUS_CONFIRMED, Order::STATUS_DELIVERED, 'Only confirmed orders can be delivered.');
+
+        // Phase 28: runs after the transition committed; the delivery itself
+        // can never be undone by a failed alert.
+        app(AlertService::class)->dispatch(
+            'order_delivered',
+            'success',
+            'Order delivered',
+            $delivered->reference_number.' was delivered.',
+            route('admin.orders.show', $delivered),
+            AlertService::SALES_ROLES,
+        );
+
+        return $delivered;
     }
 
     private function transition(Order $order, string $from, string $to, string $message): Order
