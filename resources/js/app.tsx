@@ -19,7 +19,8 @@ void createInertiaApp({
                 return AuthLayout;
             case name.startsWith('settings/'):
                 return [AppLayout, SettingsLayout];
-            case name.toLowerCase().startsWith('admin/') || name === 'dashboard':
+            case name.toLowerCase().startsWith('admin/') ||
+                name === 'dashboard':
                 return AppLayout;
             default:
                 return PublicLayout;
@@ -46,5 +47,9 @@ initializeTheme();
 // dimmed shimmer while the next slice of data loads (rule lives in
 // resources/css/app.css). Keeps search/filter interactions feeling alive
 // on every table page without per-page skeleton code.
-router.on('start', () => document.documentElement.setAttribute('data-inertia-pending', ''));
-router.on('finish', () => document.documentElement.removeAttribute('data-inertia-pending'));
+router.on('start', () =>
+    document.documentElement.setAttribute('data-inertia-pending', ''),
+);
+router.on('finish', () =>
+    document.documentElement.removeAttribute('data-inertia-pending'),
+);

@@ -3,7 +3,14 @@ import Heading from '@/components/heading';
 import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import { formatDate, titleCase } from '@/lib/format';
 import { ArrowLeft } from 'lucide-react';
 import * as OrderRoutes from '@/routes/admin/orders';
@@ -37,7 +44,11 @@ type Order = {
     total: string;
     notes: string | null;
     ordered_at: string | null;
-    customer: { id: number; company_name?: string | null; contact_name?: string | null } | null;
+    customer: {
+        id: number;
+        company_name?: string | null;
+        contact_name?: string | null;
+    } | null;
     items: OrderItem[];
     returns: SalesReturn[];
 };
@@ -79,18 +90,27 @@ export default function Show({ order }: { order: Order }) {
                     />
                     <div className="flex gap-2">
                         {canManage && isPending && (
-                            <Button onClick={() => post('confirm')}>Confirm</Button>
+                            <Button onClick={() => post('confirm')}>
+                                Confirm
+                            </Button>
                         )}
                         {canManage && (isPending || isConfirmed) && (
-                            <Button variant="destructive" onClick={() => post('cancel')}>
+                            <Button
+                                variant="destructive"
+                                onClick={() => post('cancel')}
+                            >
                                 Cancel
                             </Button>
                         )}
                         {canManage && isConfirmed && (
-                            <Button onClick={() => post('deliver')}>Deliver</Button>
+                            <Button onClick={() => post('deliver')}>
+                                Deliver
+                            </Button>
                         )}
                         {canManage && isDelivered && (
-                            <Link href={OrderRoutes.processReturn(order.id).url}>
+                            <Link
+                                href={OrderRoutes.processReturn(order.id).url}
+                            >
                                 <Button>Process Return</Button>
                             </Link>
                         )}
@@ -104,7 +124,7 @@ export default function Show({ order }: { order: Order }) {
                 {actionError && (
                     <div
                         role="alert"
-                        className="rounded border border-destructive bg-destructive/10 px-4 py-3 text-sm text-destructive"
+                        className="border-destructive bg-destructive/10 text-destructive rounded border px-4 py-3 text-sm"
                     >
                         {actionError}
                     </div>
@@ -128,10 +148,16 @@ export default function Show({ order }: { order: Order }) {
                             <TableBody>
                                 {order.items.map((item) => (
                                     <TableRow key={item.id}>
-                                        <TableCell>{item.product_variant?.name || '—'}</TableCell>
-                                        <TableCell>{item.product_variant?.sku || '—'}</TableCell>
+                                        <TableCell>
+                                            {item.product_variant?.name || '—'}
+                                        </TableCell>
+                                        <TableCell>
+                                            {item.product_variant?.sku || '—'}
+                                        </TableCell>
                                         <TableCell>{item.quantity}</TableCell>
-                                        <TableCell>{item.returned_quantity ?? 0}</TableCell>
+                                        <TableCell>
+                                            {item.returned_quantity ?? 0}
+                                        </TableCell>
                                         <TableCell>{item.unit_price}</TableCell>
                                         <TableCell>{item.subtotal}</TableCell>
                                     </TableRow>
@@ -141,7 +167,9 @@ export default function Show({ order }: { order: Order }) {
                         <div className="px-6">
                             <div className="mt-4 flex flex-col items-end gap-1">
                                 <div className="flex w-72 justify-between text-sm">
-                                    <span className="text-muted-foreground">Subtotal</span>
+                                    <span className="text-muted-foreground">
+                                        Subtotal
+                                    </span>
                                     <span>{order.subtotal}</span>
                                 </div>
                                 <div className="flex w-72 justify-between border-t pt-1 font-bold">
@@ -153,7 +181,7 @@ export default function Show({ order }: { order: Order }) {
                                 </div>
                             </div>
                             {order.notes && (
-                                <p className="mt-4 whitespace-pre-wrap text-sm text-muted-foreground">
+                                <p className="text-muted-foreground mt-4 text-sm whitespace-pre-wrap">
                                     {order.notes}
                                 </p>
                             )}
@@ -179,14 +207,23 @@ export default function Show({ order }: { order: Order }) {
                                 <TableBody>
                                     {order.returns.map((salesReturn) => (
                                         <TableRow key={salesReturn.id}>
-                                            <TableCell>{salesReturn.return_number}</TableCell>
                                             <TableCell>
-                                                {formatDate(salesReturn.returned_at)}
+                                                {salesReturn.return_number}
                                             </TableCell>
-                                            <TableCell>{salesReturn.items.length}</TableCell>
-                                            <TableCell>{salesReturn.total}</TableCell>
                                             <TableCell>
-                                                {salesReturn.returned_by?.name || '—'}
+                                                {formatDate(
+                                                    salesReturn.returned_at,
+                                                )}
+                                            </TableCell>
+                                            <TableCell>
+                                                {salesReturn.items.length}
+                                            </TableCell>
+                                            <TableCell>
+                                                {salesReturn.total}
+                                            </TableCell>
+                                            <TableCell>
+                                                {salesReturn.returned_by
+                                                    ?.name || '—'}
                                             </TableCell>
                                         </TableRow>
                                     ))}

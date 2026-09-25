@@ -6,8 +6,22 @@ import { Pagination } from '@/components/pagination';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableEmpty,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import * as InventoryRoutes from '@/routes/admin/inventory';
 import { cn } from '@/lib/utils';
 import { formatDate, formatTime, titleCase } from '@/lib/format';
@@ -26,7 +40,11 @@ type Movement = {
     reference_id: number | null;
     user_id: number | null;
     created_at: string;
-    variant: { id: number; name: string; product: { id: number; name: string } };
+    variant: {
+        id: number;
+        name: string;
+        product: { id: number; name: string };
+    };
     user: { id: number; name: string } | null;
 };
 
@@ -55,12 +73,27 @@ type Props = {
     movement_types: string[];
 };
 
-export default function History({ movements, filters, products, variants, users, movement_types }: Props) {
+export default function History({
+    movements,
+    filters,
+    products,
+    variants,
+    users,
+    movement_types,
+}: Props) {
     const [search, setSearch] = useState(filters.search || '');
-    const [productId, setProductId] = useState<string>(filters.product_id ? String(filters.product_id) : 'all');
-    const [variantId, setVariantId] = useState<string>(filters.variant_id ? String(filters.variant_id) : 'all');
-    const [movementType, setMovementType] = useState<string>(filters.movement_type || 'all');
-    const [userId, setUserId] = useState<string>(filters.user_id ? String(filters.user_id) : 'all');
+    const [productId, setProductId] = useState<string>(
+        filters.product_id ? String(filters.product_id) : 'all',
+    );
+    const [variantId, setVariantId] = useState<string>(
+        filters.variant_id ? String(filters.variant_id) : 'all',
+    );
+    const [movementType, setMovementType] = useState<string>(
+        filters.movement_type || 'all',
+    );
+    const [userId, setUserId] = useState<string>(
+        filters.user_id ? String(filters.user_id) : 'all',
+    );
     const [dateFrom, setDateFrom] = useState<string>(filters.date_from || '');
     const [dateTo, setDateTo] = useState<string>(filters.date_to || '');
 
@@ -82,7 +115,8 @@ export default function History({ movements, filters, products, variants, users,
                 search: search.trim() || undefined,
                 product_id: productId !== 'all' ? productId : undefined,
                 variant_id: variantId !== 'all' ? variantId : undefined,
-                movement_type: movementType !== 'all' ? movementType : undefined,
+                movement_type:
+                    movementType !== 'all' ? movementType : undefined,
                 user_id: userId !== 'all' ? userId : undefined,
                 date_from: dateFrom || undefined,
                 date_to: dateTo || undefined,
@@ -99,7 +133,11 @@ export default function History({ movements, filters, products, variants, users,
         setUserId('all');
         setDateFrom('');
         setDateTo('');
-        router.get(InventoryRoutes.history().url, {}, { preserveState: true, replace: true });
+        router.get(
+            InventoryRoutes.history().url,
+            {},
+            { preserveState: true, replace: true },
+        );
     };
 
     return (
@@ -112,8 +150,16 @@ export default function History({ movements, filters, products, variants, users,
                     description="Search and filter the full stock movement ledger."
                 />
 
-                <FilterPanel onSubmit={handleFilter} onClear={clearFilters} activeCount={activeCount}>
-                    <FilterField label="Search" htmlFor="history-search" className="sm:col-span-2">
+                <FilterPanel
+                    onSubmit={handleFilter}
+                    onClear={clearFilters}
+                    activeCount={activeCount}
+                >
+                    <FilterField
+                        label="Search"
+                        htmlFor="history-search"
+                        className="sm:col-span-2"
+                    >
                         <Input
                             id="history-search"
                             placeholder="Search reason, notes, product or variant..."
@@ -127,7 +173,9 @@ export default function History({ movements, filters, products, variants, users,
                                 <SelectValue placeholder="All products" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All products</SelectItem>
+                                <SelectItem value="all">
+                                    All products
+                                </SelectItem>
                                 {products.map((p) => (
                                     <SelectItem key={p.id} value={String(p.id)}>
                                         {p.name}
@@ -142,11 +190,20 @@ export default function History({ movements, filters, products, variants, users,
                                 <SelectValue placeholder="All variants" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All variants</SelectItem>
+                                <SelectItem value="all">
+                                    All variants
+                                </SelectItem>
                                 {variants
-                                    .filter((v) => productId === 'all' || String(v.product_id) === productId)
+                                    .filter(
+                                        (v) =>
+                                            productId === 'all' ||
+                                            String(v.product_id) === productId,
+                                    )
                                     .map((v) => (
-                                        <SelectItem key={v.id} value={String(v.id)}>
+                                        <SelectItem
+                                            key={v.id}
+                                            value={String(v.id)}
+                                        >
                                             {v.name}
                                         </SelectItem>
                                     ))}
@@ -154,7 +211,10 @@ export default function History({ movements, filters, products, variants, users,
                         </Select>
                     </FilterField>
                     <FilterField label="Type">
-                        <Select value={movementType} onValueChange={setMovementType}>
+                        <Select
+                            value={movementType}
+                            onValueChange={setMovementType}
+                        >
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="All types" />
                             </SelectTrigger>
@@ -205,8 +265,9 @@ export default function History({ movements, filters, products, variants, users,
                     <CardHeader>
                         <div className="flex flex-wrap items-center justify-between gap-2">
                             <CardTitle>Stock movements</CardTitle>
-                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
-                                {movements.total.toLocaleString()} record{movements.total === 1 ? '' : 's'}
+                            <span className="text-muted-foreground text-xs font-medium tabular-nums">
+                                {movements.total.toLocaleString()} record
+                                {movements.total === 1 ? '' : 's'}
                             </span>
                         </div>
                     </CardHeader>
@@ -217,7 +278,9 @@ export default function History({ movements, filters, products, variants, users,
                                     <TableHead>Date</TableHead>
                                     <TableHead>Product / Variant</TableHead>
                                     <TableHead>Type</TableHead>
-                                    <TableHead className="text-right">Change</TableHead>
+                                    <TableHead className="text-right">
+                                        Change
+                                    </TableHead>
                                     <TableHead>Before → After</TableHead>
                                     <TableHead>Reason</TableHead>
                                     <TableHead>User</TableHead>
@@ -225,33 +288,53 @@ export default function History({ movements, filters, products, variants, users,
                             </TableHeader>
                             <TableBody>
                                 {movements.data.length === 0 ? (
-                                    <TableEmpty colSpan={7}>No movements match these filters.</TableEmpty>
+                                    <TableEmpty colSpan={7}>
+                                        No movements match these filters.
+                                    </TableEmpty>
                                 ) : (
                                     movements.data.map((m) => {
-                                        const delta = m.quantity_after - m.quantity_before;
+                                        const delta =
+                                            m.quantity_after -
+                                            m.quantity_before;
                                         const increase = delta >= 0;
                                         return (
                                             <TableRow key={m.id}>
                                                 <TableCell className="whitespace-nowrap">
                                                     <div className="text-[13px] font-medium tabular-nums">
-                                                        {formatDate(m.created_at)}
+                                                        {formatDate(
+                                                            m.created_at,
+                                                        )}
                                                     </div>
-                                                    <div className="text-xs tabular-nums text-muted-foreground">
-                                                        {formatTime(m.created_at)}
+                                                    <div className="text-muted-foreground text-xs tabular-nums">
+                                                        {formatTime(
+                                                            m.created_at,
+                                                        )}
                                                     </div>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <div className="font-medium">{m.variant.product.name}</div>
-                                                    <div className="text-xs text-muted-foreground">{m.variant.name}</div>
+                                                    <div className="font-medium">
+                                                        {m.variant.product.name}
+                                                    </div>
+                                                    <div className="text-muted-foreground text-xs">
+                                                        {m.variant.name}
+                                                    </div>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Badge variant={increase ? 'success' : 'destructive'}>
+                                                    <Badge
+                                                        variant={
+                                                            increase
+                                                                ? 'success'
+                                                                : 'destructive'
+                                                        }
+                                                    >
                                                         {increase ? (
                                                             <ArrowUpRight aria-hidden="true" />
                                                         ) : (
                                                             <ArrowDownRight aria-hidden="true" />
                                                         )}
-                                                        {titleCase(m.movement_type)}
+                                                        {titleCase(
+                                                            m.movement_type,
+                                                        )}
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell
@@ -266,31 +349,47 @@ export default function History({ movements, filters, products, variants, users,
                                                     {Math.abs(delta)}
                                                 </TableCell>
                                                 <TableCell className="font-mono text-[13px] tabular-nums">
-                                                    <span className="text-muted-foreground">{m.quantity_before}</span>
-                                                    <span className="mx-1.5 text-muted-foreground/60">→</span>
-                                                    <span className="font-medium">{m.quantity_after}</span>
+                                                    <span className="text-muted-foreground">
+                                                        {m.quantity_before}
+                                                    </span>
+                                                    <span className="text-muted-foreground/60 mx-1.5">
+                                                        →
+                                                    </span>
+                                                    <span className="font-medium">
+                                                        {m.quantity_after}
+                                                    </span>
                                                 </TableCell>
                                                 <TableCell className="max-w-[240px]">
-                                                    <div className="truncate" title={m.reason || ''}>
+                                                    <div
+                                                        className="truncate"
+                                                        title={m.reason || ''}
+                                                    >
                                                         {m.reason || '—'}
                                                     </div>
                                                     {m.notes && (
                                                         <div
-                                                            className="truncate text-xs text-muted-foreground"
+                                                            className="text-muted-foreground truncate text-xs"
                                                             title={m.notes}
                                                         >
                                                             {m.notes}
                                                         </div>
                                                     )}
                                                 </TableCell>
-                                                <TableCell>{m.user?.name || '—'}</TableCell>
+                                                <TableCell>
+                                                    {m.user?.name || '—'}
+                                                </TableCell>
                                             </TableRow>
                                         );
                                     })
                                 )}
                             </TableBody>
                         </Table>
-                        {movements.last_page > 1 && <Pagination links={movements.links} className="px-6 pt-4 pb-2" />}
+                        {movements.last_page > 1 && (
+                            <Pagination
+                                links={movements.links}
+                                className="px-6 pt-4 pb-2"
+                            />
+                        )}
                     </CardContent>
                 </Card>
             </div>

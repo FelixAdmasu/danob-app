@@ -90,19 +90,19 @@ export default function Dashboard() {
                     </CardHeader>
                     <CardContent>
                         <div className="grid gap-4 sm:grid-cols-2">
-                            <div className="rounded-lg border border-dashed border-border bg-muted p-6 text-center dark:border-border dark:bg-muted">
-                                <p className="text-sm font-medium text-muted-foreground dark:text-muted-foreground">
+                            <div className="border-border bg-muted dark:border-border dark:bg-muted rounded-lg border border-dashed p-6 text-center">
+                                <p className="text-muted-foreground dark:text-muted-foreground text-sm font-medium">
                                     Profile
                                 </p>
-                                <p className="mt-1 text-xs text-muted-foreground dark:text-muted-foreground">
+                                <p className="text-muted-foreground dark:text-muted-foreground mt-1 text-xs">
                                     Update your name and email
                                 </p>
                             </div>
-                            <div className="rounded-lg border border-dashed border-border bg-muted p-6 text-center dark:border-border dark:bg-muted">
-                                <p className="text-sm font-medium text-muted-foreground dark:text-muted-foreground">
+                            <div className="border-border bg-muted dark:border-border dark:bg-muted rounded-lg border border-dashed p-6 text-center">
+                                <p className="text-muted-foreground dark:text-muted-foreground text-sm font-medium">
                                     Security
                                 </p>
-                                <p className="mt-1 text-xs text-muted-foreground dark:text-muted-foreground">
+                                <p className="text-muted-foreground dark:text-muted-foreground mt-1 text-xs">
                                     Manage password and 2FA
                                 </p>
                             </div>

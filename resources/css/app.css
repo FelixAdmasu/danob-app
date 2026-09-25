@@ -16,8 +16,8 @@
         'Noto Color Emoji';
 
     --font-serif:
-        'Playfair Display', ui-serif, Georgia, Cambria,
-        'Times New Roman', Times, serif;
+        'Playfair Display', ui-serif, Georgia, Cambria, 'Times New Roman',
+        Times, serif;
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
@@ -44,10 +44,10 @@
     --color-accent: var(--accent);
     --color-accent-foreground: var(--accent-foreground);
 
-    --color-danob: #2D5016;
-    --color-danob-light: #4A8C2A;
-    --color-danob-dark: #1A3A0A;
-    --color-danob-foreground: #FFFFFF;
+    --color-danob: #2d5016;
+    --color-danob-light: #4a8c2a;
+    --color-danob-dark: #1a3a0a;
+    --color-danob-foreground: #ffffff;
 
     --color-destructive: var(--destructive);
     --color-destructive-foreground: var(--destructive-foreground);
@@ -75,36 +75,44 @@
     --animate-trail: moveTrail 8s ease-in-out infinite;
 
     @keyframes marquee {
-        0% { transform: translateX(0%); }
-        100% { transform: translateX(-50%); }
+        0% {
+            transform: translateX(0%);
+        }
+        100% {
+            transform: translateX(-50%);
+        }
     }
 
     @keyframes moveTrail {
-        0% { top: -20%; }
-        100% { top: 120%; }
+        0% {
+            top: -20%;
+        }
+        100% {
+            top: 120%;
+        }
     }
 }
 
 :root {
-    --background: #ECF3E5;
-    --foreground: #070E01;
-    --card: #FFFFFF;
-    --card-foreground: #070E01;
-    --popover: #FFFFFF;
-    --popover-foreground: #070E01;
-    --primary: #2D5016;
-    --primary-foreground: #FFFFFF;
-    --secondary: #D4E8C8;
-    --secondary-foreground: #070E01;
-    --muted: #D4E8C8;
-    --muted-foreground: #4A4A4A;
-    --accent: #A5FFA9;
-    --accent-foreground: #070E01;
+    --background: #ecf3e5;
+    --foreground: #070e01;
+    --card: #ffffff;
+    --card-foreground: #070e01;
+    --popover: #ffffff;
+    --popover-foreground: #070e01;
+    --primary: #2d5016;
+    --primary-foreground: #ffffff;
+    --secondary: #d4e8c8;
+    --secondary-foreground: #070e01;
+    --muted: #d4e8c8;
+    --muted-foreground: #4a4a4a;
+    --accent: #a5ffa9;
+    --accent-foreground: #070e01;
     --destructive: oklch(0.577 0.245 27.325);
     --destructive-foreground: oklch(0.577 0.245 27.325);
     --border: rgba(7, 14, 1, 0.1);
     --input: rgba(7, 14, 1, 0.1);
-    --ring: #2D5016;
+    --ring: #2d5016;
     /* Chart series — foundation greens (unused before; themed to match the site) */
     --chart-1: #2d5016;
     --chart-2: #4a8c2a;
@@ -126,14 +134,14 @@
      * --sidebar (the frame behind the floating panel) stays sage so the page
      * canvas remains seamless. Public pages never render sidebar components.
      */
-    --sidebar: #ECF3E5;
-    --sidebar-foreground: #D4E8C8;
-    --sidebar-primary: #7FB069;
-    --sidebar-primary-foreground: #08110B;
-    --sidebar-accent: #1C2B12;
-    --sidebar-accent-foreground: #F4F8EF;
+    --sidebar: #ecf3e5;
+    --sidebar-foreground: #d4e8c8;
+    --sidebar-primary: #7fb069;
+    --sidebar-primary-foreground: #08110b;
+    --sidebar-accent: #1c2b12;
+    --sidebar-accent-foreground: #f4f8ef;
     --sidebar-border: rgba(255, 255, 255, 0.09);
-    --sidebar-ring: #7FB069;
+    --sidebar-ring: #7fb069;
 }
 
 /*
@@ -144,29 +152,29 @@
  */
 .dark {
     /* Core surfaces */
-    --background: #0B1406;
-    --foreground: #ECF3E5;
-    --card: #111B0A;
-    --card-foreground: #ECF3E5;
-    --popover: #18240F;
-    --popover-foreground: #ECF3E5;
+    --background: #0b1406;
+    --foreground: #ecf3e5;
+    --card: #111b0a;
+    --card-foreground: #ecf3e5;
+    --popover: #18240f;
+    --popover-foreground: #ecf3e5;
 
     /* Primary — foundation moss green (readable on dark surfaces) */
-    --primary: #7FB069;
-    --primary-foreground: #08110B;
+    --primary: #7fb069;
+    --primary-foreground: #08110b;
 
     /* Secondary — elevated forest-neutral */
-    --secondary: #1E2E14;
-    --secondary-foreground: #D4E8C8;
+    --secondary: #1e2e14;
+    --secondary-foreground: #d4e8c8;
 
     /* Muted — quiet surface; accent — selected/hover wash */
-    --muted: #1A2812;
-    --muted-foreground: #9DAE8E;
-    --accent: #24411B;
-    --accent-foreground: #ECF3E5;
+    --muted: #1a2812;
+    --muted-foreground: #9dae8e;
+    --accent: #24411b;
+    --accent-foreground: #ecf3e5;
 
     /* Unused legacy token kept as-is */
-    --color-danob: #2D5016;
+    --color-danob: #2d5016;
     --color-danob-foreground: oklch(0.145 0 0);
 
     /* Destructive — existing semantic red preserved (destructive/errors only) */
@@ -174,17 +182,17 @@
     --destructive-foreground: oklch(0.637 0.237 25.331);
 
     /* Borders — forest #26331C, strong/input #33452A */
-    --border: #26331C;
-    --input: #33452A;
-    --ring: #7FB069;
+    --border: #26331c;
+    --input: #33452a;
+    --ring: #7fb069;
 
     /* Charts — foundation greens reordered so every segment contrasts the
        dark card (no near-black series on near-black surfaces) */
-    --chart-1: #7FB069;
-    --chart-2: #D4E8C8;
-    --chart-3: #4A8C2A;
-    --chart-4: #A5FFA9;
-    --chart-5: #95E6B6;
+    --chart-1: #7fb069;
+    --chart-2: #d4e8c8;
+    --chart-3: #4a8c2a;
+    --chart-4: #a5ffa9;
+    --chart-5: #95e6b6;
 
     /* Semantic viz colors — dark palette counterparts */
     --viz-success: #95e6b6;
@@ -193,14 +201,14 @@
     --viz-info: #7fb069;
 
     /* Sidebar — deeper forest-black surface */
-    --sidebar: #090F05;
-    --sidebar-foreground: #C7D6B6;
-    --sidebar-primary: #7FB069;
-    --sidebar-primary-foreground: #08110B;
-    --sidebar-accent: #1C2B12;
-    --sidebar-accent-foreground: #ECF3E5;
+    --sidebar: #090f05;
+    --sidebar-foreground: #c7d6b6;
+    --sidebar-primary: #7fb069;
+    --sidebar-primary-foreground: #08110b;
+    --sidebar-accent: #1c2b12;
+    --sidebar-accent-foreground: #ecf3e5;
     --sidebar-border: #243219;
-    --sidebar-ring: #7FB069;
+    --sidebar-ring: #7fb069;
 }
 
 @layer base {
@@ -216,19 +224,21 @@
         scroll-behavior: smooth;
     }
     * {
-    border-color: var(--color-border);
-  }
-  body {
-    background-color: var(--color-background);
-    color: var(--foreground);
-  }
+        border-color: var(--color-border);
+    }
+    body {
+        background-color: var(--color-background);
+        color: var(--foreground);
+    }
 }
 
 /* Scroll reveal */
 .animate-on-scroll-hidden {
     opacity: 0;
     transform: translateY(30px);
-    transition: opacity 1s ease-out, transform 1s ease-out;
+    transition:
+        opacity 1s ease-out,
+        transform 1s ease-out;
 }
 
 .animate-on-scroll-visible {
@@ -237,8 +247,13 @@
 }
 
 @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-15px); }
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
 }
 
 .animation-float {
@@ -276,7 +291,7 @@
     font-size: 13px !important;
     font-weight: 600 !important;
     letter-spacing: 0.08em !important;
-    color: #070E01 !important;
+    color: #070e01 !important;
     transition: all 0.2s ease !important;
     cursor: pointer !important;
 }
@@ -288,11 +303,11 @@
 
 /* Auth page separator — subtle styling */
 .login-passkey-wrap .relative.my-6 .bg-background {
-    background: #ECF3E5 !important;
+    background: #ecf3e5 !important;
 }
 
 .login-passkey-wrap .relative.my-6 span {
-    background: #ECF3E5 !important;
+    background: #ecf3e5 !important;
     color: rgba(7, 14, 1, 0.2) !important;
     font-size: 9px !important;
     font-weight: 700 !important;
@@ -300,7 +315,7 @@
     text-transform: uppercase !important;
 }
 
-.login-passkey-wrap [data-orientation="horizontal"] {
+.login-passkey-wrap [data-orientation='horizontal'] {
     background: rgba(7, 14, 1, 0.06) !important;
     height: 1px !important;
 }
@@ -326,7 +341,7 @@
  * in resources/js/app.tsx). Gives all list/ledger/report tables a loading
  * affordance without per-page skeleton code.
  */
-html[data-inertia-pending] [data-slot="table-body"] {
+html[data-inertia-pending] [data-slot='table-body'] {
     pointer-events: none;
     animation: table-pending-pulse 1.1s ease-in-out infinite;
 }
@@ -364,7 +379,7 @@ img.img-fallback {
  * panel presence. Dark theme keeps a slightly deeper black-green.
  * Unlayered, so it intentionally wins over the `bg-sidebar` utility.
  */
-[data-sidebar="sidebar"] {
+[data-sidebar='sidebar'] {
     background-image: linear-gradient(180deg, #121e0d 0%, #0a1106 100%);
     border: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: 14px;
@@ -373,7 +388,7 @@ img.img-fallback {
         0 4px 14px -8px rgb(7 14 1 / 0.3);
 }
 
-.dark [data-sidebar="sidebar"] {
+.dark [data-sidebar='sidebar'] {
     background-image: linear-gradient(180deg, #0e1709 0%, #070d04 100%);
     border-color: rgba(255, 255, 255, 0.06);
     box-shadow:
@@ -391,7 +406,11 @@ img.img-fallback {
 }
 
 #nprogress .bar {
-    background: linear-gradient(90deg, var(--primary), var(--chart-2)) !important;
+    background: linear-gradient(
+        90deg,
+        var(--primary),
+        var(--chart-2)
+    ) !important;
     height: 3px !important;
     box-shadow: 0 0 8px color-mix(in srgb, var(--primary) 55%, transparent);
 }

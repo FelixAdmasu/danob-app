@@ -54,15 +54,12 @@ export default function Profile(
         router.post(updateAvatar().url, formData, {
             forceFormData: true,
             preserveScroll: true,
-            onError: (errors) =>
-                setAvatarErrors(errors as { avatar?: string }),
+            onError: (errors) => setAvatarErrors(errors as { avatar?: string }),
             onFinish: () => setAvatarAction(null),
         });
     };
 
-    const handleAvatarChange = (
-        event: React.ChangeEvent<HTMLInputElement>,
-    ) => {
+    const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0] ?? null;
         event.target.value = '';
 
@@ -106,7 +103,7 @@ export default function Profile(
                             src={auth.user.avatar ?? undefined}
                             alt={auth.user.name}
                         />
-                        <AvatarFallback className="rounded-full bg-neutral-200 text-xl font-medium text-black dark:bg-secondary dark:text-secondary-foreground">
+                        <AvatarFallback className="dark:bg-secondary dark:text-secondary-foreground rounded-full bg-neutral-200 text-xl font-medium text-black">
                             {getInitials(auth.user.name)}
                         </AvatarFallback>
                     </Avatar>
@@ -118,9 +115,7 @@ export default function Profile(
                                 variant="outline"
                                 size="sm"
                                 disabled={avatarAction !== null}
-                                onClick={() =>
-                                    avatarInputRef.current?.click()
-                                }
+                                onClick={() => avatarInputRef.current?.click()}
                                 data-test="upload-avatar-button"
                             >
                                 {avatarAction === 'upload' ? (
@@ -151,7 +146,7 @@ export default function Profile(
                             )}
                         </div>
 
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-muted-foreground text-xs">
                             JPG, PNG or WEBP up to 5 MB.
                         </p>
 
@@ -233,7 +228,7 @@ export default function Profile(
                                             <Link
                                                 href={send()}
                                                 as="button"
-                                                className="text-foreground underline decoration-border underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current!"
+                                                className="text-foreground decoration-border underline underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current!"
                                             >
                                                 Click here to re-send the
                                                 verification email.

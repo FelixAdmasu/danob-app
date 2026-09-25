@@ -33,9 +33,12 @@ export function NavMain({
 
     return (
         <SidebarGroup className={cn('px-2 py-0', className)}>
-            <SidebarGroupLabel className="gap-2.5 px-3 pt-1 pb-2 text-[10px] font-semibold tracking-[0.22em] text-sidebar-foreground/45">
+            <SidebarGroupLabel className="text-sidebar-foreground/45 gap-2.5 px-3 pt-1 pb-2 text-[10px] font-semibold tracking-[0.22em]">
                 <span className="whitespace-nowrap">{label}</span>
-                <span aria-hidden="true" className="h-px flex-1 bg-sidebar-border" />
+                <span
+                    aria-hidden="true"
+                    className="bg-sidebar-border h-px flex-1"
+                />
             </SidebarGroupLabel>
             <SidebarMenu className="gap-1">
                 {items.map((item) => (

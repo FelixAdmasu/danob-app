@@ -7,11 +7,27 @@ import { formatDate, formatDateTime, titleCase } from '@/lib/format';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableEmpty,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import * as CustomerRoutes from '@/routes/admin/customers';
 import * as InventoryRoutes from '@/routes/admin/inventory';
 import * as OrderRoutes from '@/routes/admin/orders';
-import { ArrowUpDown, BadgeCheck, PackageCheck, Receipt, ShoppingBag, Truck, Undo2 } from 'lucide-react';
+import {
+    ArrowUpDown,
+    BadgeCheck,
+    PackageCheck,
+    Receipt,
+    ShoppingBag,
+    Truck,
+    Undo2,
+} from 'lucide-react';
 
 type Metrics = {
     total_orders: number;
@@ -36,7 +52,10 @@ type RecentOrderRow = {
     total: string;
     ordered_at: string | null;
     returned_quantity: number | null;
-    customer: { company_name?: string | null; contact_name?: string | null } | null;
+    customer: {
+        company_name?: string | null;
+        contact_name?: string | null;
+    } | null;
 };
 
 type TopCustomerRow = {
@@ -64,7 +83,11 @@ type Movement = {
     quantity_after: number;
     reason: string | null;
     created_at: string;
-    variant: { id: number; name: string; product: { id: number; name: string } };
+    variant: {
+        id: number;
+        name: string;
+        product: { id: number; name: string };
+    };
     user: { name: string } | null;
 };
 
@@ -124,12 +147,42 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
                 />
 
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-                    <StatCard label="Total Orders" value={m.total_orders} icon={ShoppingBag} />
-                    <StatCard label="Pending" value={m.pending} icon={Undo2} tone="warning" hint={m.pending_value} />
-                    <StatCard label="Confirmed" value={m.confirmed} icon={BadgeCheck} hint={m.confirmed_value} />
-                    <StatCard label="Delivered" value={m.delivered} icon={Truck} tone="success" />
-                    <StatCard label="Cancelled" value={m.cancelled} icon={Undo2} tone="danger" hint={m.cancelled_value} />
-                    <StatCard label="Delivered Value" value={m.delivered_value} icon={PackageCheck} />
+                    <StatCard
+                        label="Total Orders"
+                        value={m.total_orders}
+                        icon={ShoppingBag}
+                    />
+                    <StatCard
+                        label="Pending"
+                        value={m.pending}
+                        icon={Undo2}
+                        tone="warning"
+                        hint={m.pending_value}
+                    />
+                    <StatCard
+                        label="Confirmed"
+                        value={m.confirmed}
+                        icon={BadgeCheck}
+                        hint={m.confirmed_value}
+                    />
+                    <StatCard
+                        label="Delivered"
+                        value={m.delivered}
+                        icon={Truck}
+                        tone="success"
+                    />
+                    <StatCard
+                        label="Cancelled"
+                        value={m.cancelled}
+                        icon={Undo2}
+                        tone="danger"
+                        hint={m.cancelled_value}
+                    />
+                    <StatCard
+                        label="Delivered Value"
+                        value={m.delivered_value}
+                        icon={PackageCheck}
+                    />
                 </div>
 
                 <Card>
@@ -145,29 +198,43 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
                             emptyText="No orders yet."
                         />
                         <div className="min-w-0 flex-1">
-                            <p className="mb-3 text-xs text-muted-foreground">
-                                Count and operational order value at each stage. The sales figure above counts delivered orders only — pending and
-                                confirmed are still in flight, and cancelled orders were reversed.
+                            <p className="text-muted-foreground mb-3 text-xs">
+                                Count and operational order value at each stage.
+                                The sales figure above counts delivered orders
+                                only — pending and confirmed are still in
+                                flight, and cancelled orders were reversed.
                             </p>
                             <Table>
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>Status</TableHead>
-                                        <TableHead className="text-right">Orders</TableHead>
-                                        <TableHead className="text-right">Order Value</TableHead>
+                                        <TableHead className="text-right">
+                                            Orders
+                                        </TableHead>
+                                        <TableHead className="text-right">
+                                            Order Value
+                                        </TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {sales.pipeline.length === 0 ? (
-                                        <TableEmpty colSpan={3}>No orders yet.</TableEmpty>
+                                        <TableEmpty colSpan={3}>
+                                            No orders yet.
+                                        </TableEmpty>
                                     ) : (
                                         sales.pipeline.map((row) => (
                                             <TableRow key={row.status}>
                                                 <TableCell>
-                                                    <StatusBadge status={row.status} />
+                                                    <StatusBadge
+                                                        status={row.status}
+                                                    />
                                                 </TableCell>
-                                                <TableCell className="text-right font-mono">{row.count}</TableCell>
-                                                <TableCell className="text-right font-mono">{row.value}</TableCell>
+                                                <TableCell className="text-right font-mono">
+                                                    {row.count}
+                                                </TableCell>
+                                                <TableCell className="text-right font-mono">
+                                                    {row.value}
+                                                </TableCell>
                                             </TableRow>
                                         ))
                                     )}
@@ -189,30 +256,54 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
                                         <TableHead>Order</TableHead>
                                         <TableHead>Customer</TableHead>
                                         <TableHead>Date</TableHead>
-                                        <TableHead className="text-right">Total</TableHead>
-                                        <TableHead className="text-right">Returned</TableHead>
+                                        <TableHead className="text-right">
+                                            Total
+                                        </TableHead>
+                                        <TableHead className="text-right">
+                                            Returned
+                                        </TableHead>
                                         <TableHead>Status</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {sales.recent_orders.length === 0 ? (
-                                        <TableEmpty colSpan={6}>No orders yet.</TableEmpty>
+                                        <TableEmpty colSpan={6}>
+                                            No orders yet.
+                                        </TableEmpty>
                                     ) : (
                                         sales.recent_orders.map((o) => (
                                             <TableRow key={o.id}>
                                                 <TableCell className="font-mono">
-                                                    <Link href={OrderRoutes.show(o.id).url} className="hover:underline">
+                                                    <Link
+                                                        href={
+                                                            OrderRoutes.show(
+                                                                o.id,
+                                                            ).url
+                                                        }
+                                                        className="hover:underline"
+                                                    >
                                                         {o.reference_number}
                                                     </Link>
                                                 </TableCell>
                                                 <TableCell>
-                                                    {o.customer?.company_name || o.customer?.contact_name || '—'}
+                                                    {o.customer?.company_name ||
+                                                        o.customer
+                                                            ?.contact_name ||
+                                                        '—'}
                                                 </TableCell>
-                                                <TableCell>{formatDate(o.ordered_at)}</TableCell>
-                                                <TableCell className="text-right font-mono">{o.total}</TableCell>
-                                                <TableCell className="text-right">{o.returned_quantity ?? 0}</TableCell>
                                                 <TableCell>
-                                                    <StatusBadge status={o.status} />
+                                                    {formatDate(o.ordered_at)}
+                                                </TableCell>
+                                                <TableCell className="text-right font-mono">
+                                                    {o.total}
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    {o.returned_quantity ?? 0}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <StatusBadge
+                                                        status={o.status}
+                                                    />
                                                 </TableCell>
                                             </TableRow>
                                         ))
@@ -221,7 +312,10 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
                             </Table>
                             {sales.recent_orders.length > 0 && (
                                 <div className="px-4 pt-4">
-                                    <Link href={OrderRoutes.index().url} className="text-xs font-medium text-primary hover:underline">
+                                    <Link
+                                        href={OrderRoutes.index().url}
+                                        className="text-primary text-xs font-medium hover:underline"
+                                    >
                                         View all orders →
                                     </Link>
                                 </div>
@@ -235,16 +329,35 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-3 gap-3">
-                                <StatCard label="Returns" value={sales.returns.count} icon={Receipt} />
-                                <StatCard label="Units" value={sales.returns.quantity} icon={ArrowUpDown} />
-                                <StatCard label="Value" value={sales.returns.value} icon={PackageCheck} />
+                                <StatCard
+                                    label="Returns"
+                                    value={sales.returns.count}
+                                    icon={Receipt}
+                                />
+                                <StatCard
+                                    label="Units"
+                                    value={sales.returns.quantity}
+                                    icon={ArrowUpDown}
+                                />
+                                <StatCard
+                                    label="Value"
+                                    value={sales.returns.value}
+                                    icon={PackageCheck}
+                                />
                             </div>
-                            <p className="text-xs text-muted-foreground">
-                                Returns apply only after delivery: the order stays <span className="font-medium">delivered</span> and stock is
-                                restored. Cancelled orders never delivered and are counted separately in the pipeline — a cancelled order is not a
-                                returned order.
+                            <p className="text-muted-foreground text-xs">
+                                Returns apply only after delivery: the order
+                                stays{' '}
+                                <span className="font-medium">delivered</span>{' '}
+                                and stock is restored. Cancelled orders never
+                                delivered and are counted separately in the
+                                pipeline — a cancelled order is not a returned
+                                order.
                             </p>
-                            <Link href={OrderRoutes.index().url} className="text-xs font-medium text-primary hover:underline">
+                            <Link
+                                href={OrderRoutes.index().url}
+                                className="text-primary text-xs font-medium hover:underline"
+                            >
                                 View orders and their return history →
                             </Link>
                         </CardContent>
@@ -266,8 +379,13 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
                                 }))}
                                 emptyText="No customer activity yet."
                             />
-                            <p className="text-xs text-muted-foreground">Order value excludes cancelled orders.</p>
-                            <Link href={CustomerRoutes.index().url} className="text-xs font-medium text-primary hover:underline">
+                            <p className="text-muted-foreground text-xs">
+                                Order value excludes cancelled orders.
+                            </p>
+                            <Link
+                                href={CustomerRoutes.index().url}
+                                className="text-primary text-xs font-medium hover:underline"
+                            >
                                 View all customers →
                             </Link>
                         </CardContent>
@@ -287,8 +405,10 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
                                 }))}
                                 emptyText="No confirmed or delivered product sales yet."
                             />
-                            <p className="text-xs text-muted-foreground">
-                                Confirmed and delivered orders only — pending and cancelled orders are excluded — net of returned units.
+                            <p className="text-muted-foreground text-xs">
+                                Confirmed and delivered orders only — pending
+                                and cancelled orders are excluded — net of
+                                returned units.
                             </p>
                         </CardContent>
                     </Card>
@@ -302,35 +422,70 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
                             </CardHeader>
                             <CardContent>
                                 {sales.movements.length === 0 ? (
-                                    <p className="text-sm text-muted-foreground">No sales movements yet.</p>
+                                    <p className="text-muted-foreground text-sm">
+                                        No sales movements yet.
+                                    </p>
                                 ) : (
-                                    <ul className="flex flex-col divide-y divide-border/70">
+                                    <ul className="divide-border/70 flex flex-col divide-y">
                                         {sales.movements.map((movement) => (
-                                            <li key={movement.id} className="flex items-start justify-between gap-3 py-2.5 first:pt-0">
+                                            <li
+                                                key={movement.id}
+                                                className="flex items-start justify-between gap-3 py-2.5 first:pt-0"
+                                            >
                                                 <div className="min-w-0">
                                                     <p className="truncate text-sm font-medium">
-                                                        {movement.variant.product.name} — {movement.variant.name}
+                                                        {
+                                                            movement.variant
+                                                                .product.name
+                                                        }{' '}
+                                                        —{' '}
+                                                        {movement.variant.name}
                                                     </p>
-                                                    <p className="text-xs text-muted-foreground">
-                                                        {formatDateTime(movement.created_at)} · {movement.quantity_before} →{' '}
-                                                        {movement.quantity_after}
-                                                        {movement.reason ? ` · ${movement.reason}` : ''}
+                                                    <p className="text-muted-foreground text-xs">
+                                                        {formatDateTime(
+                                                            movement.created_at,
+                                                        )}{' '}
+                                                        ·{' '}
+                                                        {
+                                                            movement.quantity_before
+                                                        }{' '}
+                                                        →{' '}
+                                                        {
+                                                            movement.quantity_after
+                                                        }
+                                                        {movement.reason
+                                                            ? ` · ${movement.reason}`
+                                                            : ''}
                                                     </p>
                                                 </div>
                                                 <div className="flex shrink-0 items-center gap-2">
                                                     <Badge
-                                                        variant={movement.quantity_after >= movement.quantity_before ? 'success' : 'destructive'}
+                                                        variant={
+                                                            movement.quantity_after >=
+                                                            movement.quantity_before
+                                                                ? 'success'
+                                                                : 'destructive'
+                                                        }
                                                     >
-                                                        {titleCase(movement.movement_type)}
+                                                        {titleCase(
+                                                            movement.movement_type,
+                                                        )}
                                                     </Badge>
-                                                    <span className="font-mono text-sm font-semibold">{movementLabel(movement)}</span>
+                                                    <span className="font-mono text-sm font-semibold">
+                                                        {movementLabel(
+                                                            movement,
+                                                        )}
+                                                    </span>
                                                 </div>
                                             </li>
                                         ))}
                                     </ul>
                                 )}
                                 <div className="mt-4">
-                                    <Link href={InventoryRoutes.history().url} className="text-xs font-medium text-primary hover:underline">
+                                    <Link
+                                        href={InventoryRoutes.history().url}
+                                        className="text-primary text-xs font-medium hover:underline"
+                                    >
                                         View inventory history →
                                     </Link>
                                 </div>
@@ -342,25 +497,41 @@ export default function SalesDashboard({ sales }: { sales: Sales }) {
                                 <CardTitle>Related Dashboards</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">
+                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                                     {[
-                                        { title: 'Inventory Dashboard', href: '/admin' },
-                                        { title: 'Purchase Dashboard', href: '/admin/purchases/dashboard' },
-                                        { title: 'Low Stock', href: InventoryRoutes.lowStock().url },
+                                        {
+                                            title: 'Inventory Dashboard',
+                                            href: '/admin',
+                                        },
+                                        {
+                                            title: 'Purchase Dashboard',
+                                            href: '/admin/purchases/dashboard',
+                                        },
+                                        {
+                                            title: 'Low Stock',
+                                            href: InventoryRoutes.lowStock()
+                                                .url,
+                                        },
                                     ].map((item) => (
                                         <Link
                                             key={item.title}
                                             href={item.href}
-                                            className="flex flex-col gap-1 rounded-2xl border border-border/70 bg-card p-4 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-sm dark:shadow-none"
+                                            className="border-border/70 bg-card hover:border-primary/30 flex flex-col gap-1 rounded-2xl border p-4 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm dark:shadow-none"
                                         >
-                                            <span className="text-sm font-medium">{item.title}</span>
-                                            <span className="text-xs text-muted-foreground">Open →</span>
+                                            <span className="text-sm font-medium">
+                                                {item.title}
+                                            </span>
+                                            <span className="text-muted-foreground text-xs">
+                                                Open →
+                                            </span>
                                         </Link>
                                     ))}
                                 </div>
-                                <p className="mt-3 text-xs text-muted-foreground">
-                                    Inventory and purchasing detail is available to managers and admins. Sales activity links to inventory history so
-                                    both views share the same ledger.
+                                <p className="text-muted-foreground mt-3 text-xs">
+                                    Inventory and purchasing detail is available
+                                    to managers and admins. Sales activity links
+                                    to inventory history so both views share the
+                                    same ledger.
                                 </p>
                             </CardContent>
                         </Card>

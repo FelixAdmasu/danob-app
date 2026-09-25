@@ -6,7 +6,15 @@ import { Pagination } from '@/components/pagination';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableEmpty,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import * as BranchRoutes from '@/routes/admin/branches';
 import { onImageError } from '@/lib/image-fallback';
 import { Loader2, MapPin, Pencil, Search, Trash2, Upload } from 'lucide-react';
@@ -69,7 +77,8 @@ export default function Index({ branches, filters }: Props) {
         if (branch.sub_city) formData.append('sub_city', branch.sub_city);
         if (branch.kebele) formData.append('kebele', branch.kebele);
         if (branch.phone) formData.append('phone', branch.phone);
-        if (branch.opening_hours) formData.append('opening_hours', branch.opening_hours);
+        if (branch.opening_hours)
+            formData.append('opening_hours', branch.opening_hours);
         if (branch.services) formData.append('services', branch.services);
         formData.append('is_active', branch.is_active ? '1' : '0');
         formData.append('image', file);
@@ -77,7 +86,9 @@ export default function Index({ branches, filters }: Props) {
             forceFormData: true,
             preserveScroll: true,
             onError: (errors: Record<string, string>) =>
-                setUploadError(errors.image ?? 'Image upload failed. Please try again.'),
+                setUploadError(
+                    errors.image ?? 'Image upload failed. Please try again.',
+                ),
             onFinish: () => setUploadingId(null),
         } as never;
         router.post(BranchRoutes.update(branch.id).url, formData, options);
@@ -85,7 +96,11 @@ export default function Index({ branches, filters }: Props) {
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        router.get(BranchRoutes.index().url, { search: search || undefined }, { preserveState: true, replace: true });
+        router.get(
+            BranchRoutes.index().url,
+            { search: search || undefined },
+            { preserveState: true, replace: true },
+        );
     };
 
     const handleDelete = (branch: Branch) => {
@@ -103,19 +118,35 @@ export default function Index({ branches, filters }: Props) {
                     title="Branches"
                     description="Manage branch locations and contact information."
                 />
-                <form onSubmit={handleSearch} className="flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-xs transition-colors dark:border-border/60 dark:shadow-none">
+                <form
+                    onSubmit={handleSearch}
+                    className="border-border/70 bg-card dark:border-border/60 flex flex-wrap items-center gap-2 rounded-xl border p-3 shadow-xs transition-colors dark:shadow-none"
+                >
                     <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input placeholder="Search name, city..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+                        <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                        <Input
+                            placeholder="Search name, city..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="pl-9"
+                        />
                     </div>
-                    <Button type="submit" variant="outline">Search</Button>
+                    <Button type="submit" variant="outline">
+                        Search
+                    </Button>
                     {filters.search && (
-                        <Link href={BranchRoutes.index().url}><Button type="button" variant="ghost">Clear</Button></Link>
+                        <Link href={BranchRoutes.index().url}>
+                            <Button type="button" variant="ghost">
+                                Clear
+                            </Button>
+                        </Link>
                     )}
                 </form>
 
                 {uploadError && (
-                    <div className="rounded border border-destructive bg-destructive/10 px-4 py-3 text-sm text-destructive">{uploadError}</div>
+                    <div className="border-destructive bg-destructive/10 text-destructive rounded border px-4 py-3 text-sm">
+                        {uploadError}
+                    </div>
                 )}
 
                 <input
@@ -129,8 +160,9 @@ export default function Index({ branches, filters }: Props) {
                     <CardHeader>
                         <div className="flex flex-wrap items-center justify-between gap-2">
                             <CardTitle>All Branches</CardTitle>
-                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
-                                {branches.total.toLocaleString()} record{branches.total === 1 ? '' : 's'}
+                            <span className="text-muted-foreground text-xs font-medium tabular-nums">
+                                {branches.total.toLocaleString()} record
+                                {branches.total === 1 ? '' : 's'}
                             </span>
                         </div>
                     </CardHeader>
@@ -144,57 +176,107 @@ export default function Index({ branches, filters }: Props) {
                                     <TableHead>Address</TableHead>
                                     <TableHead>Phone</TableHead>
                                     <TableHead>Active</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
+                                    <TableHead className="text-right">
+                                        Actions
+                                    </TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {branches.data.length === 0 ? (
-                                    <TableEmpty colSpan={7}>No branches found.</TableEmpty>
+                                    <TableEmpty colSpan={7}>
+                                        No branches found.
+                                    </TableEmpty>
                                 ) : (
                                     branches.data.map((b) => (
                                         <TableRow key={b.id}>
                                             <TableCell>
                                                 <button
                                                     type="button"
-                                                    onClick={() => openImagePicker(b)}
-                                                    title={b.image_url ? 'Change image' : 'Upload image'}
-                                                    className="group relative flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-dashed border-border bg-muted/60 transition-colors hover:border-primary/60"
+                                                    onClick={() =>
+                                                        openImagePicker(b)
+                                                    }
+                                                    title={
+                                                        b.image_url
+                                                            ? 'Change image'
+                                                            : 'Upload image'
+                                                    }
+                                                    className="group border-border bg-muted/60 hover:border-primary/60 relative flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-dashed transition-colors"
                                                 >
                                                     {b.image_url ? (
                                                         <img
                                                             src={b.image_url}
                                                             alt={b.name}
                                                             className="size-full object-cover"
-                                                            onError={onImageError}
+                                                            onError={
+                                                                onImageError
+                                                            }
                                                         />
                                                     ) : (
-                                                        <MapPin className="h-4 w-4 text-muted-foreground/50" aria-hidden="true" />
+                                                        <MapPin
+                                                            className="text-muted-foreground/50 h-4 w-4"
+                                                            aria-hidden="true"
+                                                        />
                                                     )}
                                                     <span className="absolute inset-0 hidden items-center justify-center bg-black/50 group-hover:flex">
-                                                        <Upload className="h-3.5 w-3.5 text-white" aria-hidden="true" />
+                                                        <Upload
+                                                            className="h-3.5 w-3.5 text-white"
+                                                            aria-hidden="true"
+                                                        />
                                                     </span>
                                                     {uploadingId === b.id && (
                                                         <span className="absolute inset-0 flex items-center justify-center bg-black/50">
-                                                            <Loader2 className="h-4 w-4 animate-spin text-white" aria-hidden="true" />
+                                                            <Loader2
+                                                                className="h-4 w-4 animate-spin text-white"
+                                                                aria-hidden="true"
+                                                            />
                                                         </span>
                                                     )}
                                                 </button>
                                             </TableCell>
-                                            <TableCell className="text-sm font-medium">{b.name}</TableCell>
-                                            <TableCell className="text-sm">{b.city}</TableCell>
-                                            <TableCell className="text-sm">{b.address}</TableCell>
-                                            <TableCell className="text-sm">{b.phone || '—'}</TableCell>
+                                            <TableCell className="text-sm font-medium">
+                                                {b.name}
+                                            </TableCell>
+                                            <TableCell className="text-sm">
+                                                {b.city}
+                                            </TableCell>
+                                            <TableCell className="text-sm">
+                                                {b.address}
+                                            </TableCell>
+                                            <TableCell className="text-sm">
+                                                {b.phone || '—'}
+                                            </TableCell>
                                             <TableCell>
-                                                <StatusBadge status={b.is_active ? 'active' : 'inactive'} />
+                                                <StatusBadge
+                                                    status={
+                                                        b.is_active
+                                                            ? 'active'
+                                                            : 'inactive'
+                                                    }
+                                                />
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-1">
-                                                    <Link href={BranchRoutes.edit(b.id).url}>
-                                                        <Button variant="ghost" size="icon">
+                                                    <Link
+                                                        href={
+                                                            BranchRoutes.edit(
+                                                                b.id,
+                                                            ).url
+                                                        }
+                                                    >
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                        >
                                                             <Pencil className="h-4 w-4" />
                                                         </Button>
                                                     </Link>
-                                                    <Button variant="ghost" size="icon" onClick={() => handleDelete(b)}>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() =>
+                                                            handleDelete(b)
+                                                        }
+                                                    >
                                                         <Trash2 className="h-4 w-4" />
                                                     </Button>
                                                 </div>
@@ -204,7 +286,12 @@ export default function Index({ branches, filters }: Props) {
                                 )}
                             </TableBody>
                         </Table>
-                        {branches.last_page > 1 && <Pagination links={branches.links} className="px-6 pt-4 pb-2" />}
+                        {branches.last_page > 1 && (
+                            <Pagination
+                                links={branches.links}
+                                className="px-6 pt-4 pb-2"
+                            />
+                        )}
                     </CardContent>
                 </Card>
             </div>

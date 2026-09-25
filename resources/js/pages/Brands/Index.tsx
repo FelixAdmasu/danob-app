@@ -20,33 +20,37 @@ export default function BrandsIndex({ brands }: Props) {
         <>
             <Head title="Brands" />
 
-            <section className="relative bg-[#ECF3E5] pt-32 md:pt-48 overflow-hidden">
-                <div className="absolute left-6 md:left-12 top-0 bottom-0 w-[1px] bg-[#070E01]/10 hidden md:block">
-                    <div className="absolute w-full h-16 bg-[#A5FFA9]/60 blur-sm animate-trail" />
+            <section className="relative overflow-hidden bg-[#ECF3E5] pt-32 md:pt-48">
+                <div className="absolute top-0 bottom-0 left-6 hidden w-[1px] bg-[#070E01]/10 md:left-12 md:block">
+                    <div className="animate-trail absolute h-16 w-full bg-[#A5FFA9]/60 blur-sm" />
                 </div>
 
-                <div className="max-w-[1920px] mx-auto relative z-10 px-6 md:px-12">
-                    <div className="max-w-[1000px] mb-12">
-                        <span className="inline-block text-[10px] font-bold uppercase tracking-[0.4em] text-[#4A4A4A] mb-8">
+                <div className="relative z-10 mx-auto max-w-[1920px] px-6 md:px-12">
+                    <div className="mb-12 max-w-[1000px]">
+                        <span className="mb-8 inline-block text-[10px] font-bold tracking-[0.4em] text-[#4A4A4A] uppercase">
                             — Partners
                         </span>
-                        <h1 className="font-serif text-4xl md:text-5xl lg:text-7xl leading-[1.1] tracking-tighter text-[#070E01] max-w-4xl">
+                        <h1 className="max-w-4xl font-serif text-4xl leading-[1.1] tracking-tighter text-[#070E01] md:text-5xl lg:text-7xl">
                             Trusted Brands.
                         </h1>
-                        <p className="text-lg text-[#4A4A4A] mt-6 max-w-xl">
+                        <p className="mt-6 max-w-xl text-lg text-[#4A4A4A]">
                             Browse the brands available through Danob.
                         </p>
                     </div>
                 </div>
             </section>
 
-            <section className="py-32 md:py-48 px-6 md:px-12 bg-[#ECF3E5]">
-                <div className="max-w-[1920px] mx-auto">
+            <section className="bg-[#ECF3E5] px-6 py-32 md:px-12 md:py-48">
+                <div className="mx-auto max-w-[1920px]">
                     {brands.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-16 gap-x-12">
+                        <div className="grid grid-cols-1 gap-x-12 gap-y-16 md:grid-cols-2 lg:grid-cols-3">
                             {brands.map((brand) => (
-                                <Link key={brand.id} href={`/brands/${brand.slug}`} className="group cursor-pointer">
-                                    <div className="aspect-[4/5] overflow-hidden mb-8 relative bg-[#D4E8C8]">
+                                <Link
+                                    key={brand.id}
+                                    href={`/brands/${brand.slug}`}
+                                    className="group cursor-pointer"
+                                >
+                                    <div className="relative mb-8 aspect-[4/5] overflow-hidden bg-[#D4E8C8]">
                                         {brand.logo_url ? (
                                             <img
                                                 src={brand.logo_url}
@@ -55,29 +59,37 @@ export default function BrandsIndex({ brands }: Props) {
                                                 className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                                             />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center">
-                                                <Package className="h-16 w-16 text-[#070E01]/15 group-hover:text-[#070E01]/30 transition-colors duration-700" />
+                                            <div className="flex h-full w-full items-center justify-center">
+                                                <Package className="h-16 w-16 text-[#070E01]/15 transition-colors duration-700 group-hover:text-[#070E01]/30" />
                                             </div>
                                         )}
                                     </div>
-                                    <div className="flex justify-between items-start border-b border-[#070E01]/10 pb-6">
+                                    <div className="flex items-start justify-between border-b border-[#070E01]/10 pb-6">
                                         <div>
-                                            <h3 className="font-serif text-2xl mb-2">{brand.name}</h3>
+                                            <h3 className="mb-2 font-serif text-2xl">
+                                                {brand.name}
+                                            </h3>
                                             {brand.description && (
-                                                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#4A4A4A] line-clamp-2">
+                                                <p className="line-clamp-2 text-[10px] font-bold tracking-[0.3em] text-[#4A4A4A] uppercase">
                                                     {brand.description}
                                                 </p>
                                             )}
                                         </div>
-                                        <p className="font-bold text-sm text-[#070E01]">{brand.products_count} Products</p>
+                                        <p className="text-sm font-bold text-[#070E01]">
+                                            {brand.products_count} Products
+                                        </p>
                                     </div>
                                 </Link>
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-24">
-                            <h3 className="font-serif text-2xl text-[#070E01]">No brands found</h3>
-                            <p className="text-sm text-[#4A4A4A] mt-2">Brand information will appear here once added.</p>
+                        <div className="py-24 text-center">
+                            <h3 className="font-serif text-2xl text-[#070E01]">
+                                No brands found
+                            </h3>
+                            <p className="mt-2 text-sm text-[#4A4A4A]">
+                                Brand information will appear here once added.
+                            </p>
                         </div>
                     )}
                 </div>

@@ -43,7 +43,7 @@ export default function Login({ status, canResetPassword }: Props) {
                             <div className="space-y-2">
                                 <Label
                                     htmlFor="email"
-                                    className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#070E01]/50"
+                                    className="text-[11px] font-semibold tracking-[0.2em] text-[#070E01]/50 uppercase"
                                 >
                                     Email
                                 </Label>
@@ -56,7 +56,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                     tabIndex={1}
                                     autoComplete="email"
                                     placeholder="name@company.com"
-                                    className="h-13 bg-white border border-[#070E01]/15 rounded-2xl text-[14px] text-[#070E01] placeholder:text-[#070E01]/20 focus:outline-none focus:border-[#2D5016]/40 focus:bg-white focus:shadow-[0_0_0_4px_rgba(45,80,22,0.06)] transition-all duration-200"
+                                    className="h-13 rounded-2xl border border-[#070E01]/15 bg-white text-[14px] text-[#070E01] transition-all duration-200 placeholder:text-[#070E01]/20 focus:border-[#2D5016]/40 focus:bg-white focus:shadow-[0_0_0_4px_rgba(45,80,22,0.06)] focus:outline-none"
                                 />
                                 <InputError message={errors.email} />
                             </div>
@@ -65,14 +65,14 @@ export default function Login({ status, canResetPassword }: Props) {
                                 <div className="flex items-center justify-between">
                                     <Label
                                         htmlFor="password"
-                                        className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#070E01]/50"
+                                        className="text-[11px] font-semibold tracking-[0.2em] text-[#070E01]/50 uppercase"
                                     >
                                         Password
                                     </Label>
                                     {canResetPassword && (
                                         <TextLink
                                             href={request()}
-                                            className="text-[11px] text-[#070E01]/30 hover:text-[#2D5016] transition-colors"
+                                            className="text-[11px] text-[#070E01]/30 transition-colors hover:text-[#2D5016]"
                                             tabIndex={5}
                                         >
                                             Forgot?
@@ -86,7 +86,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                     tabIndex={2}
                                     autoComplete="current-password"
                                     placeholder="Enter password"
-                                    className="h-13 bg-white border border-[#070E01]/15 rounded-2xl text-[14px] text-[#070E01] placeholder:text-[#070E01]/20 focus:outline-none focus:border-[#2D5016]/40 focus:bg-white focus:shadow-[0_0_0_4px_rgba(45,80,22,0.06)] transition-all duration-200"
+                                    className="h-13 rounded-2xl border border-[#070E01]/15 bg-white text-[14px] text-[#070E01] transition-all duration-200 placeholder:text-[#070E01]/20 focus:border-[#2D5016]/40 focus:bg-white focus:shadow-[0_0_0_4px_rgba(45,80,22,0.06)] focus:outline-none"
                                 />
                                 <InputError message={errors.password} />
                             </div>
@@ -96,11 +96,11 @@ export default function Login({ status, canResetPassword }: Props) {
                                     id="remember"
                                     name="remember"
                                     tabIndex={3}
-                                    className="border-[#070E01]/15 data-[state=checked]:bg-[#2D5016] data-[state=checked]:border-[#2D5016]"
+                                    className="border-[#070E01]/15 data-[state=checked]:border-[#2D5016] data-[state=checked]:bg-[#2D5016]"
                                 />
                                 <Label
                                     htmlFor="remember"
-                                    className="text-[13px] text-[#070E01]/40 cursor-pointer"
+                                    className="cursor-pointer text-[13px] text-[#070E01]/40"
                                 >
                                     Remember me
                                 </Label>
@@ -109,7 +109,7 @@ export default function Login({ status, canResetPassword }: Props) {
 
                         <Button
                             type="submit"
-                            className="mt-8 h-13 w-full bg-[#070E01] hover:bg-[#2D5016] text-[#ECF3E5] text-[13px] font-semibold tracking-[0.15em] uppercase rounded-2xl transition-all duration-300 cursor-pointer shadow-[0_2px_12px_rgba(7,14,1,0.12)] hover:shadow-[0_4px_20px_rgba(45,80,22,0.2)]"
+                            className="mt-8 h-13 w-full cursor-pointer rounded-2xl bg-[#070E01] text-[13px] font-semibold tracking-[0.15em] text-[#ECF3E5] uppercase shadow-[0_2px_12px_rgba(7,14,1,0.12)] transition-all duration-300 hover:bg-[#2D5016] hover:shadow-[0_4px_20px_rgba(45,80,22,0.2)]"
                             tabIndex={4}
                             disabled={processing}
                             data-test="login-button"
@@ -126,7 +126,7 @@ export default function Login({ status, canResetPassword }: Props) {
                             <TextLink
                                 href={register()}
                                 tabIndex={5}
-                                className="text-[13px] text-[#2D5016] hover:text-[#1A3A0A] font-semibold transition-colors"
+                                className="text-[13px] font-semibold text-[#2D5016] transition-colors hover:text-[#1A3A0A]"
                             >
                                 Sign up
                             </TextLink>

@@ -28,16 +28,24 @@ export default function BranchVisual({ name, imageUrl }: BranchVisualProps) {
                         'linear-gradient(to right, #070E01 1px, transparent 1px), linear-gradient(to bottom, #070E01 1px, transparent 1px)',
                     backgroundSize: '72px 72px',
                     opacity: 0.05,
-                    maskImage: 'radial-gradient(circle at center, black 30%, transparent 80%)',
-                    WebkitMaskImage: 'radial-gradient(circle at center, black 30%, transparent 80%)',
+                    maskImage:
+                        'radial-gradient(circle at center, black 30%, transparent 80%)',
+                    WebkitMaskImage:
+                        'radial-gradient(circle at center, black 30%, transparent 80%)',
                 }}
             />
             {!showPhoto && (
-                <div aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
+                <div
+                    aria-hidden="true"
+                    className="absolute inset-0 flex items-center justify-center"
+                >
                     <div className="relative flex h-36 w-36 items-center justify-center">
                         <span className="absolute inset-0 rounded-full border border-[#070E01]/15" />
                         <span className="absolute inset-0 animate-ping rounded-full border border-[#2D5016]/40 [animation-duration:4s]" />
-                        <MapPin className="relative h-12 w-12 text-[#2D5016]/70" strokeWidth={1.5} />
+                        <MapPin
+                            className="relative h-12 w-12 text-[#2D5016]/70"
+                            strokeWidth={1.5}
+                        />
                     </div>
                 </div>
             )}

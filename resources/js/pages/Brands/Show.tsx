@@ -8,7 +8,13 @@ type Product = {
     slug: string;
     description: string;
     category: { name: string; slug: string } | null;
-    images: { id: number; url: string; sort_order: number; is_primary: boolean; alt_text: string | null }[];
+    images: {
+        id: number;
+        url: string;
+        sort_order: number;
+        is_primary: boolean;
+        alt_text: string | null;
+    }[];
 };
 
 type Brand = {
@@ -28,29 +34,39 @@ export default function BrandShow({ brand }: Props) {
         <>
             <Head title={brand.name} />
 
-            <section className="relative bg-[#ECF3E5] pt-32 md:pt-48 overflow-hidden">
-                <div className="absolute left-6 md:left-12 top-0 bottom-0 w-[1px] bg-[#070E01]/10 hidden md:block">
-                    <div className="absolute w-full h-16 bg-[#A5FFA9]/60 blur-sm animate-trail" />
+            <section className="relative overflow-hidden bg-[#ECF3E5] pt-32 md:pt-48">
+                <div className="absolute top-0 bottom-0 left-6 hidden w-[1px] bg-[#070E01]/10 md:left-12 md:block">
+                    <div className="animate-trail absolute h-16 w-full bg-[#A5FFA9]/60 blur-sm" />
                 </div>
 
-                <div className="max-w-[1920px] mx-auto relative z-10 px-6 md:px-12">
-                    <nav className="mb-12 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-[#4A4A4A]">
-                        <Link href="/" className="hover:text-[#070E01] transition-colors">Home</Link>
+                <div className="relative z-10 mx-auto max-w-[1920px] px-6 md:px-12">
+                    <nav className="mb-12 flex items-center gap-2 text-[10px] font-bold tracking-[0.3em] text-[#4A4A4A] uppercase">
+                        <Link
+                            href="/"
+                            className="transition-colors hover:text-[#070E01]"
+                        >
+                            Home
+                        </Link>
                         <span>/</span>
-                        <Link href="/brands" className="hover:text-[#070E01] transition-colors">Brands</Link>
+                        <Link
+                            href="/brands"
+                            className="transition-colors hover:text-[#070E01]"
+                        >
+                            Brands
+                        </Link>
                         <span>/</span>
                         <span className="text-[#070E01]">{brand.name}</span>
                     </nav>
 
-                    <div className="max-w-[1000px] mb-16">
-                        <span className="inline-block text-[10px] font-bold uppercase tracking-[0.4em] text-[#4A4A4A] mb-8">
+                    <div className="mb-16 max-w-[1000px]">
+                        <span className="mb-8 inline-block text-[10px] font-bold tracking-[0.4em] text-[#4A4A4A] uppercase">
                             — Brand
                         </span>
-                        <h1 className="font-serif text-4xl md:text-5xl lg:text-7xl leading-[1.1] tracking-tighter text-[#070E01] max-w-4xl">
+                        <h1 className="max-w-4xl font-serif text-4xl leading-[1.1] tracking-tighter text-[#070E01] md:text-5xl lg:text-7xl">
                             {brand.name}
                         </h1>
                         {brand.description && (
-                            <p className="text-lg text-[#4A4A4A] mt-6 max-w-xl">
+                            <p className="mt-6 max-w-xl text-lg text-[#4A4A4A]">
                                 {brand.description}
                             </p>
                         )}
@@ -58,43 +74,63 @@ export default function BrandShow({ brand }: Props) {
                 </div>
             </section>
 
-            <section className="py-32 md:py-48 px-6 md:px-12 bg-[#ECF3E5]">
-                <div className="max-w-[1920px] mx-auto">
+            <section className="bg-[#ECF3E5] px-6 py-32 md:px-12 md:py-48">
+                <div className="mx-auto max-w-[1920px]">
                     {brand.products.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-16 gap-x-12">
+                        <div className="grid grid-cols-1 gap-x-12 gap-y-16 md:grid-cols-2 lg:grid-cols-3">
                             {brand.products.map((product) => {
-                                const primaryImage = product.images?.find((img) => img.is_primary) || product.images?.[0] || null;
+                                const primaryImage =
+                                    product.images?.find(
+                                        (img) => img.is_primary,
+                                    ) ||
+                                    product.images?.[0] ||
+                                    null;
                                 return (
-                                <Link key={product.id} href={`/products/${product.slug}`} className="group cursor-pointer">
-                                    <div className="aspect-[4/5] overflow-hidden mb-8 relative bg-[#D4E8C8] flex items-center justify-center">
-                                        {primaryImage ? (
-                                            <img
-                                                src={primaryImage.url}
-                                                alt={primaryImage.alt_text || product.name}
-                                                onError={onImageError}
-                                                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                            />
-                                        ) : (
-                                            <Package className="h-16 w-16 text-[#070E01]/15 group-hover:text-[#070E01]/30 transition-colors duration-700" />
-                                        )}
-                                    </div>
-                                    <div className="flex justify-between items-start border-b border-[#070E01]/10 pb-6">
-                                        <div>
-                                            <h3 className="font-serif text-2xl mb-2">{product.name}</h3>
-                                            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#4A4A4A]">
-                                                {product.category?.name || 'Uncategorized'}
-                                            </p>
+                                    <Link
+                                        key={product.id}
+                                        href={`/products/${product.slug}`}
+                                        className="group cursor-pointer"
+                                    >
+                                        <div className="relative mb-8 flex aspect-[4/5] items-center justify-center overflow-hidden bg-[#D4E8C8]">
+                                            {primaryImage ? (
+                                                <img
+                                                    src={primaryImage.url}
+                                                    alt={
+                                                        primaryImage.alt_text ||
+                                                        product.name
+                                                    }
+                                                    onError={onImageError}
+                                                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                                />
+                                            ) : (
+                                                <Package className="h-16 w-16 text-[#070E01]/15 transition-colors duration-700 group-hover:text-[#070E01]/30" />
+                                            )}
                                         </div>
-                                    </div>
-                                </Link>
+                                        <div className="flex items-start justify-between border-b border-[#070E01]/10 pb-6">
+                                            <div>
+                                                <h3 className="mb-2 font-serif text-2xl">
+                                                    {product.name}
+                                                </h3>
+                                                <p className="text-[10px] font-bold tracking-[0.3em] text-[#4A4A4A] uppercase">
+                                                    {product.category?.name ||
+                                                        'Uncategorized'}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </Link>
                                 );
                             })}
                         </div>
                     ) : (
-                        <div className="text-center py-24">
-                            <Package className="mx-auto h-16 w-16 text-[#070E01]/15 mb-6" />
-                            <h3 className="font-serif text-2xl text-[#070E01]">No products yet</h3>
-                            <p className="text-sm text-[#4A4A4A] mt-2">Products from this brand will appear here once added.</p>
+                        <div className="py-24 text-center">
+                            <Package className="mx-auto mb-6 h-16 w-16 text-[#070E01]/15" />
+                            <h3 className="font-serif text-2xl text-[#070E01]">
+                                No products yet
+                            </h3>
+                            <p className="mt-2 text-sm text-[#4A4A4A]">
+                                Products from this brand will appear here once
+                                added.
+                            </p>
                         </div>
                     )}
                 </div>

@@ -23,7 +23,10 @@ type Order = {
     id: number;
     reference_number: string;
     status: string;
-    customer: { company_name?: string | null; contact_name?: string | null } | null;
+    customer: {
+        company_name?: string | null;
+        contact_name?: string | null;
+    } | null;
     items: ReturnItem[];
 };
 
@@ -81,7 +84,10 @@ export default function Create({ order }: { order: Order }) {
                     </div>
                 </div>
                 {(errors.order || errors.items || errors.quantity) && (
-                    <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+                    <p
+                        role="alert"
+                        className="text-sm text-red-600 dark:text-red-400"
+                    >
                         {errors.order || errors.items || errors.quantity}
                     </p>
                 )}
@@ -93,7 +99,8 @@ export default function Create({ order }: { order: Order }) {
                         <CardContent>
                             <div className="space-y-4">
                                 {order.items.map((item) => {
-                                    const remaining = item.quantity - item.returned_quantity;
+                                    const remaining =
+                                        item.quantity - item.returned_quantity;
                                     const value = quantities[item.id] ?? '';
                                     if (remaining <= 0) {
                                         return (
@@ -104,21 +111,31 @@ export default function Create({ order }: { order: Order }) {
                                                 <div className="space-y-1">
                                                     <Label>Product</Label>
                                                     <p className="text-sm">
-                                                        {item.product_variant?.name || '—'}
+                                                        {item.product_variant
+                                                            ?.name || '—'}
                                                     </p>
                                                 </div>
                                                 <div className="space-y-1">
                                                     <Label>Ordered</Label>
-                                                    <p className="text-sm">{item.quantity}</p>
+                                                    <p className="text-sm">
+                                                        {item.quantity}
+                                                    </p>
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <Label>Already Returned</Label>
-                                                    <p className="text-sm">{item.returned_quantity}</p>
+                                                    <Label>
+                                                        Already Returned
+                                                    </Label>
+                                                    <p className="text-sm">
+                                                        {item.returned_quantity}
+                                                    </p>
                                                 </div>
                                                 <div className="space-y-1 xl:col-span-2">
-                                                    <Label>Fully returned</Label>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        Nothing left to return on this line.
+                                                    <Label>
+                                                        Fully returned
+                                                    </Label>
+                                                    <p className="text-muted-foreground text-sm">
+                                                        Nothing left to return
+                                                        on this line.
                                                     </p>
                                                 </div>
                                             </div>
@@ -132,25 +149,37 @@ export default function Create({ order }: { order: Order }) {
                                             <div className="space-y-1">
                                                 <Label>Product</Label>
                                                 <p className="text-sm">
-                                                    {item.product_variant?.name || '—'}
-                                                    {item.product_variant?.sku ? ` (${item.product_variant.sku})` : ''}
+                                                    {item.product_variant
+                                                        ?.name || '—'}
+                                                    {item.product_variant?.sku
+                                                        ? ` (${item.product_variant.sku})`
+                                                        : ''}
                                                 </p>
                                             </div>
                                             <div className="space-y-1">
                                                 <Label>Ordered</Label>
-                                                <p className="text-sm">{item.quantity}</p>
+                                                <p className="text-sm">
+                                                    {item.quantity}
+                                                </p>
                                             </div>
                                             <div className="space-y-1">
                                                 <Label>Already Returned</Label>
-                                                <p className="text-sm">{item.returned_quantity}</p>
+                                                <p className="text-sm">
+                                                    {item.returned_quantity}
+                                                </p>
                                             </div>
                                             <div className="space-y-1">
                                                 <Label>Unit Price</Label>
-                                                <p className="text-sm">{item.unit_price}</p>
+                                                <p className="text-sm">
+                                                    {item.unit_price}
+                                                </p>
                                             </div>
                                             <div className="space-y-2">
-                                                <Label htmlFor={`return-${item.id}`}>
-                                                    Return (remaining: {remaining})
+                                                <Label
+                                                    htmlFor={`return-${item.id}`}
+                                                >
+                                                    Return (remaining:{' '}
+                                                    {remaining})
                                                 </Label>
                                                 <Input
                                                     id={`return-${item.id}`}
@@ -158,18 +187,30 @@ export default function Create({ order }: { order: Order }) {
                                                     min={0}
                                                     max={remaining}
                                                     value={value}
-                                                    aria-invalid={errors.quantity ? true : undefined}
+                                                    aria-invalid={
+                                                        errors.quantity
+                                                            ? true
+                                                            : undefined
+                                                    }
                                                     onChange={(e) =>
-                                                        setQuantities((prev) => ({
-                                                            ...prev,
-                                                            [item.id]: e.target.value,
-                                                        }))
+                                                        setQuantities(
+                                                            (prev) => ({
+                                                                ...prev,
+                                                                [item.id]:
+                                                                    e.target
+                                                                        .value,
+                                                            }),
+                                                        )
                                                     }
                                                 />
-                                                <p className="text-xs text-muted-foreground">
+                                                <p className="text-muted-foreground text-xs">
                                                     Value:{' '}
                                                     {(
-                                                        (Number(quantities[item.id] ?? 0) || 0) *
+                                                        (Number(
+                                                            quantities[
+                                                                item.id
+                                                            ] ?? 0,
+                                                        ) || 0) *
                                                         Number(item.unit_price)
                                                     ).toFixed(2)}
                                                 </p>
@@ -186,14 +227,20 @@ export default function Create({ order }: { order: Order }) {
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-2">
-                                <Label htmlFor="return-notes">Return notes</Label>
+                                <Label htmlFor="return-notes">
+                                    Return notes
+                                </Label>
                                 <Input
                                     id="return-notes"
                                     value={notes}
                                     onChange={(e) => setNotes(e.target.value)}
                                     placeholder="Optional"
                                 />
-                                {errors.notes && <p className="text-xs text-red-600 dark:text-red-400">{errors.notes}</p>}
+                                {errors.notes && (
+                                    <p className="text-xs text-red-600 dark:text-red-400">
+                                        {errors.notes}
+                                    </p>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
@@ -203,7 +250,8 @@ export default function Create({ order }: { order: Order }) {
                             disabled={
                                 processing ||
                                 order.items.every(
-                                    (item) => Number(quantities[item.id] ?? 0) <= 0,
+                                    (item) =>
+                                        Number(quantities[item.id] ?? 0) <= 0,
                                 )
                             }
                         >

@@ -6,8 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import * as ProductRoutes from '@/routes/admin/products';
 import { Plus, Upload, X, Image as ImageIcon } from 'lucide-react';
 
@@ -52,19 +57,57 @@ export default function Create({ categories, brands }: Props) {
     const [processing, setProcessing] = useState(false);
 
     const addVariant = () => {
-        setData({ ...data, variants: [...data.variants, { name: '', sku: '', unit: '', quantity: '1', low_stock_threshold: '', public_price: '', is_active: true }] });
+        setData({
+            ...data,
+            variants: [
+                ...data.variants,
+                {
+                    name: '',
+                    sku: '',
+                    unit: '',
+                    quantity: '1',
+                    low_stock_threshold: '',
+                    public_price: '',
+                    is_active: true,
+                },
+            ],
+        });
     };
-    const updateVariant = (idx: number, field: keyof VariantForm, value: string | boolean) => {
+    const updateVariant = (
+        idx: number,
+        field: keyof VariantForm,
+        value: string | boolean,
+    ) => {
         const next = [...data.variants];
         (next[idx] as Record<string, unknown>)[field] = value;
         setData({ ...data, variants: next });
     };
-    const removeVariant = (idx: number) => setData({ ...data, variants: data.variants.filter((_, i) => i !== idx) });
+    const removeVariant = (idx: number) =>
+        setData({
+            ...data,
+            variants: data.variants.filter((_, i) => i !== idx),
+        });
 
     const addImage = () => {
-        setData({ ...data, images: [...data.images, { file: null, preview: null, alt_text: '', sort_order: String(data.images.length), is_primary: data.images.length === 0 }] });
+        setData({
+            ...data,
+            images: [
+                ...data.images,
+                {
+                    file: null,
+                    preview: null,
+                    alt_text: '',
+                    sort_order: String(data.images.length),
+                    is_primary: data.images.length === 0,
+                },
+            ],
+        });
     };
-    const updateImage = (idx: number, field: keyof ImageForm, value: string | boolean | File | null) => {
+    const updateImage = (
+        idx: number,
+        field: keyof ImageForm,
+        value: string | boolean | File | null,
+    ) => {
         const next = [...data.images];
         if (field === 'is_primary' && value === true) {
             next.forEach((img, i) => (img.is_primary = i === idx));
@@ -99,15 +142,32 @@ export default function Create({ categories, brands }: Props) {
             if (v.sku) formData.append(`variants[${idx}][sku]`, v.sku);
             if (v.unit) formData.append(`variants[${idx}][unit]`, v.unit);
             formData.append(`variants[${idx}][quantity]`, v.quantity || '1');
-            if (v.low_stock_threshold !== '') formData.append(`variants[${idx}][low_stock_threshold]`, v.low_stock_threshold);
-            if (v.public_price) formData.append(`variants[${idx}][public_price]`, v.public_price);
-            formData.append(`variants[${idx}][is_active]`, v.is_active ? '1' : '0');
+            if (v.low_stock_threshold !== '')
+                formData.append(
+                    `variants[${idx}][low_stock_threshold]`,
+                    v.low_stock_threshold,
+                );
+            if (v.public_price)
+                formData.append(
+                    `variants[${idx}][public_price]`,
+                    v.public_price,
+                );
+            formData.append(
+                `variants[${idx}][is_active]`,
+                v.is_active ? '1' : '0',
+            );
         });
         data.images.forEach((img, idx) => {
             if (img.file) formData.append(`images[${idx}][file]`, img.file);
             formData.append(`images[${idx}][alt_text]`, img.alt_text || '');
-            formData.append(`images[${idx}][sort_order]`, img.sort_order || String(idx));
-            formData.append(`images[${idx}][is_primary]`, img.is_primary ? '1' : '0');
+            formData.append(
+                `images[${idx}][sort_order]`,
+                img.sort_order || String(idx),
+            );
+            formData.append(
+                `images[${idx}][is_primary]`,
+                img.is_primary ? '1' : '0',
+            );
         });
         router.post(ProductRoutes.store().url, formData, {
             forceFormData: true,
@@ -124,7 +184,11 @@ export default function Create({ categories, brands }: Props) {
         <>
             <Head title="Create Product" />
             <div className="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-                <Heading eyebrow="Catalog" title="Create Product" description="Add a new product to the catalog" />
+                <Heading
+                    eyebrow="Catalog"
+                    title="Create Product"
+                    description="Add a new product to the catalog"
+                />
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <Card>
                         <CardHeader>
@@ -134,25 +198,54 @@ export default function Create({ categories, brands }: Props) {
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
                                     <Label htmlFor="name">Name *</Label>
-                                    <Input id="name" value={data.name} onChange={(e) => setData({ ...data, name: e.target.value })} required />
+                                    <Input
+                                        id="name"
+                                        value={data.name}
+                                        onChange={(e) =>
+                                            setData({
+                                                ...data,
+                                                name: e.target.value,
+                                            })
+                                        }
+                                        required
+                                    />
                                     <InputError message={errors.name} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="slug">Slug *</Label>
-                                    <Input id="slug" value={data.slug} onChange={(e) => setData({ ...data, slug: e.target.value })} required placeholder="e.g. vanilla-powder" />
+                                    <Input
+                                        id="slug"
+                                        value={data.slug}
+                                        onChange={(e) =>
+                                            setData({
+                                                ...data,
+                                                slug: e.target.value,
+                                            })
+                                        }
+                                        required
+                                        placeholder="e.g. vanilla-powder"
+                                    />
                                     <InputError message={errors.slug} />
                                 </div>
                             </div>
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
                                     <Label>Category *</Label>
-                                    <Select value={data.category_id} onValueChange={(v) => setData({ ...data, category_id: v })}>
+                                    <Select
+                                        value={data.category_id}
+                                        onValueChange={(v) =>
+                                            setData({ ...data, category_id: v })
+                                        }
+                                    >
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select category" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {categories.map((c) => (
-                                                <SelectItem key={c.id} value={String(c.id)}>
+                                                <SelectItem
+                                                    key={c.id}
+                                                    value={String(c.id)}
+                                                >
                                                     {c.name}
                                                 </SelectItem>
                                             ))}
@@ -162,14 +255,27 @@ export default function Create({ categories, brands }: Props) {
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Brand</Label>
-                                    <Select value={data.brand_id || 'none'} onValueChange={(v) => setData({ ...data, brand_id: v === 'none' ? '' : v })}>
+                                    <Select
+                                        value={data.brand_id || 'none'}
+                                        onValueChange={(v) =>
+                                            setData({
+                                                ...data,
+                                                brand_id: v === 'none' ? '' : v,
+                                            })
+                                        }
+                                    >
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select brand" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="none">No brand</SelectItem>
+                                            <SelectItem value="none">
+                                                No brand
+                                            </SelectItem>
                                             {brands.map((b) => (
-                                                <SelectItem key={b.id} value={String(b.id)}>
+                                                <SelectItem
+                                                    key={b.id}
+                                                    value={String(b.id)}
+                                                >
                                                     {b.name}
                                                 </SelectItem>
                                             ))}
@@ -179,26 +285,42 @@ export default function Create({ categories, brands }: Props) {
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="description">Description *</Label>
+                                <Label htmlFor="description">
+                                    Description *
+                                </Label>
                                 <textarea
                                     id="description"
                                     value={data.description}
-                                    onChange={(e) => setData({ ...data, description: e.target.value })}
+                                    onChange={(e) =>
+                                        setData({
+                                            ...data,
+                                            description: e.target.value,
+                                        })
+                                    }
                                     required
                                     rows={4}
-                                    className="flex min-h-[80px] w-full rounded-lg border border-input bg-background px-3.5 py-2 text-sm shadow-xs transition-[border-color,box-shadow] duration-150 outline-none focus-visible:border-primary/60 focus-visible:ring-4 focus-visible:ring-primary/15"
+                                    className="border-input bg-background focus-visible:border-primary/60 focus-visible:ring-primary/15 flex min-h-[80px] w-full rounded-lg border px-3.5 py-2 text-sm shadow-xs transition-[border-color,box-shadow] duration-150 outline-none focus-visible:ring-4"
                                 />
                                 <InputError message={errors.description} />
                             </div>
                             <div className="space-y-2">
                                 <Label>Status</Label>
-                                <Select value={data.status} onValueChange={(v) => setData({ ...data, status: v })}>
+                                <Select
+                                    value={data.status}
+                                    onValueChange={(v) =>
+                                        setData({ ...data, status: v })
+                                    }
+                                >
                                     <SelectTrigger className="w-[200px]">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="active">Active</SelectItem>
-                                        <SelectItem value="inactive">Inactive</SelectItem>
+                                        <SelectItem value="active">
+                                            Active
+                                        </SelectItem>
+                                        <SelectItem value="inactive">
+                                            Inactive
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <InputError message={errors.status} />
@@ -209,54 +331,189 @@ export default function Create({ categories, brands }: Props) {
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between">
                             <CardTitle>Variants</CardTitle>
-                            <Button type="button" variant="outline" size="sm" onClick={addVariant}>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={addVariant}
+                            >
                                 <Plus className="mr-2 h-4 w-4" /> Add Variant
                             </Button>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {data.variants.length === 0 ? (
-                                <p className="text-sm text-muted-foreground">No variants. Add one if this product has options.</p>
+                                <p className="text-muted-foreground text-sm">
+                                    No variants. Add one if this product has
+                                    options.
+                                </p>
                             ) : (
                                 data.variants.map((variant, idx) => (
-                                    <div key={idx} className="rounded-lg border p-4 space-y-3">
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-sm font-medium">Variant {idx + 1}</span>
-                                            <Button type="button" variant="ghost" size="sm" onClick={() => removeVariant(idx)}>
+                                    <div
+                                        key={idx}
+                                        className="space-y-3 rounded-lg border p-4"
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-sm font-medium">
+                                                Variant {idx + 1}
+                                            </span>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() =>
+                                                    removeVariant(idx)
+                                                }
+                                            >
                                                 Remove
                                             </Button>
                                         </div>
                                         <div className="grid gap-3 md:grid-cols-2">
                                             <div className="space-y-1">
                                                 <Label>Name *</Label>
-                                                <Input value={variant.name} onChange={(e) => updateVariant(idx, 'name', e.target.value)} placeholder="e.g. 1kg" />
-                                                <InputError message={(errors as Record<string, string>)[`variants.${idx}.name`]} />
+                                                <Input
+                                                    value={variant.name}
+                                                    onChange={(e) =>
+                                                        updateVariant(
+                                                            idx,
+                                                            'name',
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    placeholder="e.g. 1kg"
+                                                />
+                                                <InputError
+                                                    message={
+                                                        (
+                                                            errors as Record<
+                                                                string,
+                                                                string
+                                                            >
+                                                        )[
+                                                            `variants.${idx}.name`
+                                                        ]
+                                                    }
+                                                />
                                             </div>
                                             <div className="space-y-1">
                                                 <Label>SKU</Label>
-                                                <Input value={variant.sku} onChange={(e) => updateVariant(idx, 'sku', e.target.value)} />
-                                                <InputError message={(errors as Record<string, string>)[`variants.${idx}.sku`]} />
+                                                <Input
+                                                    value={variant.sku}
+                                                    onChange={(e) =>
+                                                        updateVariant(
+                                                            idx,
+                                                            'sku',
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                />
+                                                <InputError
+                                                    message={
+                                                        (
+                                                            errors as Record<
+                                                                string,
+                                                                string
+                                                            >
+                                                        )[`variants.${idx}.sku`]
+                                                    }
+                                                />
                                             </div>
                                             <div className="space-y-1">
                                                 <Label>Unit</Label>
-                                                <Input value={variant.unit} onChange={(e) => updateVariant(idx, 'unit', e.target.value)} placeholder="e.g. kg" />
+                                                <Input
+                                                    value={variant.unit}
+                                                    onChange={(e) =>
+                                                        updateVariant(
+                                                            idx,
+                                                            'unit',
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    placeholder="e.g. kg"
+                                                />
                                             </div>
                                             <div className="space-y-1">
                                                 <Label>Quantity</Label>
-                                                <Input type="number" value={variant.quantity} onChange={(e) => updateVariant(idx, 'quantity', e.target.value)} />
+                                                <Input
+                                                    type="number"
+                                                    value={variant.quantity}
+                                                    onChange={(e) =>
+                                                        updateVariant(
+                                                            idx,
+                                                            'quantity',
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                />
                                             </div>
                                             <div className="space-y-1">
-                                                <Label>Low Stock Threshold</Label>
-                                                <Input type="number" min={0} value={variant.low_stock_threshold} onChange={(e) => updateVariant(idx, 'low_stock_threshold', e.target.value)} placeholder="Empty = monitoring off" />
-                                                <InputError message={(errors as Record<string, string>)[`variants.${idx}.low_stock_threshold`]} />
-                                                <p className="text-[10px] text-muted-foreground">Flag as low stock when quantity is at or below this value.</p>
+                                                <Label>
+                                                    Low Stock Threshold
+                                                </Label>
+                                                <Input
+                                                    type="number"
+                                                    min={0}
+                                                    value={
+                                                        variant.low_stock_threshold
+                                                    }
+                                                    onChange={(e) =>
+                                                        updateVariant(
+                                                            idx,
+                                                            'low_stock_threshold',
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    placeholder="Empty = monitoring off"
+                                                />
+                                                <InputError
+                                                    message={
+                                                        (
+                                                            errors as Record<
+                                                                string,
+                                                                string
+                                                            >
+                                                        )[
+                                                            `variants.${idx}.low_stock_threshold`
+                                                        ]
+                                                    }
+                                                />
+                                                <p className="text-muted-foreground text-[10px]">
+                                                    Flag as low stock when
+                                                    quantity is at or below this
+                                                    value.
+                                                </p>
                                             </div>
                                             <div className="space-y-1">
                                                 <Label>Public Price</Label>
-                                                <Input value={variant.public_price} onChange={(e) => updateVariant(idx, 'public_price', e.target.value)} placeholder="e.g. 12.50" />
+                                                <Input
+                                                    value={variant.public_price}
+                                                    onChange={(e) =>
+                                                        updateVariant(
+                                                            idx,
+                                                            'public_price',
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    placeholder="e.g. 12.50"
+                                                />
                                             </div>
                                             <div className="flex items-center gap-2 pt-6">
-                                                <input type="checkbox" checked={variant.is_active} onChange={(e) => updateVariant(idx, 'is_active', e.target.checked)} id={`variant-active-${idx}`} />
-                                                <Label htmlFor={`variant-active-${idx}`}>Active</Label>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={variant.is_active}
+                                                    onChange={(e) =>
+                                                        updateVariant(
+                                                            idx,
+                                                            'is_active',
+                                                            e.target.checked,
+                                                        )
+                                                    }
+                                                    id={`variant-active-${idx}`}
+                                                />
+                                                <Label
+                                                    htmlFor={`variant-active-${idx}`}
+                                                >
+                                                    Active
+                                                </Label>
                                             </div>
                                         </div>
                                     </div>
@@ -268,30 +525,51 @@ export default function Create({ categories, brands }: Props) {
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between">
                             <CardTitle>Images</CardTitle>
-                            <Button type="button" variant="outline" size="sm" onClick={addImage}>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={addImage}
+                            >
                                 <Upload className="mr-2 h-4 w-4" /> Add Image
                             </Button>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {data.images.length === 0 ? (
-                                <p className="text-sm text-muted-foreground">No images. Upload JPG, PNG or WEBP (max 5MB).</p>
+                                <p className="text-muted-foreground text-sm">
+                                    No images. Upload JPG, PNG or WEBP (max
+                                    5MB).
+                                </p>
                             ) : (
                                 data.images.map((image, idx) => (
-                                    <div key={idx} className="rounded-lg border p-4 space-y-3">
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-sm font-medium flex items-center gap-2">
-                                                <ImageIcon className="h-4 w-4" /> Image {idx + 1}
+                                    <div
+                                        key={idx}
+                                        className="space-y-3 rounded-lg border p-4"
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            <span className="flex items-center gap-2 text-sm font-medium">
+                                                <ImageIcon className="h-4 w-4" />{' '}
+                                                Image {idx + 1}
                                             </span>
-                                            <Button type="button" variant="ghost" size="sm" onClick={() => removeImage(idx)}>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => removeImage(idx)}
+                                            >
                                                 <X className="h-4 w-4" />
                                             </Button>
                                         </div>
                                         {image.preview ? (
                                             <div className="h-32 w-full overflow-hidden rounded border">
-                                                <img src={image.preview} alt="Preview" className="h-full w-full object-cover" />
+                                                <img
+                                                    src={image.preview}
+                                                    alt="Preview"
+                                                    className="h-full w-full object-cover"
+                                                />
                                             </div>
                                         ) : (
-                                            <div className="h-32 w-full rounded border border-dashed flex items-center justify-center bg-muted">
+                                            <div className="bg-muted flex h-32 w-full items-center justify-center rounded border border-dashed">
                                                 <ImageIcon className="h-8 w-8 opacity-20" />
                                             </div>
                                         )}
@@ -301,30 +579,83 @@ export default function Create({ categories, brands }: Props) {
                                                 type="file"
                                                 accept="image/jpeg,image/png,image/webp"
                                                 onChange={(e) => {
-                                                    const file = e.target.files?.[0] || null;
-                                                    if (file) updateImage(idx, 'file', file);
+                                                    const file =
+                                                        e.target.files?.[0] ||
+                                                        null;
+                                                    if (file)
+                                                        updateImage(
+                                                            idx,
+                                                            'file',
+                                                            file,
+                                                        );
                                                 }}
                                             />
-                                            <InputError message={(errors as Record<string, string>)[`images.${idx}.file`]} />
+                                            <InputError
+                                                message={
+                                                    (
+                                                        errors as Record<
+                                                            string,
+                                                            string
+                                                        >
+                                                    )[`images.${idx}.file`]
+                                                }
+                                            />
                                         </div>
                                         <div className="grid gap-3 md:grid-cols-3">
                                             <div className="space-y-1">
                                                 <Label>Alt Text</Label>
-                                                <Input value={image.alt_text} onChange={(e) => updateImage(idx, 'alt_text', e.target.value)} placeholder="Alt for accessibility" />
+                                                <Input
+                                                    value={image.alt_text}
+                                                    onChange={(e) =>
+                                                        updateImage(
+                                                            idx,
+                                                            'alt_text',
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    placeholder="Alt for accessibility"
+                                                />
                                             </div>
                                             <div className="space-y-1">
                                                 <Label>Sort Order</Label>
-                                                <Input type="number" value={image.sort_order} onChange={(e) => updateImage(idx, 'sort_order', e.target.value)} />
+                                                <Input
+                                                    type="number"
+                                                    value={image.sort_order}
+                                                    onChange={(e) =>
+                                                        updateImage(
+                                                            idx,
+                                                            'sort_order',
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                />
                                             </div>
                                             <div className="flex items-center gap-2 pt-6">
-                                                <input type="checkbox" checked={image.is_primary} onChange={(e) => updateImage(idx, 'is_primary', e.target.checked)} id={`image-primary-${idx}`} />
-                                                <Label htmlFor={`image-primary-${idx}`}>Primary</Label>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={image.is_primary}
+                                                    onChange={(e) =>
+                                                        updateImage(
+                                                            idx,
+                                                            'is_primary',
+                                                            e.target.checked,
+                                                        )
+                                                    }
+                                                    id={`image-primary-${idx}`}
+                                                />
+                                                <Label
+                                                    htmlFor={`image-primary-${idx}`}
+                                                >
+                                                    Primary
+                                                </Label>
                                             </div>
                                         </div>
                                     </div>
                                 ))
                             )}
-                            {errors.images && <InputError message={errors.images} />}
+                            {errors.images && (
+                                <InputError message={errors.images} />
+                            )}
                         </CardContent>
                     </Card>
 

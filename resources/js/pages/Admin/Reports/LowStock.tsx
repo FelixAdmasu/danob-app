@@ -8,8 +8,22 @@ import { StatCard } from '@/components/stat-card';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableEmpty,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import { ReportExportButton } from '@/components/report-export-button';
 import { AlertTriangle, Layers, Package } from 'lucide-react';
 import * as ProductRoutes from '@/routes/admin/products';
@@ -60,7 +74,11 @@ export default function LowStockReport({ variants, counts, filters }: Props) {
     const clearFilters = () => {
         setStatus('attention');
         setSearch('');
-        router.get(ReportRoutes.lowStock().url, {}, { preserveState: true, replace: true });
+        router.get(
+            ReportRoutes.lowStock().url,
+            {},
+            { preserveState: true, replace: true },
+        );
     };
 
     return (
@@ -74,16 +92,35 @@ export default function LowStockReport({ variants, counts, filters }: Props) {
                 />
 
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    <StatCard label="Low Stock" value={counts.low} icon={AlertTriangle} tone="warning" />
-                    <StatCard label="Out of Stock" value={counts.out} icon={Package} tone="danger" />
-                    <StatCard label="Monitored Variants" value={counts.monitored} icon={Layers} />
+                    <StatCard
+                        label="Low Stock"
+                        value={counts.low}
+                        icon={AlertTriangle}
+                        tone="warning"
+                    />
+                    <StatCard
+                        label="Out of Stock"
+                        value={counts.out}
+                        icon={Package}
+                        tone="danger"
+                    />
+                    <StatCard
+                        label="Monitored Variants"
+                        value={counts.monitored}
+                        icon={Layers}
+                    />
                 </div>
 
                 <FilterPanel
                     onSubmit={handleFilter}
                     onClear={clearFilters}
                     activeCount={activeCount}
-                    actions={<ReportExportButton url={ReportRoutes.lowStock.export().url} filters={filters} />}
+                    actions={
+                        <ReportExportButton
+                            url={ReportRoutes.lowStock.export().url}
+                            filters={filters}
+                        />
+                    }
                 >
                     <FilterField label="Status">
                         <Select value={status} onValueChange={setStatus}>
@@ -91,14 +128,24 @@ export default function LowStockReport({ variants, counts, filters }: Props) {
                                 <SelectValue placeholder="Needs attention" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="attention">Needs Attention</SelectItem>
+                                <SelectItem value="attention">
+                                    Needs Attention
+                                </SelectItem>
                                 <SelectItem value="low">Low Stock</SelectItem>
-                                <SelectItem value="out">Out of Stock</SelectItem>
-                                <SelectItem value="monitored">All Monitored Variants</SelectItem>
+                                <SelectItem value="out">
+                                    Out of Stock
+                                </SelectItem>
+                                <SelectItem value="monitored">
+                                    All Monitored Variants
+                                </SelectItem>
                             </SelectContent>
                         </Select>
                     </FilterField>
-                    <FilterField label="Search" htmlFor="search" className="sm:col-span-2">
+                    <FilterField
+                        label="Search"
+                        htmlFor="search"
+                        className="sm:col-span-2"
+                    >
                         <Input
                             id="search"
                             placeholder="Search by product, variant or SKU..."
@@ -112,8 +159,9 @@ export default function LowStockReport({ variants, counts, filters }: Props) {
                     <CardHeader>
                         <div className="flex flex-wrap items-center justify-between gap-2">
                             <CardTitle>All Variants</CardTitle>
-                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
-                                {variants.total.toLocaleString()} record{variants.total === 1 ? '' : 's'}
+                            <span className="text-muted-foreground text-xs font-medium tabular-nums">
+                                {variants.total.toLocaleString()} record
+                                {variants.total === 1 ? '' : 's'}
                             </span>
                         </div>
                     </CardHeader>
@@ -124,8 +172,12 @@ export default function LowStockReport({ variants, counts, filters }: Props) {
                                     <TableHead>Product</TableHead>
                                     <TableHead>Variant</TableHead>
                                     <TableHead>SKU</TableHead>
-                                    <TableHead className="text-right">Quantity</TableHead>
-                                    <TableHead className="text-right">Threshold</TableHead>
+                                    <TableHead className="text-right">
+                                        Quantity
+                                    </TableHead>
+                                    <TableHead className="text-right">
+                                        Threshold
+                                    </TableHead>
                                     <TableHead>Monitoring</TableHead>
                                     <TableHead>Status</TableHead>
                                     <TableHead>Action</TableHead>
@@ -133,24 +185,49 @@ export default function LowStockReport({ variants, counts, filters }: Props) {
                             </TableHeader>
                             <TableBody>
                                 {variants.data.length === 0 ? (
-                                    <TableEmpty colSpan={8}>No low-stock variants.</TableEmpty>
+                                    <TableEmpty colSpan={8}>
+                                        No low-stock variants.
+                                    </TableEmpty>
                                 ) : (
                                     variants.data.map((v) => (
                                         <TableRow key={v.id}>
-                                            <TableCell>{v.product.name}</TableCell>
+                                            <TableCell>
+                                                {v.product.name}
+                                            </TableCell>
                                             <TableCell>{v.name}</TableCell>
-                                            <TableCell className="font-mono">{v.sku || '—'}</TableCell>
-                                            <TableCell className="text-right font-mono">{v.quantity}</TableCell>
-                                            <TableCell className="text-right font-mono">{v.low_stock_threshold ?? '—'}</TableCell>
-                                            <TableCell>
-                                                {v.low_stock_threshold === null ? 'Unmonitored' : 'Monitored'}
+                                            <TableCell className="font-mono">
+                                                {v.sku || '—'}
+                                            </TableCell>
+                                            <TableCell className="text-right font-mono">
+                                                {v.quantity}
+                                            </TableCell>
+                                            <TableCell className="text-right font-mono">
+                                                {v.low_stock_threshold ?? '—'}
                                             </TableCell>
                                             <TableCell>
-                                                <StatusBadge status={v.stock_status} />
+                                                {v.low_stock_threshold === null
+                                                    ? 'Unmonitored'
+                                                    : 'Monitored'}
                                             </TableCell>
                                             <TableCell>
-                                                <Link href={ProductRoutes.show(v.product.id).url}>
-                                                    <Button variant="ghost" size="sm">View Product</Button>
+                                                <StatusBadge
+                                                    status={v.stock_status}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Link
+                                                    href={
+                                                        ProductRoutes.show(
+                                                            v.product.id,
+                                                        ).url
+                                                    }
+                                                >
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                    >
+                                                        View Product
+                                                    </Button>
                                                 </Link>
                                             </TableCell>
                                         </TableRow>
@@ -158,7 +235,12 @@ export default function LowStockReport({ variants, counts, filters }: Props) {
                                 )}
                             </TableBody>
                         </Table>
-                        {variants.last_page > 1 && <Pagination links={variants.links} className="px-6 pt-4 pb-2" />}
+                        {variants.last_page > 1 && (
+                            <Pagination
+                                links={variants.links}
+                                className="px-6 pt-4 pb-2"
+                            />
+                        )}
                     </CardContent>
                 </Card>
             </div>

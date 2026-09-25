@@ -5,7 +5,11 @@ import { Badge, type BadgeVariant } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import * as NotificationRoutes from '@/routes/admin/notifications';
 import { Bell, Check, Loader2, RotateCw } from 'lucide-react';
-import type { NotificationItem, NotificationsPayload, SharedNotifications } from '@/types';
+import type {
+    NotificationItem,
+    NotificationsPayload,
+    SharedNotifications,
+} from '@/types';
 
 /**
  * Severity → the app's existing badge tones (Phase 1 vocabulary): success
@@ -57,7 +61,9 @@ async function post(url: string): Promise<NotificationsPayload> {
     });
 
     if (!response.ok) {
-        throw new Error(`Notifications request failed with status ${response.status}`);
+        throw new Error(
+            `Notifications request failed with status ${response.status}`,
+        );
     }
 
     return (await response.json()) as NotificationsPayload;
@@ -119,7 +125,9 @@ export function NotificationCenter({ className }: { className?: string }) {
             });
 
             if (!response.ok) {
-                throw new Error(`Notifications failed with status ${response.status}`);
+                throw new Error(
+                    `Notifications failed with status ${response.status}`,
+                );
             }
 
             apply((await response.json()) as NotificationsPayload);
@@ -159,7 +167,8 @@ export function NotificationCenter({ className }: { className?: string }) {
 
         document.addEventListener('pointerdown', handlePointerDown);
 
-        return () => document.removeEventListener('pointerdown', handlePointerDown);
+        return () =>
+            document.removeEventListener('pointerdown', handlePointerDown);
     }, []);
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -203,7 +212,10 @@ export function NotificationCenter({ className }: { className?: string }) {
         }
     };
 
-    const unreadLabel = unreadCount === 0 ? 'Notifications' : `Notifications (${unreadCount} unread)`;
+    const unreadLabel =
+        unreadCount === 0
+            ? 'Notifications'
+            : `Notifications (${unreadCount} unread)`;
 
     return (
         <div
@@ -222,7 +234,7 @@ export function NotificationCenter({ className }: { className?: string }) {
                 {unreadCount > 0 && (
                     <span
                         aria-hidden="true"
-                        className="bg-primary text-primary-foreground absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] leading-none font-semibold"
+                        className="bg-primary text-primary-foreground absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] leading-none font-semibold"
                     >
                         {unreadCount > 99 ? '99+' : unreadCount}
                     </span>
@@ -230,9 +242,11 @@ export function NotificationCenter({ className }: { className?: string }) {
             </button>
 
             {open && (
-                <div className="border-border/70 bg-background absolute right-0 top-full z-50 mt-2 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-xl border shadow-lg dark:border-border/60">
+                <div className="border-border/70 bg-background dark:border-border/60 absolute top-full right-0 z-50 mt-2 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-xl border shadow-lg">
                     <div className="border-border/60 flex items-center justify-between gap-2 border-b px-3 py-2">
-                        <span className="text-sm font-semibold">Notifications</span>
+                        <span className="text-sm font-semibold">
+                            Notifications
+                        </span>
                         <span className="flex items-center gap-2">
                             {unreadCount > 0 && (
                                 <span className="text-muted-foreground text-xs">
@@ -255,7 +269,10 @@ export function NotificationCenter({ className }: { className?: string }) {
                     <div className="max-h-96 overflow-y-auto">
                         {loading && items === null ? (
                             <p className="text-muted-foreground flex items-center justify-center gap-2 px-3 py-6 text-center text-sm">
-                                <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
+                                <Loader2
+                                    aria-hidden="true"
+                                    className="h-4 w-4 animate-spin"
+                                />
                                 Loading…
                             </p>
                         ) : failed ? (
@@ -266,7 +283,10 @@ export function NotificationCenter({ className }: { className?: string }) {
                                     onClick={() => void load()}
                                     className="text-foreground focus-visible:ring-ring mt-2 inline-flex items-center gap-1.5 rounded-sm text-xs font-medium underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:outline-none"
                                 >
-                                    <RotateCw aria-hidden="true" className="h-3 w-3" />
+                                    <RotateCw
+                                        aria-hidden="true"
+                                        className="h-3 w-3"
+                                    />
                                     Try again
                                 </button>
                             </div>
@@ -275,10 +295,15 @@ export function NotificationCenter({ className }: { className?: string }) {
                                 You’re all caught up.
                             </p>
                         ) : (
-                            <ul aria-label="Recent notifications" className="py-1">
+                            <ul
+                                aria-label="Recent notifications"
+                                className="py-1"
+                            >
                                 {items.map((item) => {
                                     const unread = !item.read;
-                                    const href = item.url ? appHref(item.url) : null;
+                                    const href = item.url
+                                        ? appHref(item.url)
+                                        : null;
                                     const body = (
                                         <span className="text-foreground block text-sm leading-snug">
                                             {item.message}
@@ -297,13 +322,23 @@ export function NotificationCenter({ className }: { className?: string }) {
                                                 aria-hidden="true"
                                                 className={cn(
                                                     'mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full',
-                                                    unread ? 'bg-primary' : 'bg-transparent',
+                                                    unread
+                                                        ? 'bg-primary'
+                                                        : 'bg-transparent',
                                                 )}
                                             />
                                             <div className="min-w-0 flex-1 space-y-1">
-                                                {unread && <span className="sr-only">Unread. </span>}
+                                                {unread && (
+                                                    <span className="sr-only">
+                                                        Unread.{' '}
+                                                    </span>
+                                                )}
                                                 <Badge
-                                                    variant={SEVERITY_TONES[item.severity] ?? 'secondary'}
+                                                    variant={
+                                                        SEVERITY_TONES[
+                                                            item.severity
+                                                        ] ?? 'secondary'
+                                                    }
                                                 >
                                                     {item.title}
                                                 </Badge>
@@ -320,7 +355,8 @@ export function NotificationCenter({ className }: { className?: string }) {
                                                                 event.ctrlKey ||
                                                                 event.shiftKey ||
                                                                 event.altKey ||
-                                                                event.button !== 0
+                                                                event.button !==
+                                                                    0
                                                             ) {
                                                                 return;
                                                             }
@@ -334,7 +370,13 @@ export function NotificationCenter({ className }: { className?: string }) {
                                                             // the toast explains the read that
                                                             // did not happen.
                                                             event.preventDefault();
-                                                            void markRead(item).finally(() => router.visit(href));
+                                                            void markRead(
+                                                                item,
+                                                            ).finally(() =>
+                                                                router.visit(
+                                                                    href,
+                                                                ),
+                                                            );
                                                         }}
                                                         className="hover:text-foreground focus-visible:ring-ring block rounded-sm text-sm leading-snug transition-colors focus-visible:ring-2 focus-visible:outline-none"
                                                     >
@@ -350,12 +392,17 @@ export function NotificationCenter({ className }: { className?: string }) {
                                             {unread && (
                                                 <button
                                                     type="button"
-                                                    onClick={() => void markRead(item)}
+                                                    onClick={() =>
+                                                        void markRead(item)
+                                                    }
                                                     disabled={busy}
                                                     aria-label={`Mark “${item.title}” notification as read`}
                                                     className="text-muted-foreground hover:text-foreground focus-visible:ring-ring mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-60"
                                                 >
-                                                    <Check aria-hidden="true" className="h-3.5 w-3.5" />
+                                                    <Check
+                                                        aria-hidden="true"
+                                                        className="h-3.5 w-3.5"
+                                                    />
                                                 </button>
                                             )}
                                         </li>

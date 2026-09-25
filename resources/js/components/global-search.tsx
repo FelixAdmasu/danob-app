@@ -55,11 +55,17 @@ export function GlobalSearch({ className }: { className?: string }) {
         let index = -1;
         return groups.map((group) => ({
             ...group,
-            items: group.items.map((item): IndexedResult => ({ ...item, index: (index += 1) })),
+            items: group.items.map((item): IndexedResult => ({
+                ...item,
+                index: (index += 1),
+            })),
         }));
     }, [groups]);
 
-    const flatItems = useMemo(() => indexedGroups.flatMap((group) => group.items), [indexedGroups]);
+    const flatItems = useMemo(
+        () => indexedGroups.flatMap((group) => group.items),
+        [indexedGroups],
+    );
 
     // Debounced, abortable server lookup. An empty term resets everything
     // without ever issuing a request.
@@ -84,23 +90,33 @@ export function GlobalSearch({ className }: { className?: string }) {
             setFailed(false);
 
             try {
-                const response = await fetch(AdminRoutes.search({ query: { search: query } }).url, {
-                    headers: {
-                        Accept: 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest',
+                const response = await fetch(
+                    AdminRoutes.search({ query: { search: query } }).url,
+                    {
+                        headers: {
+                            Accept: 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        signal: controller.signal,
                     },
-                    signal: controller.signal,
-                });
+                );
 
                 if (!response.ok) {
-                    throw new Error(`Search failed with status ${response.status}`);
+                    throw new Error(
+                        `Search failed with status ${response.status}`,
+                    );
                 }
 
-                const payload = (await response.json()) as { groups?: SearchGroup[] };
+                const payload = (await response.json()) as {
+                    groups?: SearchGroup[];
+                };
                 setGroups(Array.isArray(payload.groups) ? payload.groups : []);
                 setActive(-1);
             } catch (error) {
-                if (error instanceof DOMException && error.name === 'AbortError') {
+                if (
+                    error instanceof DOMException &&
+                    error.name === 'AbortError'
+                ) {
                     return;
                 }
 
@@ -129,7 +145,8 @@ export function GlobalSearch({ className }: { className?: string }) {
 
         document.addEventListener('pointerdown', handlePointerDown);
 
-        return () => document.removeEventListener('pointerdown', handlePointerDown);
+        return () =>
+            document.removeEventListener('pointerdown', handlePointerDown);
     }, []);
 
     // Keep the keyboard-highlighted result visible inside the panel.
@@ -138,7 +155,9 @@ export function GlobalSearch({ className }: { className?: string }) {
             return;
         }
 
-        document.getElementById(`global-search-result-${active}`)?.scrollIntoView({ block: 'nearest' });
+        document
+            .getElementById(`global-search-result-${active}`)
+            ?.scrollIntoView({ block: 'nearest' });
     }, [active]);
 
     const goTo = (item: IndexedResult) => {
@@ -168,7 +187,9 @@ export function GlobalSearch({ className }: { className?: string }) {
             setActive((current) => (current + 1) % flatItems.length);
         } else if (event.key === 'ArrowUp') {
             event.preventDefault();
-            setActive((current) => (current <= 0 ? flatItems.length - 1 : current - 1));
+            setActive((current) =>
+                current <= 0 ? flatItems.length - 1 : current - 1,
+            );
         } else if (event.key === 'Enter') {
             const target = flatItems[active >= 0 ? active : 0];
             if (target) {
@@ -180,7 +201,10 @@ export function GlobalSearch({ className }: { className?: string }) {
 
     return (
         <div ref={wrapperRef} className={cn('relative', className)}>
-            <Search aria-hidden="true" className="text-muted-foreground pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+            <Search
+                aria-hidden="true"
+                className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2"
+            />
             <Input
                 type="text"
                 value={term}
@@ -200,34 +224,56 @@ export function GlobalSearch({ className }: { className?: string }) {
                 aria-expanded={showPanel}
                 aria-controls="global-search-results"
                 aria-autocomplete="list"
-                aria-activedescendant={active >= 0 ? `global-search-result-${active}` : undefined}
+                aria-activedescendant={
+                    active >= 0 ? `global-search-result-${active}` : undefined
+                }
                 autoComplete="off"
                 spellCheck={false}
-                className="h-9 pl-9 pr-9"
+                className="h-9 pr-9 pl-9"
             />
             {loading && (
-                <Loader2 aria-hidden="true" className="text-muted-foreground absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin" />
+                <Loader2
+                    aria-hidden="true"
+                    className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 animate-spin"
+                />
             )}
 
             {showPanel && (
                 <div
                     id="global-search-results"
-                    className="border-border/70 bg-background absolute right-0 top-full z-50 mt-2 w-[min(26rem,calc(100vw-2rem))] overflow-hidden rounded-xl border shadow-lg dark:border-border/60"
+                    className="border-border/70 bg-background dark:border-border/60 absolute top-full right-0 z-50 mt-2 w-[min(26rem,calc(100vw-2rem))] overflow-hidden rounded-xl border shadow-lg"
                 >
-                    <div role="listbox" aria-label="Search results" className="max-h-80 overflow-y-auto py-1">
+                    <div
+                        role="listbox"
+                        aria-label="Search results"
+                        className="max-h-80 overflow-y-auto py-1"
+                    >
                         {loading && groups.length === 0 ? (
-                            <p className="text-muted-foreground px-3 py-4 text-center text-sm">Searching…</p>
+                            <p className="text-muted-foreground px-3 py-4 text-center text-sm">
+                                Searching…
+                            </p>
                         ) : failed ? (
-                            <p className="text-muted-foreground px-3 py-4 text-center text-sm">Search failed. Try again.</p>
+                            <p className="text-muted-foreground px-3 py-4 text-center text-sm">
+                                Search failed. Try again.
+                            </p>
                         ) : flatItems.length === 0 ? (
                             <p className="text-muted-foreground px-3 py-4 text-center text-sm">
                                 No results for “{trimmed}”.
                             </p>
                         ) : (
                             indexedGroups.map((group) => (
-                                <div key={group.key} role="group" aria-label={group.label}>
-                                    <div aria-hidden="true" className="border-border/60 text-muted-foreground flex items-center gap-2 border-b px-3 py-1.5">
-                                        <span className="text-[11px] font-semibold uppercase tracking-wider">{group.label}</span>
+                                <div
+                                    key={group.key}
+                                    role="group"
+                                    aria-label={group.label}
+                                >
+                                    <div
+                                        aria-hidden="true"
+                                        className="border-border/60 text-muted-foreground flex items-center gap-2 border-b px-3 py-1.5"
+                                    >
+                                        <span className="text-[11px] font-semibold tracking-wider uppercase">
+                                            {group.label}
+                                        </span>
                                         <span className="bg-border/70 h-px flex-1" />
                                     </div>
                                     {group.items.map((item) => (
@@ -235,19 +281,36 @@ export function GlobalSearch({ className }: { className?: string }) {
                                             key={`${group.key}-${item.index}`}
                                             id={`global-search-result-${item.index}`}
                                             role="option"
-                                            aria-selected={active === item.index}
-                                            onMouseMove={() => setActive(item.index)}
+                                            aria-selected={
+                                                active === item.index
+                                            }
+                                            onMouseMove={() =>
+                                                setActive(item.index)
+                                            }
                                             onClick={() => goTo(item)}
                                             className={cn(
                                                 'flex cursor-pointer items-center justify-between gap-3 px-3 py-2 text-left outline-none',
-                                                active === item.index ? 'bg-muted' : 'hover:bg-muted/70',
+                                                active === item.index
+                                                    ? 'bg-muted'
+                                                    : 'hover:bg-muted/70',
                                             )}
                                         >
                                             <span className="min-w-0">
-                                                <span className="block truncate text-sm font-medium">{item.label}</span>
-                                                {item.subtitle && <span className="text-muted-foreground block truncate text-xs">{item.subtitle}</span>}
+                                                <span className="block truncate text-sm font-medium">
+                                                    {item.label}
+                                                </span>
+                                                {item.subtitle && (
+                                                    <span className="text-muted-foreground block truncate text-xs">
+                                                        {item.subtitle}
+                                                    </span>
+                                                )}
                                             </span>
-                                            {item.status && <StatusBadge status={item.status} className="shrink-0" />}
+                                            {item.status && (
+                                                <StatusBadge
+                                                    status={item.status}
+                                                    className="shrink-0"
+                                                />
+                                            )}
                                         </div>
                                     ))}
                                 </div>

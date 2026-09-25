@@ -48,15 +48,12 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
             <div className="flex flex-col gap-6 lg:flex-row lg:gap-10">
                 <aside className="w-full lg:w-60 lg:shrink-0">
                     {auth.user && (
-                        <div className="mb-3 flex items-center gap-3 rounded-xl border border-border bg-card p-3 shadow-xs dark:shadow-none">
-                            <UserInfo
-                                user={auth.user}
-                                showEmail
-                            />
+                        <div className="border-border bg-card mb-3 flex items-center gap-3 rounded-xl border p-3 shadow-xs dark:shadow-none">
+                            <UserInfo user={auth.user} showEmail />
                         </div>
                     )}
                     <nav
-                        className="flex flex-col gap-1 rounded-xl border border-border bg-card p-2 shadow-xs dark:shadow-none"
+                        className="border-border bg-card flex flex-col gap-1 rounded-xl border p-2 shadow-xs dark:shadow-none"
                         aria-label="Settings"
                     >
                         {sidebarNavItems.map((item, index) => {
@@ -68,14 +65,16 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                     className={cn(
                                         'flex h-9 items-center gap-2 rounded-lg px-3 text-sm transition-colors duration-200',
                                         active
-                                            ? 'bg-primary font-medium text-primary-foreground dark:bg-[#24411B] dark:text-foreground'
+                                            ? 'bg-primary text-primary-foreground dark:text-foreground font-medium dark:bg-[#24411B]'
                                             : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                                     )}
                                 >
                                     {item.icon && (
                                         <item.icon className="h-4 w-4 shrink-0" />
                                     )}
-                                    <span className="truncate">{item.title}</span>
+                                    <span className="truncate">
+                                        {item.title}
+                                    </span>
                                 </Link>
                             );
                         })}

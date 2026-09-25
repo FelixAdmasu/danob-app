@@ -3,14 +3,31 @@ import { useState, useMemo } from 'react';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import InventoryRoutes from '@/routes/admin/inventory';
 import { Plus } from 'lucide-react';
 
-type Variant = { id: number; name: string; sku: string | null; quantity: number };
+type Variant = {
+    id: number;
+    name: string;
+    sku: string | null;
+    quantity: number;
+};
 type Product = { id: number; name: string; slug: string; variants: Variant[] };
 
 type Props = {
@@ -27,8 +44,16 @@ export default function OpeningStock({ products }: Props) {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [processing, setProcessing] = useState(false);
 
-    const selectedProduct = useMemo(() => products.find((p) => String(p.id) === productId) || null, [products, productId]);
-    const selectedVariant = useMemo(() => selectedProduct?.variants.find((v) => String(v.id) === variantId) || null, [selectedProduct, variantId]);
+    const selectedProduct = useMemo(
+        () => products.find((p) => String(p.id) === productId) || null,
+        [products, productId],
+    );
+    const selectedVariant = useMemo(
+        () =>
+            selectedProduct?.variants.find((v) => String(v.id) === variantId) ||
+            null,
+        [selectedProduct, variantId],
+    );
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -67,12 +92,19 @@ export default function OpeningStock({ products }: Props) {
                     description="Establish initial inventory for a variant. This creates an opening_balance ledger entry."
                 />
 
-                {flashSuccess && <div className="rounded border border-green-200 bg-green-50 dark:border-[#477158] dark:bg-[#15261C] px-4 py-3 text-sm text-green-800 dark:text-[#95E6B6]">{flashSuccess}</div>}
+                {flashSuccess && (
+                    <div className="rounded border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800 dark:border-[#477158] dark:bg-[#15261C] dark:text-[#95E6B6]">
+                        {flashSuccess}
+                    </div>
+                )}
 
                 <Card>
                     <CardHeader>
                         <CardTitle>Set Opening Balance</CardTitle>
-                        <CardDescription>Select product and variant, then enter the opening quantity. Allowed only once per variant.</CardDescription>
+                        <CardDescription>
+                            Select product and variant, then enter the opening
+                            quantity. Allowed only once per variant.
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSubmit} className="space-y-6">
@@ -91,8 +123,13 @@ export default function OpeningStock({ products }: Props) {
                                         </SelectTrigger>
                                         <SelectContent>
                                             {products.map((p) => (
-                                                <SelectItem key={p.id} value={String(p.id)}>
-                                                    {p.name} ({p.variants.length} variants)
+                                                <SelectItem
+                                                    key={p.id}
+                                                    value={String(p.id)}
+                                                >
+                                                    {p.name} (
+                                                    {p.variants.length}{' '}
+                                                    variants)
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
@@ -101,47 +138,110 @@ export default function OpeningStock({ products }: Props) {
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Variant *</Label>
-                                    <Select value={variantId} onValueChange={setVariantId} disabled={!selectedProduct}>
+                                    <Select
+                                        value={variantId}
+                                        onValueChange={setVariantId}
+                                        disabled={!selectedProduct}
+                                    >
                                         <SelectTrigger>
-                                            <SelectValue placeholder={selectedProduct ? 'Select variant' : 'Select product first'} />
+                                            <SelectValue
+                                                placeholder={
+                                                    selectedProduct
+                                                        ? 'Select variant'
+                                                        : 'Select product first'
+                                                }
+                                            />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {selectedProduct?.variants.map((v) => (
-                                                <SelectItem key={v.id} value={String(v.id)}>
-                                                    {v.name} {v.sku ? `(${v.sku})` : ''} — Qty: {v.quantity}
-                                                </SelectItem>
-                                            ))}
+                                            {selectedProduct?.variants.map(
+                                                (v) => (
+                                                    <SelectItem
+                                                        key={v.id}
+                                                        value={String(v.id)}
+                                                    >
+                                                        {v.name}{' '}
+                                                        {v.sku
+                                                            ? `(${v.sku})`
+                                                            : ''}{' '}
+                                                        — Qty: {v.quantity}
+                                                    </SelectItem>
+                                                ),
+                                            )}
                                         </SelectContent>
                                     </Select>
-                                    <InputError message={errors.product_variant_id} />
+                                    <InputError
+                                        message={errors.product_variant_id}
+                                    />
                                 </div>
                             </div>
 
                             {selectedVariant && (
-                                <div className="rounded border bg-muted/30 p-4 text-sm">
+                                <div className="bg-muted/30 rounded border p-4 text-sm">
                                     <p>
-                                        Current quantity for <span className="font-medium">{selectedVariant.name}</span>: <span className="font-bold">{selectedVariant.quantity}</span>
+                                        Current quantity for{' '}
+                                        <span className="font-medium">
+                                            {selectedVariant.name}
+                                        </span>
+                                        :{' '}
+                                        <span className="font-bold">
+                                            {selectedVariant.quantity}
+                                        </span>
                                     </p>
-                                    <p className="text-xs text-muted-foreground mt-1">Opening stock will set this to the new quantity and record a ledger entry.</p>
+                                    <p className="text-muted-foreground mt-1 text-xs">
+                                        Opening stock will set this to the new
+                                        quantity and record a ledger entry.
+                                    </p>
                                 </div>
                             )}
 
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="quantity">Opening Quantity *</Label>
-                                    <Input id="quantity" type="number" min={0} value={quantity} onChange={(e) => setQuantity(e.target.value)} required placeholder="e.g. 100" />
+                                    <Label htmlFor="quantity">
+                                        Opening Quantity *
+                                    </Label>
+                                    <Input
+                                        id="quantity"
+                                        type="number"
+                                        min={0}
+                                        value={quantity}
+                                        onChange={(e) =>
+                                            setQuantity(e.target.value)
+                                        }
+                                        required
+                                        placeholder="e.g. 100"
+                                    />
                                     <InputError message={errors.quantity} />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="notes">Notes (optional)</Label>
-                                    <Input id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Reason or reference" />
+                                    <Label htmlFor="notes">
+                                        Notes (optional)
+                                    </Label>
+                                    <Input
+                                        id="notes"
+                                        value={notes}
+                                        onChange={(e) =>
+                                            setNotes(e.target.value)
+                                        }
+                                        placeholder="Reason or reference"
+                                    />
                                     <InputError message={errors.notes} />
                                 </div>
                             </div>
 
                             <div className="flex gap-2">
-                                <Button type="submit" disabled={processing || !productId || !variantId || quantity === ''}>
-                                    <Plus className="mr-2 h-4 w-4" /> {processing ? 'Saving...' : 'Record Opening Stock'}
+                                <Button
+                                    type="submit"
+                                    disabled={
+                                        processing ||
+                                        !productId ||
+                                        !variantId ||
+                                        quantity === ''
+                                    }
+                                >
+                                    <Plus className="mr-2 h-4 w-4" />{' '}
+                                    {processing
+                                        ? 'Saving...'
+                                        : 'Record Opening Stock'}
                                 </Button>
                                 <Link href="/admin">
                                     <Button type="button" variant="outline">

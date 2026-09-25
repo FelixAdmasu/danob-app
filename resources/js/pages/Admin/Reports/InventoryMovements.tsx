@@ -7,8 +7,22 @@ import { StatCard } from '@/components/stat-card';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableEmpty,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import { ReportExportButton } from '@/components/report-export-button';
 import { ArrowDownToLine, ArrowUpFromLine, History } from 'lucide-react';
 import ReportRoutes from '@/routes/admin/reports';
@@ -27,7 +41,11 @@ type Movement = {
     reference_id: number | null;
     user_id: number | null;
     created_at: string;
-    variant: { id: number; name: string; product: { id: number; name: string } };
+    variant: {
+        id: number;
+        name: string;
+        product: { id: number; name: string };
+    };
     user: { id: number; name: string } | null;
 };
 
@@ -65,11 +83,27 @@ function referenceLabel(movement: Movement): string {
     return `${segments[segments.length - 1]} #${movement.reference_id}`;
 }
 
-export default function InventoryMovements({ movements, summary, filters, products, variants, users, movement_types }: Props) {
-    const [productId, setProductId] = useState<string>(filters.product_id ? String(filters.product_id) : 'all');
-    const [variantId, setVariantId] = useState<string>(filters.variant_id ? String(filters.variant_id) : 'all');
-    const [movementType, setMovementType] = useState<string>(filters.movement_type || 'all');
-    const [userId, setUserId] = useState<string>(filters.user_id ? String(filters.user_id) : 'all');
+export default function InventoryMovements({
+    movements,
+    summary,
+    filters,
+    products,
+    variants,
+    users,
+    movement_types,
+}: Props) {
+    const [productId, setProductId] = useState<string>(
+        filters.product_id ? String(filters.product_id) : 'all',
+    );
+    const [variantId, setVariantId] = useState<string>(
+        filters.variant_id ? String(filters.variant_id) : 'all',
+    );
+    const [movementType, setMovementType] = useState<string>(
+        filters.movement_type || 'all',
+    );
+    const [userId, setUserId] = useState<string>(
+        filters.user_id ? String(filters.user_id) : 'all',
+    );
     const [search, setSearch] = useState<string>(filters.search || '');
     const [dateFrom, setDateFrom] = useState<string>(filters.date_from || '');
     const [dateTo, setDateTo] = useState<string>(filters.date_to || '');
@@ -91,7 +125,8 @@ export default function InventoryMovements({ movements, summary, filters, produc
             {
                 product_id: productId !== 'all' ? productId : undefined,
                 variant_id: variantId !== 'all' ? variantId : undefined,
-                movement_type: movementType !== 'all' ? movementType : undefined,
+                movement_type:
+                    movementType !== 'all' ? movementType : undefined,
                 user_id: userId !== 'all' ? userId : undefined,
                 search: search || undefined,
                 date_from: dateFrom || undefined,
@@ -109,7 +144,11 @@ export default function InventoryMovements({ movements, summary, filters, produc
         setSearch('');
         setDateFrom('');
         setDateTo('');
-        router.get(ReportRoutes.inventoryMovements().url, {}, { preserveState: true, replace: true });
+        router.get(
+            ReportRoutes.inventoryMovements().url,
+            {},
+            { preserveState: true, replace: true },
+        );
     };
 
     return (
@@ -123,18 +162,40 @@ export default function InventoryMovements({ movements, summary, filters, produc
                 />
 
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    <StatCard label="Movements" value={summary.movement_count} icon={History} />
-                    <StatCard label="Units In" value={summary.units_in} icon={ArrowDownToLine} tone="success" />
-                    <StatCard label="Units Out" value={summary.units_out} icon={ArrowUpFromLine} />
+                    <StatCard
+                        label="Movements"
+                        value={summary.movement_count}
+                        icon={History}
+                    />
+                    <StatCard
+                        label="Units In"
+                        value={summary.units_in}
+                        icon={ArrowDownToLine}
+                        tone="success"
+                    />
+                    <StatCard
+                        label="Units Out"
+                        value={summary.units_out}
+                        icon={ArrowUpFromLine}
+                    />
                 </div>
 
                 <FilterPanel
                     onSubmit={handleFilter}
                     onClear={clearFilters}
                     activeCount={activeCount}
-                    actions={<ReportExportButton url={ReportRoutes.inventoryMovements.export().url} filters={filters} />}
+                    actions={
+                        <ReportExportButton
+                            url={ReportRoutes.inventoryMovements.export().url}
+                            filters={filters}
+                        />
+                    }
                 >
-                    <FilterField label="Search" htmlFor="search" className="sm:col-span-2">
+                    <FilterField
+                        label="Search"
+                        htmlFor="search"
+                        className="sm:col-span-2"
+                    >
                         <Input
                             id="search"
                             placeholder="Search by reason, variant, SKU or product..."
@@ -148,7 +209,9 @@ export default function InventoryMovements({ movements, summary, filters, produc
                                 <SelectValue placeholder="All products" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All products</SelectItem>
+                                <SelectItem value="all">
+                                    All products
+                                </SelectItem>
                                 {products.map((p) => (
                                     <SelectItem key={p.id} value={String(p.id)}>
                                         {p.name}
@@ -163,11 +226,20 @@ export default function InventoryMovements({ movements, summary, filters, produc
                                 <SelectValue placeholder="All variants" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All variants</SelectItem>
+                                <SelectItem value="all">
+                                    All variants
+                                </SelectItem>
                                 {variants
-                                    .filter((v) => productId === 'all' || String(v.product_id) === productId)
+                                    .filter(
+                                        (v) =>
+                                            productId === 'all' ||
+                                            String(v.product_id) === productId,
+                                    )
                                     .map((v) => (
-                                        <SelectItem key={v.id} value={String(v.id)}>
+                                        <SelectItem
+                                            key={v.id}
+                                            value={String(v.id)}
+                                        >
                                             {v.name}
                                         </SelectItem>
                                     ))}
@@ -175,7 +247,10 @@ export default function InventoryMovements({ movements, summary, filters, produc
                         </Select>
                     </FilterField>
                     <FilterField label="Type">
-                        <Select value={movementType} onValueChange={setMovementType}>
+                        <Select
+                            value={movementType}
+                            onValueChange={setMovementType}
+                        >
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="All types" />
                             </SelectTrigger>
@@ -205,10 +280,20 @@ export default function InventoryMovements({ movements, summary, filters, produc
                         </Select>
                     </FilterField>
                     <FilterField label="From" htmlFor="date_from">
-                        <Input id="date_from" type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
+                        <Input
+                            id="date_from"
+                            type="date"
+                            value={dateFrom}
+                            onChange={(e) => setDateFrom(e.target.value)}
+                        />
                     </FilterField>
                     <FilterField label="To" htmlFor="date_to">
-                        <Input id="date_to" type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
+                        <Input
+                            id="date_to"
+                            type="date"
+                            value={dateTo}
+                            onChange={(e) => setDateTo(e.target.value)}
+                        />
                     </FilterField>
                 </FilterPanel>
 
@@ -216,8 +301,9 @@ export default function InventoryMovements({ movements, summary, filters, produc
                     <CardHeader>
                         <div className="flex flex-wrap items-center justify-between gap-2">
                             <CardTitle>All Movements</CardTitle>
-                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
-                                {movements.total.toLocaleString()} record{movements.total === 1 ? '' : 's'}
+                            <span className="text-muted-foreground text-xs font-medium tabular-nums">
+                                {movements.total.toLocaleString()} record
+                                {movements.total === 1 ? '' : 's'}
                             </span>
                         </div>
                     </CardHeader>
@@ -228,8 +314,12 @@ export default function InventoryMovements({ movements, summary, filters, produc
                                     <TableHead>Date</TableHead>
                                     <TableHead>Product / Variant</TableHead>
                                     <TableHead>Type</TableHead>
-                                    <TableHead className="text-right">Qty</TableHead>
-                                    <TableHead className="text-right">Before → After</TableHead>
+                                    <TableHead className="text-right">
+                                        Qty
+                                    </TableHead>
+                                    <TableHead className="text-right">
+                                        Before → After
+                                    </TableHead>
                                     <TableHead>Reason</TableHead>
                                     <TableHead>Reference</TableHead>
                                     <TableHead>User</TableHead>
@@ -237,34 +327,63 @@ export default function InventoryMovements({ movements, summary, filters, produc
                             </TableHeader>
                             <TableBody>
                                 {movements.data.length === 0 ? (
-                                    <TableEmpty colSpan={8}>No inventory movements found.</TableEmpty>
+                                    <TableEmpty colSpan={8}>
+                                        No inventory movements found.
+                                    </TableEmpty>
                                 ) : (
                                     movements.data.map((m) => (
                                         <TableRow key={m.id}>
-                                            <TableCell className="text-xs">{formatDateTime(m.created_at)}</TableCell>
+                                            <TableCell className="text-xs">
+                                                {formatDateTime(m.created_at)}
+                                            </TableCell>
                                             <TableCell className="text-sm">
-                                                <div className="font-medium">{m.variant.product.name}</div>
-                                                <div className="text-xs text-muted-foreground">{m.variant.name}</div>
+                                                <div className="font-medium">
+                                                    {m.variant.product.name}
+                                                </div>
+                                                <div className="text-muted-foreground text-xs">
+                                                    {m.variant.name}
+                                                </div>
                                             </TableCell>
                                             <TableCell>
-                                                <Badge variant="secondary">{titleCase(m.movement_type)}</Badge>
+                                                <Badge variant="secondary">
+                                                    {titleCase(m.movement_type)}
+                                                </Badge>
                                             </TableCell>
-                                            <TableCell className="text-right text-sm font-mono">{m.quantity}</TableCell>
-                                            <TableCell className="text-right text-xs font-mono">
-                                                {m.quantity_before} → {m.quantity_after}
+                                            <TableCell className="text-right font-mono text-sm">
+                                                {m.quantity}
                                             </TableCell>
-                                            <TableCell className="max-w-[200px] truncate text-xs" title={m.reason || ''}>
+                                            <TableCell className="text-right font-mono text-xs">
+                                                {m.quantity_before} →{' '}
+                                                {m.quantity_after}
+                                            </TableCell>
+                                            <TableCell
+                                                className="max-w-[200px] truncate text-xs"
+                                                title={m.reason || ''}
+                                            >
                                                 {m.reason || '—'}
-                                                {m.notes && <div className="text-[10px] text-muted-foreground">{m.notes}</div>}
+                                                {m.notes && (
+                                                    <div className="text-muted-foreground text-[10px]">
+                                                        {m.notes}
+                                                    </div>
+                                                )}
                                             </TableCell>
-                                            <TableCell className="text-xs font-mono">{referenceLabel(m)}</TableCell>
-                                            <TableCell className="text-xs">{m.user?.name || '—'}</TableCell>
+                                            <TableCell className="font-mono text-xs">
+                                                {referenceLabel(m)}
+                                            </TableCell>
+                                            <TableCell className="text-xs">
+                                                {m.user?.name || '—'}
+                                            </TableCell>
                                         </TableRow>
                                     ))
                                 )}
                             </TableBody>
                         </Table>
-                        {movements.last_page > 1 && <Pagination links={movements.links} className="px-6 pt-4 pb-2" />}
+                        {movements.last_page > 1 && (
+                            <Pagination
+                                links={movements.links}
+                                className="px-6 pt-4 pb-2"
+                            />
+                        )}
                     </CardContent>
                 </Card>
             </div>

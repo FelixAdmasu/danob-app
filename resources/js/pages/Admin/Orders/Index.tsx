@@ -6,8 +6,22 @@ import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableEmpty,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import { Plus, Search } from 'lucide-react';
 import * as OrderRoutes from '@/routes/admin/orders';
 import { formatDate } from '@/lib/format';
@@ -18,7 +32,11 @@ type Order = {
     status: string;
     total: string;
     ordered_at: string;
-    customer: { id: number; company_name?: string | null; contact_name?: string | null } | null;
+    customer: {
+        id: number;
+        company_name?: string | null;
+        contact_name?: string | null;
+    } | null;
 };
 
 type PaginatedOrders = {
@@ -42,7 +60,10 @@ export default function Index({ orders, filters }: Props) {
         e.preventDefault();
         router.get(
             OrderRoutes.index().url,
-            { search: search || undefined, status: status !== 'all' ? status : undefined },
+            {
+                search: search || undefined,
+                status: status !== 'all' ? status : undefined,
+            },
             { preserveState: true, replace: true },
         );
     };
@@ -66,11 +87,16 @@ export default function Index({ orders, filters }: Props) {
 
                 <form
                     onSubmit={handleSearch}
-                    className="flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-xs transition-colors dark:border-border/60 dark:shadow-none"
+                    className="border-border/70 bg-card dark:border-border/60 flex flex-wrap items-center gap-2 rounded-xl border p-3 shadow-xs transition-colors dark:shadow-none"
                 >
                     <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input placeholder="Search reference or customer..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+                        <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                        <Input
+                            placeholder="Search reference or customer..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="pl-9"
+                        />
                     </div>
                     <Select value={status} onValueChange={setStatus}>
                         <SelectTrigger className="w-[160px]">
@@ -93,8 +119,9 @@ export default function Index({ orders, filters }: Props) {
                     <CardHeader>
                         <div className="flex flex-wrap items-center justify-between gap-2">
                             <CardTitle>All Orders</CardTitle>
-                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
-                                {orders.total.toLocaleString()} record{orders.total === 1 ? '' : 's'}
+                            <span className="text-muted-foreground text-xs font-medium tabular-nums">
+                                {orders.total.toLocaleString()} record
+                                {orders.total === 1 ? '' : 's'}
                             </span>
                         </div>
                     </CardHeader>
@@ -105,33 +132,64 @@ export default function Index({ orders, filters }: Props) {
                                     <TableHead>Reference</TableHead>
                                     <TableHead>Customer</TableHead>
                                     <TableHead>Status</TableHead>
-                                    <TableHead className="text-right">Total</TableHead>
+                                    <TableHead className="text-right">
+                                        Total
+                                    </TableHead>
                                     <TableHead>Date</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {orders.data.length === 0 ? (
-                                    <TableEmpty colSpan={5}>No orders found.</TableEmpty>
+                                    <TableEmpty colSpan={5}>
+                                        No orders found.
+                                    </TableEmpty>
                                 ) : (
                                     orders.data.map((order) => (
                                         <TableRow key={order.id}>
                                             <TableCell className="font-mono">
-                                                <Link href={OrderRoutes.show(order.id).url} className="hover:underline">
+                                                <Link
+                                                    href={
+                                                        OrderRoutes.show(
+                                                            order.id,
+                                                        ).url
+                                                    }
+                                                    className="hover:underline"
+                                                >
                                                     {order.reference_number}
                                                 </Link>
                                             </TableCell>
-                                            <TableCell>{order.customer?.company_name || order.customer?.contact_name || '—'}</TableCell>
                                             <TableCell>
-                                                <StatusBadge status={order.status} />
+                                                {order.customer?.company_name ||
+                                                    order.customer
+                                                        ?.contact_name ||
+                                                    '—'}
                                             </TableCell>
-                                            <TableCell className="text-right font-mono tabular-nums">{order.total}</TableCell>
-                                            <TableCell>{order.ordered_at ? formatDate(order.ordered_at) : '—'}</TableCell>
+                                            <TableCell>
+                                                <StatusBadge
+                                                    status={order.status}
+                                                />
+                                            </TableCell>
+                                            <TableCell className="text-right font-mono tabular-nums">
+                                                {order.total}
+                                            </TableCell>
+                                            <TableCell>
+                                                {order.ordered_at
+                                                    ? formatDate(
+                                                          order.ordered_at,
+                                                      )
+                                                    : '—'}
+                                            </TableCell>
                                         </TableRow>
                                     ))
                                 )}
                             </TableBody>
                         </Table>
-                        {orders.last_page > 1 && <Pagination links={orders.links} className="px-6 pt-4 pb-2" />}
+                        {orders.last_page > 1 && (
+                            <Pagination
+                                links={orders.links}
+                                className="px-6 pt-4 pb-2"
+                            />
+                        )}
                     </CardContent>
                 </Card>
             </div>

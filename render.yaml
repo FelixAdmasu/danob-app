@@ -4,83 +4,83 @@
 # =============================================================================
 
 services:
-  - type: web
-    name: danob-app
-    runtime: docker
-    dockerfilePath: Dockerfile
-    dockerContext: .
-    envVars:
-      # Application
-      - key: APP_NAME
-        value: Danob
-      - key: APP_ENV
-        value: production
-      - key: APP_DEBUG
-        value: "false"
-      - key: APP_URL
-        sync: false  # Set to your Render URL after first deploy, e.g. https://danob-app.onrender.com
-      - key: APP_KEY
-        generateValue: true  # Render auto-generates on first deploy
+    - type: web
+      name: danob-app
+      runtime: docker
+      dockerfilePath: Dockerfile
+      dockerContext: .
+      envVars:
+          # Application
+          - key: APP_NAME
+            value: Danob
+          - key: APP_ENV
+            value: production
+          - key: APP_DEBUG
+            value: 'false'
+          - key: APP_URL
+            sync: false # Set to your Render URL after first deploy, e.g. https://danob-app.onrender.com
+          - key: APP_KEY
+            generateValue: true # Render auto-generates on first deploy
 
-      # Database — connect to Supabase PostgreSQL
-      - key: DB_CONNECTION
-        value: pgsql
-      - key: DB_HOST
-        sync: false  # Set from Supabase dashboard
-      - key: DB_PORT
-        value: "5432"
-      - key: DB_DATABASE
-        sync: false  # Set from Supabase dashboard
-      - key: DB_USERNAME
-        sync: false  # Set from Supabase dashboard
-      - key: DB_PASSWORD
-        sync: false  # Set from Supabase dashboard
-      - key: DB_SSLMODE
-        value: require
+          # Database — connect to Supabase PostgreSQL
+          - key: DB_CONNECTION
+            value: pgsql
+          - key: DB_HOST
+            sync: false # Set from Supabase dashboard
+          - key: DB_PORT
+            value: '5432'
+          - key: DB_DATABASE
+            sync: false # Set from Supabase dashboard
+          - key: DB_USERNAME
+            sync: false # Set from Supabase dashboard
+          - key: DB_PASSWORD
+            sync: false # Set from Supabase dashboard
+          - key: DB_SSLMODE
+            value: require
 
-      # Session / Cache / Queue — all use database
-      - key: SESSION_DRIVER
-        value: database
-      - key: CACHE_STORE
-        value: database
-      - key: QUEUE_CONNECTION
-        value: database
+          # Session / Cache / Queue — all use database
+          - key: SESSION_DRIVER
+            value: database
+          - key: CACHE_STORE
+            value: database
+          - key: QUEUE_CONNECTION
+            value: database
 
-      # Logging
-      - key: LOG_CHANNEL
-        value: stack
-      - key: LOG_LEVEL
-        value: error
+          # Logging
+          - key: LOG_CHANNEL
+            value: stack
+          - key: LOG_LEVEL
+            value: error
 
-      # Broadcasting
-      - key: BROADCAST_CONNECTION
-        value: log
+          # Broadcasting
+          - key: BROADCAST_CONNECTION
+            value: log
 
-      # Filesystem
-      - key: FILESYSTEM_DISK
-        value: local
+          # Filesystem
+          - key: FILESYSTEM_DISK
+            value: local
 
-      # Product images MUST live on Supabase Storage: Render's container disk is
-      # ephemeral and is wiped on every deploy/push (see docs/storage.md).
-      - key: FILESYSTEM_DISK_PRODUCT_IMAGES
-        value: supabase
-      - key: SUPABASE_BUCKET
-        value: product-images
-      - key: SUPABASE_DEFAULT_REGION
-        value: us-east-1
-      - key: SUPABASE_USE_PATH_STYLE_ENDPOINT
-        value: "true"
-      # Secrets / project-specific values — set these on the Render dashboard
-      # (Environment tab); the blueprint does not manage them.
-      - key: SUPABASE_URL
-        sync: false  # https://<project-ref>.supabase.co — Supabase → Settings → API → Project URL
-      - key: SUPABASE_ACCESS_KEY_ID
-        sync: false  # Supabase → Project Settings → Storage → S3-compatible keys
-      - key: SUPABASE_SECRET_ACCESS_KEY
-        sync: false  # Supabase → Project Settings → Storage → S3-compatible keys
+          # Product images MUST live on Supabase Storage: Render's container disk is
+          # ephemeral and is wiped on every deploy/push (see docs/storage.md).
+          - key: FILESYSTEM_DISK_PRODUCT_IMAGES
+            value: supabase
+          - key: SUPABASE_BUCKET
+            value: product-images
+          - key: SUPABASE_DEFAULT_REGION
+            value: us-east-1
+          - key: SUPABASE_USE_PATH_STYLE_ENDPOINT
+            value: 'true'
+          # Secrets / project-specific values — set these on the Render dashboard
+          # (Environment tab); the blueprint does not manage them.
+          - key: SUPABASE_URL
+            sync: false # https://<project-ref>.supabase.co — Supabase → Settings → API → Project URL
+          - key: SUPABASE_ACCESS_KEY_ID
+            sync: false # Supabase → Project Settings → Storage → S3-compatible keys
+          - key: SUPABASE_SECRET_ACCESS_KEY
+            sync: false # Supabase → Project Settings → Storage → S3-compatible keys
 
-      # Mail — default to log until SMTP is configured
-      - key: MAIL_MAILER
-        value: log
+          # Mail — default to log until SMTP is configured
+          - key: MAIL_MAILER
+            value: log
 
-    healthCheckPath: /up
+      healthCheckPath: /up

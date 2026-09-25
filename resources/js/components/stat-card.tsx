@@ -36,28 +36,44 @@ export function StatCard({
     icon?: LucideIcon;
     tone?: Tone;
     hint?: ReactNode;
-    progress?: { value: number; max?: number; label?: string; tone?: 'primary' | 'success' | 'warning' | 'danger' | 'info' };
+    progress?: {
+        value: number;
+        max?: number;
+        label?: string;
+        tone?: 'primary' | 'success' | 'warning' | 'danger' | 'info';
+    };
     className?: string;
 }) {
     return (
         <div
             className={cn(
-                'group relative flex flex-col gap-3 overflow-hidden rounded-xl border border-border bg-card p-5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-sm dark:shadow-none',
+                'group border-border bg-card hover:border-primary/30 relative flex flex-col gap-3 overflow-hidden rounded-xl border p-5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm dark:shadow-none',
                 className,
             )}
         >
             <div className="flex items-start justify-between gap-3">
-                <p className="text-[11px] font-semibold uppercase leading-4 tracking-[0.18em] text-muted-foreground">{label}</p>
+                <p className="text-muted-foreground text-[11px] leading-4 font-semibold tracking-[0.18em] uppercase">
+                    {label}
+                </p>
                 {Icon && (
-                    <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-secondary text-secondary-foreground transition-colors duration-200 group-hover:bg-primary group-hover:text-primary-foreground">
+                    <span className="bg-secondary text-secondary-foreground group-hover:bg-primary group-hover:text-primary-foreground flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors duration-200">
                         <Icon className="size-4" aria-hidden="true" />
                     </span>
                 )}
             </div>
-            <p className={cn('font-serif text-3xl leading-none font-medium tracking-tight tabular-nums', TONE_VALUE[tone])}>
+            <p
+                className={cn(
+                    'font-serif text-3xl leading-none font-medium tracking-tight tabular-nums',
+                    TONE_VALUE[tone],
+                )}
+            >
                 {value}
             </p>
-            {hint && <p className="text-xs leading-5 text-muted-foreground">{hint}</p>}
+            {hint && (
+                <p className="text-muted-foreground text-xs leading-5">
+                    {hint}
+                </p>
+            )}
             {progress && (
                 <ProgressBar
                     value={progress.value}
