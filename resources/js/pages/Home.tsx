@@ -196,12 +196,15 @@ export default function Home({
                         </div>
                     </div>
 
-                    {/* Hero image — neutral placeholder */}
+                    {/* Hero image — bakery ingredients showcase */}
                     <div className="relative w-full" data-animation-on-scroll>
-                        <div className="flex h-[600px] w-full items-center justify-center bg-gradient-to-br from-[#D4E8C8] via-[#ECF3E5] to-[#A5FFA9]/20 md:h-[850px]">
-                            <span className="font-serif text-7xl tracking-tighter text-[#070E01]/10 italic select-none md:text-9xl">
-                                Danob
-                            </span>
+                        <div className="h-[600px] w-full overflow-hidden bg-[#D4E8C8] md:h-[850px]">
+                            <img
+                                src="/images/landing/bakery-showcase.jpg"
+                                alt="Bakery ingredients arranged on a worktable"
+                                className="h-full w-full object-cover"
+                                fetchPriority="high"
+                            />
                         </div>
                         <div className="absolute bottom-0 left-0 hidden max-w-lg bg-[#ECF3E5] p-8 md:block md:p-12">
                             <p className="mb-4 text-xs font-medium tracking-widest text-[#4A4A4A] uppercase">
