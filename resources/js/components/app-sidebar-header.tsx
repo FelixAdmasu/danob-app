@@ -1,4 +1,5 @@
 import { Breadcrumbs } from '@/components/breadcrumbs';
+import { GlobalSearch } from '@/components/global-search';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import type { BreadcrumbItem as BreadcrumbItemType } from '@/types';
 
@@ -20,6 +21,10 @@ export function AppSidebarHeader({
             <div className="min-w-0 flex-1">
                 <Breadcrumbs breadcrumbs={breadcrumbs} />
             </div>
+            {/* Global search (Phase 27): sits in the header's flex-1 row so
+                the approved shell layout is untouched. Hidden below md where
+                the breadcrumbs need the full width. */}
+            <GlobalSearch className="hidden w-56 shrink-0 md:block lg:w-72" />
         </header>
     );
 }

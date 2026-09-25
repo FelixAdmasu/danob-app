@@ -20,7 +20,17 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->input('search');
+        $validated = $request->validate([
+            'search' => ['nullable', 'string', 'max:255'],
+            'category_id' => ['nullable', 'integer', 'exists:categories,id'],
+            'brand_id' => ['nullable', 'integer', 'exists:brands,id'],
+            'status' => ['nullable', 'string', Rule::in(['active', 'inactive'])],
+        ]);
+
+        $search = $validated['search'] ?? null;
+        $categoryId = $validated['category_id'] ?? null;
+        $brandId = $validated['brand_id'] ?? null;
+        $status = $validated['status'] ?? null;
 
         $query = Product::with(['category', 'brand'])
             ->withCount('variants')
@@ -30,21 +40,35 @@ class ProductController extends Controller
                 ->where(fn ($v) => $v->where('quantity', '<=', 0)
                     ->orWhere(fn ($v2) => $v2->whereNotNull('low_stock_threshold')
                         ->whereColumn('quantity', '<=', 'low_stock_threshold')))])
-            ->with(['images' => fn ($q) => $q->orderBy('sort_order')->orderBy('id')]);
-
-        if ($search) {
-            $query->where(function ($q) use ($search): void {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('slug', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
+            ->with(['images' => fn ($q) => $q->orderBy('sort_order')->orderBy('id')])
+            // Every filter is a database-side constraint; the validated term
+            // is bound as a parameter, never concatenated into SQL.
+            ->when($search, function ($q) use ($search): void {
+                $q->where(function ($w) use ($search): void {
+                    $w->where('name', 'like', "%{$search}%")
+                        ->orWhere('slug', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%");
+                });
+            })
+            ->when($categoryId, fn ($q) => $q->where('category_id', $categoryId))
+            ->when($brandId, fn ($q) => $q->where('brand_id', $brandId))
+            ->when($status, fn ($q) => $q->where('status', $status));
 
         $products = $query->latest()->paginate(20)->withQueryString();
 
         return Inertia::render('Admin/Products/Index', [
             'products' => $products,
-            'filters' => ['search' => $search],
+            // Filter options: every category/brand is listed (not just the
+            // active ones) so an admin can always find a product by the
+            // group it belongs to.
+            'categories' => Category::orderBy('name')->get(['id', 'name']),
+            'brands' => Brand::orderBy('name')->get(['id', 'name']),
+            'filters' => [
+                'search' => $search,
+                'category_id' => $categoryId !== null ? (int) $categoryId : null,
+                'brand_id' => $brandId !== null ? (int) $brandId : null,
+                'status' => $status,
+            ],
         ]);
     }
 

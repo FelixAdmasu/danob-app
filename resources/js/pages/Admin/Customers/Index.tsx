@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search } from 'lucide-react';
 import * as CustomerRoutes from '@/routes/admin/customers';
 
@@ -28,16 +29,44 @@ type PaginatedCustomers = {
     total: number;
 };
 
+type Filters = {
+    search: string | null;
+    type: string | null;
+    status: string | null;
+};
+
 type Props = {
     customers: PaginatedCustomers;
-    filters: { search: string | null };
+    filters: Filters;
+};
+
+// Mirrors the store rule vocabulary (CustomerController) — the only values
+// the server will accept.
+const CUSTOMER_TYPES: Record<string, string> = {
+    business: 'Business',
+    home_business: 'Home Business',
+    individual: 'Individual',
+    other: 'Other',
 };
 
 export default function Index({ customers, filters }: Props) {
     const [search, setSearch] = useState(filters.search ?? '');
+    const [type, setType] = useState(filters.type ?? 'all');
+    const [status, setStatus] = useState(filters.status ?? 'all');
+
+    const hasActiveFilters = Boolean(filters.search || filters.type || filters.status);
+
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        router.get(CustomerRoutes.index().url, { search: search || undefined }, { preserveState: true, replace: true });
+        router.get(
+            CustomerRoutes.index().url,
+            {
+                search: search || undefined,
+                type: type !== 'all' ? type : undefined,
+                status: status !== 'all' ? status : undefined,
+            },
+            { preserveState: true, replace: true },
+        );
     };
     return (
         <>
@@ -49,12 +78,35 @@ export default function Index({ customers, filters }: Props) {
                     onSubmit={handleSearch}
                     className="flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-xs transition-colors dark:border-border/60 dark:shadow-none"
                 >
-                    <div className="relative flex-1">
+                    <div className="relative min-w-[200px] flex-1">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input placeholder="Search name, email, phone..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
                     </div>
+                    <Select value={type} onValueChange={setType}>
+                        <SelectTrigger className="w-[160px]" aria-label="Filter by type">
+                            <SelectValue placeholder="Type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Types</SelectItem>
+                            {Object.entries(CUSTOMER_TYPES).map(([value, label]) => (
+                                <SelectItem key={value} value={value}>
+                                    {label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <Select value={status} onValueChange={setStatus}>
+                        <SelectTrigger className="w-[140px]" aria-label="Filter by status">
+                            <SelectValue placeholder="Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Statuses</SelectItem>
+                            <SelectItem value="active">Active</SelectItem>
+                            <SelectItem value="inactive">Inactive</SelectItem>
+                        </SelectContent>
+                    </Select>
                     <Button type="submit" variant="outline">Search</Button>
-                    {filters.search && (
+                    {hasActiveFilters && (
                         <Link href={CustomerRoutes.index().url}><Button type="button" variant="ghost">Clear</Button></Link>
                     )}
                 </form>

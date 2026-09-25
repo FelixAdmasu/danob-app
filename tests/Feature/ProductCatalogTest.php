@@ -7,6 +7,8 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
+use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
 class ProductCatalogTest extends TestCase
@@ -203,5 +205,152 @@ class ProductCatalogTest extends TestCase
         $response->assertOk();
         // Inertia JSON escapes slashes, so check for substring
         $response->assertSee('primary.jpg');
+    }
+
+    // ------------------------------------------------------------------
+    // Phase 27 — advanced filtering (category / brand / status)
+    // ------------------------------------------------------------------
+
+    private function namedCategory(string $name): Category
+    {
+        return Category::create(['name' => $name, 'slug' => Str::slug($name).'-'.uniqid(), 'is_active' => true]);
+    }
+
+    private function namedBrand(string $name): Brand
+    {
+        return Brand::create(['name' => $name, 'slug' => Str::slug($name).'-'.uniqid(), 'is_active' => true]);
+    }
+
+    private function names(TestResponse $response): array
+    {
+        return array_column($response->inertiaProps('products.data'), 'name');
+    }
+
+    public function test_product_index_filters_by_category(): void
+    {
+        $admin = $this->admin();
+        $catA = $this->namedCategory('Pastries');
+        $catB = $this->namedCategory('Beverages');
+        Product::create(['category_id' => $catA->id, 'name' => 'Croissant', 'slug' => 'croissant', 'description' => 'D', 'status' => 'active']);
+        Product::create(['category_id' => $catA->id, 'name' => 'Muffin', 'slug' => 'muffin', 'description' => 'D', 'status' => 'active']);
+        Product::create(['category_id' => $catB->id, 'name' => 'Latte', 'slug' => 'latte', 'description' => 'D', 'status' => 'active']);
+
+        $response = $this->actingAs($admin)->get(route('admin.products.index', ['category_id' => $catA->id]));
+
+        $response->assertOk();
+        $this->assertEqualsCanonicalizing(['Croissant', 'Muffin'], $this->names($response));
+        $this->assertSame($catA->id, $response->inertiaProps('filters.category_id'));
+    }
+
+    public function test_product_index_filters_by_brand(): void
+    {
+        $admin = $this->admin();
+        $cat = $this->namedCategory('General');
+        $brandX = $this->namedBrand('Northwind');
+        $brandY = $this->namedBrand('Contoso');
+        Product::create(['category_id' => $cat->id, 'brand_id' => $brandX->id, 'name' => 'Widget', 'slug' => 'widget', 'description' => 'D', 'status' => 'active']);
+        Product::create(['category_id' => $cat->id, 'brand_id' => $brandY->id, 'name' => 'Gadget', 'slug' => 'gadget', 'description' => 'D', 'status' => 'active']);
+
+        $response = $this->actingAs($admin)->get(route('admin.products.index', ['brand_id' => $brandX->id]));
+
+        $response->assertOk();
+        $this->assertSame(['Widget'], $this->names($response));
+        $this->assertSame($brandX->id, $response->inertiaProps('filters.brand_id'));
+    }
+
+    public function test_product_index_filters_by_status(): void
+    {
+        $admin = $this->admin();
+        $cat = $this->namedCategory('General');
+        Product::create(['category_id' => $cat->id, 'name' => 'Live', 'slug' => 'live', 'description' => 'D', 'status' => 'active']);
+        Product::create(['category_id' => $cat->id, 'name' => 'Hidden', 'slug' => 'hidden', 'description' => 'D', 'status' => 'inactive']);
+
+        $response = $this->actingAs($admin)->get(route('admin.products.index', ['status' => 'inactive']));
+
+        $response->assertOk();
+        $this->assertSame(['Hidden'], $this->names($response));
+        $this->assertSame('inactive', $response->inertiaProps('filters.status'));
+    }
+
+    public function test_product_index_combines_search_category_brand_and_status(): void
+    {
+        $admin = $this->admin();
+        $catA = $this->namedCategory('Pastries');
+        $catB = $this->namedCategory('Beverages');
+        $brandX = $this->namedBrand('Northwind');
+        $brandY = $this->namedBrand('Contoso');
+        Product::create(['category_id' => $catA->id, 'brand_id' => $brandX->id, 'name' => 'Alpha Croissant', 'slug' => 'alpha-croissant', 'description' => 'D', 'status' => 'active']);
+        Product::create(['category_id' => $catA->id, 'brand_id' => $brandY->id, 'name' => 'Alpha Muffin', 'slug' => 'alpha-muffin', 'description' => 'D', 'status' => 'inactive']);
+        Product::create(['category_id' => $catB->id, 'brand_id' => $brandX->id, 'name' => 'Beta Latte', 'slug' => 'beta-latte', 'description' => 'D', 'status' => 'active']);
+
+        // search + category
+        $response = $this->actingAs($admin)->get(route('admin.products.index', ['search' => 'Alpha', 'category_id' => $catA->id]));
+        $this->assertEqualsCanonicalizing(['Alpha Croissant', 'Alpha Muffin'], $this->names($response));
+
+        // search + category + status
+        $response = $this->actingAs($admin)->get(route('admin.products.index', ['search' => 'Alpha', 'category_id' => $catA->id, 'status' => 'active']));
+        $this->assertSame(['Alpha Croissant'], $this->names($response));
+
+        // search + brand
+        $response = $this->actingAs($admin)->get(route('admin.products.index', ['search' => 'a', 'brand_id' => $brandX->id]));
+        $this->assertEqualsCanonicalizing(['Alpha Croissant', 'Beta Latte'], $this->names($response));
+
+        // combined filters that legitimately match nothing
+        $response = $this->actingAs($admin)->get(route('admin.products.index', ['search' => 'nomatch', 'category_id' => $catA->id, 'brand_id' => $brandX->id, 'status' => 'inactive']));
+        $response->assertOk();
+        $this->assertSame([], $this->names($response));
+    }
+
+    public function test_product_index_rejects_invalid_filter_values(): void
+    {
+        $admin = $this->admin();
+
+        $this->actingAs($admin)->get(route('admin.products.index', ['status' => 'bogus']))
+            ->assertSessionHasErrors('status');
+        $this->actingAs($admin)->get(route('admin.products.index', ['category_id' => 999999]))
+            ->assertSessionHasErrors('category_id');
+        $this->actingAs($admin)->get(route('admin.products.index', ['brand_id' => 'not-a-number']))
+            ->assertSessionHasErrors('brand_id');
+    }
+
+    public function test_product_index_filter_state_survives_pagination(): void
+    {
+        $admin = $this->admin();
+        $catA = $this->namedCategory('Bulk Category');
+        $catB = $this->namedCategory('Other Category');
+        foreach (range(1, 21) as $i) {
+            Product::create(['category_id' => $catA->id, 'name' => "Bulk {$i}", 'slug' => "bulk-{$i}", 'description' => 'D', 'status' => 'active']);
+        }
+        Product::create(['category_id' => $catB->id, 'name' => 'Outside', 'slug' => 'outside', 'description' => 'D', 'status' => 'active']);
+
+        $response = $this->actingAs($admin)->get(route('admin.products.index', ['category_id' => $catA->id]));
+        $this->assertCount(20, $response->inertiaProps('products.data'));
+
+        $next = $response->inertiaProps('products.next_page_url');
+        $this->assertIsString($next);
+        $this->assertStringContainsString('category_id='.$catA->id, $next);
+
+        $pageTwo = $this->get($next);
+        $pageTwo->assertOk();
+        $data = $pageTwo->inertiaProps('products.data');
+        $this->assertCount(1, $data);
+        $this->assertSame($catA->id, $data[0]['category']['id']);
+        $this->assertSame($catA->id, $pageTwo->inertiaProps('filters.category_id'));
+    }
+
+    public function test_product_index_exposes_filter_options_for_both_roles(): void
+    {
+        $cat = $this->namedCategory('Option Cat');
+        $brand = $this->namedBrand('Option Brand');
+
+        foreach (['admin', 'manager'] as $role) {
+            $response = $this->actingAs(User::factory()->create(['role' => $role]))->get(route('admin.products.index'));
+
+            $response->assertOk();
+            $categories = array_column($response->inertiaProps('categories'), 'name');
+            $brands = array_column($response->inertiaProps('brands'), 'name');
+            $this->assertContains($cat->name, $categories, "Category options missing for {$role}.");
+            $this->assertContains($brand->name, $brands, "Brand options missing for {$role}.");
+        }
     }
 }

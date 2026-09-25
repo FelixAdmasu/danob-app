@@ -210,7 +210,7 @@ export default function Dashboard({
                                             ))}
                                         </ul>
                                     ),
-                                    <Link href={InventoryRoutes.lowStock({ status: 'out' }).url} className="text-xs font-medium text-primary hover:underline">
+                                    <Link href={InventoryRoutes.lowStock({ query: { status: 'out' } }).url} className="text-xs font-medium text-primary hover:underline">
                                         View all out of stock →
                                     </Link>,
                                 )}

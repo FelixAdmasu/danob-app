@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\ReportExportController;
 use App\Http\Controllers\Admin\SalesDashboardController;
 use App\Http\Controllers\Admin\SalesReturnController;
+use App\Http\Controllers\Admin\SearchController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Public\BranchController;
 use App\Http\Controllers\Public\BrandController;
@@ -70,6 +71,12 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::get('reports/sales/export', [ReportExportController::class, 'sales'])->name('reports.sales.export');
         Route::get('reports/returns/export', [ReportExportController::class, 'returns'])->name('reports.returns.export');
         Route::get('reports/customers/export', [ReportExportController::class, 'customers'])->name('reports.customers.export');
+
+        // Global search: one bounded, read-only JSON endpoint for the header
+        // box. Every admin role may ask, but the service applies the same
+        // isRole rule as each group below, so results never become a path
+        // around authorization (staff only ever see Orders/customers records).
+        Route::get('search', [SearchController::class, 'index'])->name('search');
     });
 
     Route::middleware('role:admin,manager')->group(function () {

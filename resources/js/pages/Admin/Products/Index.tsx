@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Eye, Package, Pencil, Plus, Search, Trash2 } from 'lucide-react';
 import * as ProductRoutes from '@/routes/admin/products';
 import { onImageError } from '@/lib/image-fallback';
@@ -38,17 +39,42 @@ type PaginatedProducts = {
     total: number;
 };
 
-type Props = {
-    products: PaginatedProducts;
-    filters: { search: string | null };
+type Filters = {
+    search: string | null;
+    category_id: number | null;
+    brand_id: number | null;
+    status: string | null;
 };
 
-export default function Index({ products, filters }: Props) {
+type FilterOption = { id: number; name: string };
+
+type Props = {
+    products: PaginatedProducts;
+    categories: FilterOption[];
+    brands: FilterOption[];
+    filters: Filters;
+};
+
+export default function Index({ products, categories, brands, filters }: Props) {
     const [search, setSearch] = useState(filters.search ?? '');
+    const [categoryId, setCategoryId] = useState(filters.category_id ? String(filters.category_id) : 'all');
+    const [brandId, setBrandId] = useState(filters.brand_id ? String(filters.brand_id) : 'all');
+    const [status, setStatus] = useState(filters.status ?? 'all');
+
+    const hasActiveFilters = Boolean(filters.search || filters.category_id || filters.brand_id || filters.status);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        router.get(ProductRoutes.index().url, { search: search || undefined }, { preserveState: true, replace: true });
+        router.get(
+            ProductRoutes.index().url,
+            {
+                search: search || undefined,
+                category_id: categoryId !== 'all' ? categoryId : undefined,
+                brand_id: brandId !== 'all' ? brandId : undefined,
+                status: status !== 'all' ? status : undefined,
+            },
+            { preserveState: true, replace: true },
+        );
     };
 
     const handleDelete = (id: number) => {
@@ -75,14 +101,50 @@ export default function Index({ products, filters }: Props) {
                 />
 
                 <form onSubmit={handleSearch} className="flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-xs transition-colors dark:border-border/60 dark:shadow-none">
-                    <div className="relative flex-1">
+                    <div className="relative min-w-[200px] flex-1">
                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input placeholder="Search by name, slug..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
                     </div>
+                    <Select value={categoryId} onValueChange={setCategoryId}>
+                        <SelectTrigger className="w-[160px]" aria-label="Filter by category">
+                            <SelectValue placeholder="Category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Categories</SelectItem>
+                            {categories.map((category) => (
+                                <SelectItem key={category.id} value={String(category.id)}>
+                                    {category.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <Select value={brandId} onValueChange={setBrandId}>
+                        <SelectTrigger className="w-[150px]" aria-label="Filter by brand">
+                            <SelectValue placeholder="Brand" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Brands</SelectItem>
+                            {brands.map((brand) => (
+                                <SelectItem key={brand.id} value={String(brand.id)}>
+                                    {brand.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <Select value={status} onValueChange={setStatus}>
+                        <SelectTrigger className="w-[140px]" aria-label="Filter by status">
+                            <SelectValue placeholder="Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Statuses</SelectItem>
+                            <SelectItem value="active">Active</SelectItem>
+                            <SelectItem value="inactive">Inactive</SelectItem>
+                        </SelectContent>
+                    </Select>
                     <Button type="submit" variant="outline">
                         Search
                     </Button>
-                    {filters.search && (
+                    {hasActiveFilters && (
                         <Link href={ProductRoutes.index().url}>
                             <Button type="button" variant="ghost">
                                 Clear
