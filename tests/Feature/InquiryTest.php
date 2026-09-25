@@ -81,12 +81,12 @@ class InquiryTest extends TestCase
         ]);
     }
 
-    public function test_unverified_users_cannot_access_admin_inquiries(): void
+    public function test_non_staff_users_cannot_access_admin_inquiries(): void
     {
-        $user = User::factory()->unverified()->create(['role' => 'staff']);
+        $user = User::factory()->create(['role' => 'customer']);
 
         $this->actingAs($user)
             ->get(route('admin.inquiries.index'))
-            ->assertRedirect(route('verification.notice'));
+            ->assertForbidden();
     }
 }
