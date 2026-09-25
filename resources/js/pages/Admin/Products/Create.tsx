@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -50,6 +51,8 @@ export default function Create({ categories, brands }: Props) {
         brand_id: '',
         description: '',
         status: 'active',
+        is_featured: false,
+        featured_sort_order: '0',
         variants: [] as VariantForm[],
         images: [] as ImageForm[],
     });
@@ -137,6 +140,8 @@ export default function Create({ categories, brands }: Props) {
         if (data.brand_id) formData.append('brand_id', data.brand_id);
         formData.append('description', data.description);
         formData.append('status', data.status);
+        formData.append('is_featured', data.is_featured ? '1' : '0');
+        formData.append('featured_sort_order', data.featured_sort_order || '0');
         data.variants.forEach((v, idx) => {
             formData.append(`variants[${idx}][name]`, v.name);
             if (v.sku) formData.append(`variants[${idx}][sku]`, v.sku);
@@ -195,6 +200,44 @@ export default function Create({ categories, brands }: Props) {
                             <CardTitle>Product Details</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
+                            <div className="flex flex-wrap items-end gap-6 rounded-lg border border-dashed p-4">
+                                <div className="flex items-center gap-3">
+                                    <Checkbox
+                                        id="is_featured"
+                                        checked={data.is_featured}
+                                        onCheckedChange={(checked) =>
+                                            setData({
+                                                ...data,
+                                                is_featured: checked === true,
+                                            })
+                                        }
+                                    />
+                                    <Label htmlFor="is_featured">
+                                        Show on landing page
+                                    </Label>
+                                </div>
+                                <div className="w-40 space-y-2">
+                                    <Label htmlFor="featured_sort_order">
+                                        Display order
+                                    </Label>
+                                    <Input
+                                        id="featured_sort_order"
+                                        type="number"
+                                        min="0"
+                                        value={data.featured_sort_order}
+                                        onChange={(e) =>
+                                            setData({
+                                                ...data,
+                                                featured_sort_order:
+                                                    e.target.value,
+                                            })
+                                        }
+                                    />
+                                    <InputError
+                                        message={errors.featured_sort_order}
+                                    />
+                                </div>
+                            </div>
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
                                     <Label htmlFor="name">Name *</Label>

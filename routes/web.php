@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\SalesDashboardController;
 use App\Http\Controllers\Admin\SalesReturnController;
 use App\Http\Controllers\Admin\SearchController;
 use App\Http\Controllers\Admin\SupplierController;
+use App\Http\Controllers\InquiryController;
 use App\Http\Controllers\Public\BranchController;
 use App\Http\Controllers\Public\BrandController;
 use App\Http\Controllers\Public\HomeController;
@@ -40,6 +41,7 @@ Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::get('/how-to-order', [PageController::class, 'howToOrder'])->name('how-to-order');
 Route::get('/terms', [PageController::class, 'terms'])->name('terms');
 Route::get('/privacy', [PageController::class, 'privacy'])->name('privacy');
+Route::post('/inquiries', [InquiryController::class, 'store'])->middleware('throttle:inquiries')->name('inquiries.store');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
@@ -87,6 +89,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         // isRole rule as each group below, so results never become a path
         // around authorization (staff only ever see Orders/customers records).
         Route::get('search', [SearchController::class, 'index'])->name('search');
+        Route::get('inquiries', [InquiryController::class, 'index'])->name('inquiries.index');
+        Route::patch('inquiries/{inquiry}', [InquiryController::class, 'update'])->name('inquiries.update');
     });
 
     Route::middleware('role:admin,manager')->group(function () {

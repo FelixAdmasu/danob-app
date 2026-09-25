@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['category_id', 'brand_id', 'name', 'slug', 'description', 'status'])]
+#[Fillable(['category_id', 'brand_id', 'name', 'slug', 'description', 'status', 'is_featured', 'featured_sort_order'])]
 class Product extends Model
 {
     use HasFactory;
@@ -17,6 +17,8 @@ class Product extends Model
     {
         return [
             'status' => 'string',
+            'is_featured' => 'boolean',
+            'featured_sort_order' => 'integer',
         ];
     }
 

@@ -19,10 +19,20 @@ class HomeController extends Controller
             ->orderBy('name')
             ->get();
 
-        $featuredProducts = Product::where('status', 'active')
+        $featuredQuery = Product::where('status', 'active')
             ->with(['category', 'brand', 'images' => fn ($q) => $q->orderBy('sort_order')->orderBy('id')])
-            ->limit(6)
-            ->get();
+            ->where('is_featured', true)
+            ->orderBy('featured_sort_order')
+            ->latest();
+
+        $featuredProducts = $featuredQuery->limit(6)->get();
+        if ($featuredProducts->isEmpty()) {
+            $featuredProducts = Product::where('status', 'active')
+                ->with(['category', 'brand', 'images' => fn ($q) => $q->orderBy('sort_order')->orderBy('id')])
+                ->latest()
+                ->limit(6)
+                ->get();
+        }
 
         $brands = Brand::where('is_active', true)
             ->withCount('products')

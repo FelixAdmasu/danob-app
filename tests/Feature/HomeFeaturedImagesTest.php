@@ -69,4 +69,37 @@ class HomeFeaturedImagesTest extends TestCase
                 ->has('featuredProducts', 1)
                 ->has('featuredProducts.0.images', 0));
     }
+
+    public function test_homepage_prefers_admin_curated_featured_products(): void
+    {
+        $category = Category::create([
+            'name' => 'Curated Category',
+            'slug' => 'curated-category',
+            'is_active' => true,
+        ]);
+
+        Product::create([
+            'category_id' => $category->id,
+            'name' => 'Ordinary Product',
+            'slug' => 'ordinary-product',
+            'description' => 'Not curated',
+            'status' => 'active',
+        ]);
+
+        $curated = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Curated Product',
+            'slug' => 'curated-product',
+            'description' => 'Selected by an administrator',
+            'status' => 'active',
+            'is_featured' => true,
+            'featured_sort_order' => 1,
+        ]);
+
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('featuredProducts.0.id', $curated->id)
+                ->where('featuredProducts.0.is_featured', true));
+    }
 }

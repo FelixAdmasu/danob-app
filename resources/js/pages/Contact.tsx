@@ -1,4 +1,5 @@
 import { Head } from '@inertiajs/react';
+import InquiryForm from '@/components/inquiry-form';
 
 export default function Contact() {
     return (
@@ -52,62 +53,7 @@ export default function Contact() {
                             </div>
                         </div>
 
-                        <div className="rounded-[16px] border border-[#070E01]/10 bg-white p-12 lg:w-1/2">
-                            <div className="space-y-12">
-                                <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-                                    <div className="space-y-2 border-b border-[#070E01]/20 pb-2">
-                                        <label className="text-[9px] font-bold tracking-[0.4em] text-[#4A4A4A] uppercase">
-                                            Full Name
-                                        </label>
-                                        <input
-                                            type="text"
-                                            className="w-full bg-transparent font-serif text-xl outline-none placeholder:opacity-20"
-                                            placeholder="Your name"
-                                        />
-                                    </div>
-                                    <div className="space-y-2 border-b border-[#070E01]/20 pb-2">
-                                        <label className="text-[9px] font-bold tracking-[0.4em] text-[#4A4A4A] uppercase">
-                                            Email Address
-                                        </label>
-                                        <input
-                                            type="email"
-                                            className="w-full bg-transparent font-serif text-xl outline-none placeholder:opacity-20"
-                                            placeholder="email@address.com"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="space-y-2 border-b border-[#070E01]/20 pb-2">
-                                    <label className="text-[9px] font-bold tracking-[0.4em] text-[#4A4A4A] uppercase">
-                                        Interest
-                                    </label>
-                                    <select className="w-full cursor-pointer appearance-none bg-transparent font-serif text-xl outline-none">
-                                        <option>Product Inquiry</option>
-                                        <option>Branch Visit</option>
-                                        <option>Wholesale Order</option>
-                                        <option>Partnership</option>
-                                    </select>
-                                </div>
-                                <div className="space-y-2 border-b border-[#070E01]/20 pb-2">
-                                    <label className="text-[9px] font-bold tracking-[0.4em] text-[#4A4A4A] uppercase">
-                                        Message
-                                    </label>
-                                    <textarea
-                                        className="h-32 w-full resize-none bg-transparent font-serif text-xl outline-none placeholder:opacity-20"
-                                        placeholder="Tell us what you need..."
-                                    />
-                                </div>
-                                <button
-                                    type="button"
-                                    className="w-full bg-[#070E01] py-6 text-[10px] font-bold tracking-[0.5em] text-[#ECF3E5] uppercase transition-colors duration-500 hover:bg-[#2D5016]"
-                                >
-                                    Submit Inquiry
-                                </button>
-                                <p className="mt-4 text-center text-[10px] font-bold tracking-[0.3em] text-[#4A4A4A] uppercase">
-                                    Inquiry form coming soon — contact us by
-                                    phone or email for now.
-                                </p>
-                            </div>
-                        </div>
+                        <InquiryForm />
                     </div>
                 </div>
             </section>
