@@ -1,5 +1,6 @@
 import { Head } from '@inertiajs/react';
 import { MapPin, Phone, Clock } from 'lucide-react';
+import BranchVisual from '@/components/branch-visual';
 
 type Branch = {
     id: number;
@@ -49,24 +50,8 @@ export default function BranchesIndex({ branches }: Props) {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-16 gap-x-12">
                             {branches.map((branch) => (
                                 <div key={branch.id} className="group">
-                                    <div className="aspect-[4/5] overflow-hidden mb-8 relative bg-[#D4E8C8]">
-                                        <div className="w-full h-full flex items-center justify-center">
-                                            <MapPin className="h-16 w-16 text-[#070E01]/15" />
-                                        </div>
-                                        <img
-                                            src={branch.image_url || '/images/branches.jpg'}
-                                            alt={branch.name}
-                                            onError={(e) => {
-                                                const img = e.currentTarget;
-                                                if (img.dataset.fallback !== 'true') {
-                                                    img.dataset.fallback = 'true';
-                                                    img.src = '/images/branches.jpg';
-                                                } else {
-                                                    img.style.display = 'none';
-                                                }
-                                            }}
-                                            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                        />
+                                    <div className="aspect-[4/5] overflow-hidden mb-8 relative">
+                                        <BranchVisual name={branch.name} imageUrl={branch.image_url} />
                                     </div>
                                     <div className="border-b border-[#070E01]/10 pb-6">
                                         <h3 className="font-serif text-2xl mb-4">{branch.name}</h3>

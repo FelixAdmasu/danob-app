@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import * as BranchRoutes from '@/routes/admin/branches';
 import { onImageError } from '@/lib/image-fallback';
-import { Image as ImageIcon, Loader2, Pencil, Search, Trash2, Upload } from 'lucide-react';
+import { Loader2, MapPin, Pencil, Search, Trash2, Upload } from 'lucide-react';
 
 type Branch = {
     id: number;
@@ -168,7 +168,7 @@ export default function Index({ branches, filters }: Props) {
                                                             onError={onImageError}
                                                         />
                                                     ) : (
-                                                        <ImageIcon className="h-4 w-4 opacity-30" aria-hidden="true" />
+                                                        <MapPin className="h-4 w-4 text-muted-foreground/50" aria-hidden="true" />
                                                     )}
                                                     <span className="absolute inset-0 hidden items-center justify-center bg-black/50 group-hover:flex">
                                                         <Upload className="h-3.5 w-3.5 text-white" aria-hidden="true" />
