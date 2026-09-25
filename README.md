@@ -141,7 +141,7 @@ Do not develop directly on `main`.
 8. Merge only after the checks and review are complete.
 9. Let Render deploy the resulting `main` commit.
 
-The GitHub Actions workflow runs on pushes to `main` and on pull requests. It uses PHP 8.4, Node.js 22, Composer setup, frontend checks, PHPStan, and PHPUnit.
+The GitHub Actions workflow runs on pushes to `main` and on pull requests. It uses PHP 8.4, Node.js 22, Composer setup, frontend checks, TypeScript checks, and PHPUnit. The stricter PHPStan suite remains available through the full local `composer test` command.
 
 Recommended branch names:
 
