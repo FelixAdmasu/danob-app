@@ -52,6 +52,14 @@ export default function BranchesIndex({ branches }: Props) {
                                         <div className="w-full h-full flex items-center justify-center">
                                             <MapPin className="h-16 w-16 text-[#070E01]/15" />
                                         </div>
+                                        <img
+                                            src="/images/branches.jpg"
+                                            alt=""
+                                            onError={(e) => {
+                                                e.currentTarget.style.display = 'none';
+                                            }}
+                                            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                        />
                                     </div>
                                     <div className="border-b border-[#070E01]/10 pb-6">
                                         <h3 className="font-serif text-2xl mb-4">{branch.name}</h3>

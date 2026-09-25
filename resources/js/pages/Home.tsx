@@ -8,6 +8,7 @@ type Category = {
     name: string;
     slug: string;
     description: string | null;
+    image_url: string | null;
     products_count: number;
 };
 
@@ -16,6 +17,7 @@ type Brand = {
     name: string;
     slug: string;
     description: string | null;
+    logo_url: string | null;
     products_count: number;
 };
 
@@ -206,7 +208,16 @@ export default function Home({ featuredProducts, categories, brands, branches }:
                                     data-animation-on-scroll
                                 >
                                     <div className="aspect-[4/5] overflow-hidden mb-8 relative bg-gradient-to-br from-[#D4E8C8] to-[#ECF3E5] flex items-center justify-center">
-                                        <span className="font-serif text-[#070E01]/10 text-5xl italic select-none">{category.name.split(' ').map(w => w[0]).join('').slice(0, 3)}</span>
+                                        {category.image_url ? (
+                                            <img
+                                                src={category.image_url}
+                                                alt={category.name}
+                                                onError={onImageError}
+                                                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                            />
+                                        ) : (
+                                            <span className="font-serif text-[#070E01]/10 text-5xl italic select-none">{category.name.split(' ').map(w => w[0]).join('').slice(0, 3)}</span>
+                                        )}
                                         <div className="absolute top-6 left-6 px-3 py-1 bg-[#ECF3E5] text-[#070E01] text-[9px] font-bold uppercase tracking-widest">
                                             {category.products_count} Products
                                         </div>
@@ -429,7 +440,16 @@ export default function Home({ featuredProducts, categories, brands, branches }:
                                     data-animation-on-scroll
                                 >
                                     <div className="aspect-[4/5] overflow-hidden mb-8 relative bg-gradient-to-br from-[#D4E8C8] to-[#ECF3E5] flex items-center justify-center">
-                                        <span className="font-serif text-[#070E01]/10 text-5xl italic select-none">{brand.name.split(' ').map(w => w[0]).join('').slice(0, 3)}</span>
+                                        {brand.logo_url ? (
+                                            <img
+                                                src={brand.logo_url}
+                                                alt={brand.name}
+                                                onError={onImageError}
+                                                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                            />
+                                        ) : (
+                                            <span className="font-serif text-[#070E01]/10 text-5xl italic select-none">{brand.name.split(' ').map(w => w[0]).join('').slice(0, 3)}</span>
+                                        )}
                                     </div>
                                     <div className="flex justify-between items-start border-b border-[#070E01]/10 pb-6">
                                         <div>
@@ -469,6 +489,14 @@ export default function Home({ featuredProducts, categories, brands, branches }:
                                 <div key={branch.id} className="group" data-animation-on-scroll>
                                     <div className="aspect-[4/5] overflow-hidden mb-8 relative bg-gradient-to-br from-[#D4E8C8] to-[#ECF3E5] flex items-center justify-center">
                                         <MapPin className="w-12 h-12 text-[#070E01]/10" strokeWidth={1} />
+                                        <img
+                                            src="/images/branches.jpg"
+                                            alt=""
+                                            onError={(e) => {
+                                                e.currentTarget.style.display = 'none';
+                                            }}
+                                            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                        />
                                     </div>
                                     <div className="border-b border-[#070E01]/10 pb-6">
                                         <h3 className="font-serif text-2xl mb-4">{branch.name}</h3>

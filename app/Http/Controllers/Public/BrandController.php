@@ -26,7 +26,7 @@ class BrandController extends Controller
         abort_unless($brand->is_active, 404);
 
         $brand->load(['products' => function ($query) {
-            $query->where('status', 'active');
+            $query->where('status', 'active')->with(['images' => fn ($q) => $q->orderBy('sort_order')->orderBy('id')]);
         }]);
 
         return Inertia::render('Brands/Show', [

@@ -1,5 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import { Package } from 'lucide-react';
+import { onImageError } from '@/lib/image-fallback';
 
 type Product = {
     id: number;
@@ -7,6 +8,7 @@ type Product = {
     slug: string;
     description: string;
     category: { name: string; slug: string } | null;
+    images: { id: number; url: string; sort_order: number; is_primary: boolean; alt_text: string | null }[];
 };
 
 type Brand = {
@@ -60,12 +62,21 @@ export default function BrandShow({ brand }: Props) {
                 <div className="max-w-[1920px] mx-auto">
                     {brand.products.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-16 gap-x-12">
-                            {brand.products.map((product) => (
+                            {brand.products.map((product) => {
+                                const primaryImage = product.images?.find((img) => img.is_primary) || product.images?.[0] || null;
+                                return (
                                 <Link key={product.id} href={`/products/${product.slug}`} className="group cursor-pointer">
-                                    <div className="aspect-[4/5] overflow-hidden mb-8 relative bg-[#D4E8C8]">
-                                        <div className="w-full h-full flex items-center justify-center">
+                                    <div className="aspect-[4/5] overflow-hidden mb-8 relative bg-[#D4E8C8] flex items-center justify-center">
+                                        {primaryImage ? (
+                                            <img
+                                                src={primaryImage.url}
+                                                alt={primaryImage.alt_text || product.name}
+                                                onError={onImageError}
+                                                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                            />
+                                        ) : (
                                             <Package className="h-16 w-16 text-[#070E01]/15 group-hover:text-[#070E01]/30 transition-colors duration-700" />
-                                        </div>
+                                        )}
                                     </div>
                                     <div className="flex justify-between items-start border-b border-[#070E01]/10 pb-6">
                                         <div>
@@ -76,7 +87,8 @@ export default function BrandShow({ brand }: Props) {
                                         </div>
                                     </div>
                                 </Link>
-                            ))}
+                                );
+                            })}
                         </div>
                     ) : (
                         <div className="text-center py-24">

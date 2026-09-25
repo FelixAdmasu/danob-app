@@ -1,11 +1,13 @@
 import { Head, Link } from '@inertiajs/react';
 import { Package } from 'lucide-react';
+import { onImageError } from '@/lib/image-fallback';
 
 type Brand = {
     id: number;
     name: string;
     slug: string;
     description: string | null;
+    logo_url: string | null;
     products_count: number;
 };
 
@@ -45,9 +47,18 @@ export default function BrandsIndex({ brands }: Props) {
                             {brands.map((brand) => (
                                 <Link key={brand.id} href={`/brands/${brand.slug}`} className="group cursor-pointer">
                                     <div className="aspect-[4/5] overflow-hidden mb-8 relative bg-[#D4E8C8]">
-                                        <div className="w-full h-full flex items-center justify-center">
-                                            <Package className="h-16 w-16 text-[#070E01]/15 group-hover:text-[#070E01]/30 transition-colors duration-700" />
-                                        </div>
+                                        {brand.logo_url ? (
+                                            <img
+                                                src={brand.logo_url}
+                                                alt={brand.name}
+                                                onError={onImageError}
+                                                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center">
+                                                <Package className="h-16 w-16 text-[#070E01]/15 group-hover:text-[#070E01]/30 transition-colors duration-700" />
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="flex justify-between items-start border-b border-[#070E01]/10 pb-6">
                                         <div>
