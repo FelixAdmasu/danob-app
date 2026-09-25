@@ -80,8 +80,7 @@ return [
             'endpoint' => env('SUPABASE_ENDPOINT')
                 ?: env('SUPABASE_S3_ENDPOINT')
                 ?: ($supabaseProjectRef !== '' ? 'https://'.$supabaseProjectRef.'.storage.supabase.co/storage/v1/s3' : null)
-                ?: env('AWS_ENDPOINT')
-                ?: 'https://your-project.storage.supabase.co/storage/v1/s3',
+                ?: env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('SUPABASE_USE_PATH_STYLE_ENDPOINT', env('AWS_USE_PATH_STYLE_ENDPOINT', true)),
             'visibility' => 'public',
             'throw' => false,
