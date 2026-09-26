@@ -20,8 +20,14 @@ All configuration is standard Laravel, read from environment variables
 | `MAIL_SCHEME` | `ssl`/`tls` (optional) | unset |
 | `MAIL_USERNAME` / `MAIL_PASSWORD` | SMTP credentials (never committed) | unset |
 | `MAIL_FROM_ADDRESS` / `MAIL_FROM_NAME` | global sender identity | `hello@example.com` / app name |
+| `APP_URL` | base host for every link generated inside an email | `https://danob.onrender.com` in production |
 
 No provider is hard-coded: any SMTP-compatible service works.
+
+Links inside emails (the internal *Open in Danob* button, for example) are
+built from named routes and `APP_URL` — never hard-coded — so production
+links always point at `https://danob.onrender.com`. Localhost only ever
+appears when running against a local `.env`.
 
 ### Local development
 

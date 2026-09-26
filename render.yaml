@@ -18,7 +18,7 @@ services:
           - key: APP_DEBUG
             value: 'false'
           - key: APP_URL
-            sync: false # Set to your Render URL after first deploy, e.g. https://danob-app.onrender.com
+            value: https://danob.onrender.com # every generated link (email buttons, resets) uses this host
           - key: APP_KEY
             generateValue: true # Render auto-generates on first deploy
 
