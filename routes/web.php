@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\SalesDashboardController;
 use App\Http\Controllers\Admin\SalesReturnController;
 use App\Http\Controllers\Admin\SearchController;
 use App\Http\Controllers\Admin\SupplierController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\InquiryController;
 use App\Http\Controllers\Public\BranchController;
 use App\Http\Controllers\Public\BrandController;
@@ -142,6 +143,10 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::get('reports/purchases/export', [ReportExportController::class, 'purchases'])->name('reports.purchases.export');
         Route::get('reports/low-stock/export', [ReportExportController::class, 'lowStock'])->name('reports.low-stock.export');
         Route::get('reports/suppliers/export', [ReportExportController::class, 'suppliers'])->name('reports.suppliers.export');
+    });
+
+    Route::middleware('role:admin,super_admin')->group(function () {
+        Route::resource('users', UserController::class)->only(['index', 'create', 'store', 'edit', 'update']);
     });
 
 });
