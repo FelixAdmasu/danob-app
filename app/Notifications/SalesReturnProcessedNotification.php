@@ -8,6 +8,8 @@ use App\Models\Customer;
 use App\Models\ProductVariant;
 use App\Models\SalesReturn;
 use App\Models\SalesReturnItem;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Queue\ShouldQueueAfterCommit;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -17,9 +19,21 @@ use Illuminate\Notifications\Notification;
  * returned line quantities, the stored return total and its date. A return
  * is not a monetary refund, so the email makes no refund, payment or
  * credit claims — and, like every customer email, carries no admin links.
+ *
+ * Phase 30 — queued like every customer email (ShouldQueue +
+ * ShouldQueueAfterCommit, three attempts with ~30s/~2min backoff). This
+ * class cannot reuse CustomerOrderNotification's shared order plumbing —
+ * it carries a SalesReturn, not an Order — so it declares the identical
+ * queue contract itself; the serialized payload stays one model id.
  */
-class SalesReturnProcessedNotification extends Notification
+class SalesReturnProcessedNotification extends Notification implements ShouldQueue, ShouldQueueAfterCommit
 {
+    /** Total delivery attempts before the job is marked failed. */
+    public int $tries = 3;
+
+    /** @var array<int, int> Seconds to wait before the 2nd and 3rd attempt. */
+    public array $backoff = [30, 120];
+
     public function __construct(public readonly SalesReturn $return) {}
 
     /**

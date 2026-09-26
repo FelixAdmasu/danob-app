@@ -15,6 +15,7 @@ use App\Models\PurchaseOrderItem;
 use App\Models\StockMovement;
 use App\Models\Supplier;
 use App\Models\User;
+use App\Notifications\AlertMailNotification;
 use App\Notifications\AlertNotification;
 use App\Notifications\OrderCancelledNotification;
 use App\Notifications\OrderConfirmedNotification;
@@ -34,6 +35,12 @@ use Tests\TestCase;
 
 /**
  * Phase 29 — transactional email.
+ *
+ * Phase 30 — the mail legs are queued (ShouldQueue + ShouldQueueAfterCommit
+ * on AlertMailNotification and the customer notifications). Notification::
+ * fake still records queued sends, so every content assertion below is
+ * unchanged; Queue::fake- and jobs-table-level proofs that delivery is
+ * actually queued and after-commit live in QueueProcessingTest.
  *
  * Every case also re-asserts the business behaviour that must stay exactly
  * as it was (status, stock, receipts, database alerts), so a green run
@@ -180,8 +187,8 @@ class TransactionalEmailTest extends TestCase
         return (string) $notification->toMail(new AnonymousNotifiable)->render();
     }
 
-    /** Rendered HTML of an internal alert notification. */
-    private function alertHtml(AlertNotification $notification, User $recipient): string
+    /** Rendered HTML of an internal alert email (the queued mail twin). */
+    private function alertHtml(AlertMailNotification $notification, User $recipient): string
     {
         return (string) $notification->toMail($recipient)->render();
     }
@@ -255,15 +262,21 @@ class TransactionalEmailTest extends TestCase
         $this->assertSame(1, Inquiry::count(), 'the business operation must still store the inquiry');
 
         foreach ([$admin, $manager, $staff] as $recipient) {
+            // Phase 30 split: the in-app row is synchronous, the email twin
+            // is queued — both still decide recipients identically.
             Notification::assertSentTo($recipient, AlertNotification::class, function ($notification, $channels) {
                 return $notification->alertType === 'inquiry_created'
-                    && in_array('database', $channels, true)
-                    && in_array('mail', $channels, true);
+                    && $channels === ['database'];
+            });
+            Notification::assertSentTo($recipient, AlertMailNotification::class, function ($notification, $channels) {
+                return $notification->alertType === 'inquiry_created'
+                    && $channels === ['mail'];
             });
         }
 
         // The public submitter is never a recipient of internal content.
         Notification::assertSentOnDemandTimes(AlertNotification::class, 0);
+        Notification::assertSentOnDemandTimes(AlertMailNotification::class, 0);
         Notification::assertSentOnDemandTimes(OrderCreatedNotification::class, 0);
     }
 
@@ -280,7 +293,7 @@ class TransactionalEmailTest extends TestCase
             'message' => 'We need a monthly supply of cake mixes and cocoa.',
         ])->assertSessionHas('success');
 
-        $notification = Notification::sent($admin, AlertNotification::class)->first();
+        $notification = Notification::sent($admin, AlertMailNotification::class)->first();
         $this->assertNotNull($notification, 'the sales admin must receive the inquiry alert');
 
         $html = $this->alertHtml($notification, $admin);
@@ -324,7 +337,7 @@ class TransactionalEmailTest extends TestCase
             'message' => 'Please send a quote for forty bags of cocoa powder.',
         ])->assertSessionHas('success');
 
-        $notification = Notification::sent($admin, AlertNotification::class)->first();
+        $notification = Notification::sent($admin, AlertMailNotification::class)->first();
         $this->assertNotNull($notification);
 
         $html = $this->alertHtml($notification, $admin);
@@ -336,7 +349,7 @@ class TransactionalEmailTest extends TestCase
         $this->assertStringContainsString('Please send a quote for forty bags of cocoa powder.', $html);
 
         // Quote requests are internal too: no email to the requester.
-        Notification::assertSentOnDemandTimes(AlertNotification::class, 0);
+        Notification::assertSentOnDemandTimes(AlertMailNotification::class, 0);
     }
 
     public function test_inquiry_conversion_sends_no_email(): void
@@ -601,12 +614,15 @@ class TransactionalEmailTest extends TestCase
 
         Notification::assertSentTo($admin, AlertNotification::class, function ($notification, $channels) {
             return $notification->alertType === 'purchase_order_partially_received'
-                && in_array('mail', $channels, true)
-                && in_array('database', $channels, true);
+                && $channels === ['database'];
+        });
+        Notification::assertSentTo($admin, AlertMailNotification::class, function ($notification, $channels) {
+            return $notification->alertType === 'purchase_order_partially_received'
+                && $channels === ['mail'];
         });
 
-        $notification = Notification::sent($admin, AlertNotification::class)
-            ->first(fn (AlertNotification $alert): bool => $alert->alertType === 'purchase_order_partially_received');
+        $notification = Notification::sent($admin, AlertMailNotification::class)
+            ->first(fn (AlertMailNotification $alert): bool => $alert->alertType === 'purchase_order_partially_received');
         $this->assertNotNull($notification, 'a partial receipt must produce its own email');
         $html = $this->alertHtml($notification, $admin);
 
@@ -631,8 +647,8 @@ class TransactionalEmailTest extends TestCase
         $this->assertSame(PurchaseOrder::STATUS_RECEIVED, $po->fresh()->status);
         $this->assertSame(60, $variant->fresh()->quantity);
 
-        $notification = Notification::sent($admin, AlertNotification::class)
-            ->first(fn (AlertNotification $alert): bool => $alert->alertType === 'purchase_order_received');
+        $notification = Notification::sent($admin, AlertMailNotification::class)
+            ->first(fn (AlertMailNotification $alert): bool => $alert->alertType === 'purchase_order_received');
         $this->assertNotNull($notification, 'a fully received PO must produce its own email');
         $this->assertArrayNotHasKey('Still outstanding', $notification->context, 'a complete receipt has nothing outstanding');
 
@@ -662,13 +678,17 @@ class TransactionalEmailTest extends TestCase
         foreach ([$admin, $manager] as $recipient) {
             Notification::assertSentTo($recipient, AlertNotification::class, function ($notification, $channels) {
                 return $notification->alertType === 'low_stock'
-                    && in_array('mail', $channels, true)
-                    && in_array('database', $channels, true);
+                    && $channels === ['database'];
+            });
+            Notification::assertSentTo($recipient, AlertMailNotification::class, function ($notification, $channels) {
+                return $notification->alertType === 'low_stock'
+                    && $channels === ['mail'];
             });
         }
         Notification::assertNothingSentTo($staff, AlertNotification::class);
+        Notification::assertNothingSentTo($staff, AlertMailNotification::class);
 
-        $notification = Notification::sent($admin, AlertNotification::class)->first();
+        $notification = Notification::sent($admin, AlertMailNotification::class)->first();
         $html = $this->alertHtml($notification, $admin);
 
         $this->assertStringContainsString('Low stock', $html);
@@ -687,7 +707,7 @@ class TransactionalEmailTest extends TestCase
 
         $this->assertSame('out_of_stock', $variant->fresh()->stockStatus());
 
-        $notification = Notification::sent($admin, AlertNotification::class)->first();
+        $notification = Notification::sent($admin, AlertMailNotification::class)->first();
         $this->assertNotNull($notification);
         $this->assertSame('out_of_stock', $notification->alertType);
 
@@ -708,6 +728,9 @@ class TransactionalEmailTest extends TestCase
 
         $this->assertSame('low_stock', $variant->fresh()->stockStatus());
         Notification::assertSentToOnce($admin, AlertNotification::class);
+        // The queued email twin obeys the same transition-only rule: one
+        // job for the transition, none for the unchanged repeat.
+        Notification::assertSentToOnce($admin, AlertMailNotification::class);
     }
 
     public function test_restock_then_a_new_dip_sends_a_fresh_email(): void
@@ -722,6 +745,7 @@ class TransactionalEmailTest extends TestCase
 
         $this->assertSame('low_stock', $variant->fresh()->stockStatus());
         Notification::assertSentToTimes($admin, AlertNotification::class, 2);
+        Notification::assertSentToTimes($admin, AlertMailNotification::class, 2);
     }
 
     // ------------------------------------------------------------------

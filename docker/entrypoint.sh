@@ -1,6 +1,16 @@
 #!/bin/sh
 set -e
 
+# Phase 30: when a custom container command is provided (Render's queue
+# worker service passes `php artisan queue:work ...` as the start command),
+# run it directly and skip the web bootstrap below — migrations, caches and
+# the storage symlink are the web service's job, and the worker must never
+# race it during a deploy.
+if [ "$#" -gt 0 ]; then
+    echo "Danob Trading PLC — running custom command: $*"
+    exec "$@"
+fi
+
 echo "Danob Trading PLC — Starting..."
 
 # Storage safety net: Render's container disk is wiped on every deploy, so

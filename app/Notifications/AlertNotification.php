@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Notifications;
 
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 /**
@@ -16,31 +15,17 @@ use Illuminate\Notifications\Notification;
  * center needs — type, severity, title, message and an optional deep link.
  * Recipients are decided by AlertService, not by this class.
  *
- * Phase 29 — the same alert may additionally travel on the mail channel,
- * but only for the alert families that are actual email events (MAIL_TYPES)
- * and only for recipients that own a valid mail address. The database
- * payload stays byte-identical to Phase 28: `context` is extra mail-only
- * detail (label => value or label => list of values) that never reaches the
- * notification centre.
+ * Phase 29 — the same alert additionally travelled on the mail channel
+ * from this class. Phase 30 moved that mail leg to AlertMailNotification
+ * (ShouldQueue): a queued notification is queued per channel, so keeping
+ * 'mail' here would have forced the database channel onto the queue and
+ * delayed the in-app centre. This class now always delivers synchronously
+ * after commit, exactly as Phase 28 defined it.
  */
 class AlertNotification extends Notification
 {
     /** Severity vocabulary shared with the UI's existing badge tones. */
     public const SEVERITIES = ['success', 'warning', 'info', 'critical'];
-
-    /**
-     * Alert types that also produce an internal transactional email. Order
-     * workflow alerts stay database-only: those events are communicated to
-     * customers by the dedicated customer notifications instead, so no one
-     * receives the same event twice in two shapes.
-     */
-    public const MAIL_TYPES = [
-        'inquiry_created',
-        'low_stock',
-        'out_of_stock',
-        'purchase_order_partially_received',
-        'purchase_order_received',
-    ];
 
     /**
      * @param  array<string, string|array<int, string>>  $context  mail-only detail rows
@@ -55,17 +40,15 @@ class AlertNotification extends Notification
     ) {}
 
     /**
+     * Database channel only, always synchronously: the notification centre
+     * must never wait on a worker. The email twin is dispatched separately
+     * by AlertService as AlertMailNotification.
+     *
      * @return array<int, string>
      */
     public function via(object $notifiable): array
     {
-        $via = ['database'];
-
-        if (in_array($this->alertType, self::MAIL_TYPES, true) && $this->hasMailAddress($notifiable)) {
-            $via[] = 'mail';
-        }
-
-        return $via;
+        return ['database'];
     }
 
     /**
@@ -84,46 +67,5 @@ class AlertNotification extends Notification
             // text rather than inventing a route.
             'url' => $this->url,
         ];
-    }
-
-    /**
-     * Internal email form of the same alert: title, message, optional
-     * detail rows and an admin link that only ever reaches internal
-     * recipients (see MAIL_TYPES + AlertService role families).
-     */
-    public function toMail(object $notifiable): MailMessage
-    {
-        $severity = in_array($this->severity, self::SEVERITIES, true) ? $this->severity : 'info';
-
-        return (new MailMessage)
-            ->subject($this->title)
-            ->view('emails.alert', [
-                'heading' => $this->title,
-                'severity' => $severity,
-                'severityLabel' => str_replace('_', ' ', $this->alertType),
-                // NB: never call this variable "message" — Mailer::render()
-                // injects $data['message'] as the Mail Message instance and
-                // would clobber the alert text.
-                'body' => $this->message,
-                'context' => $this->context,
-                'actionUrl' => $this->url,
-                'actionLabel' => 'Open in Danob',
-            ]);
-    }
-
-    /**
-     * A recipient without a usable address is skipped here, so the mail
-     * channel is never even attempted with an empty or malformed address —
-     * the database notification still lands as it always did.
-     */
-    private function hasMailAddress(object $notifiable): bool
-    {
-        try {
-            $address = $notifiable->routeNotificationFor('mail', $this);
-        } catch (\Throwable) {
-            return false;
-        }
-
-        return is_string($address) && filter_var($address, FILTER_VALIDATE_EMAIL) !== false;
     }
 }

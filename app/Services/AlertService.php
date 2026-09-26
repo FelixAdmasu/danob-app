@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Models\ProductVariant;
 use App\Models\User;
+use App\Notifications\AlertMailNotification;
 use App\Notifications\AlertNotification;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -27,8 +28,13 @@ use Illuminate\Support\Facades\DB;
  *     best-effort: an alert is a side effect and can never roll back or
  *     fail the business transaction that produced it. Phase 29: the same
  *     dispatch also carries the mail-only $context rows, so the alert
- *     families listed in AlertNotification::MAIL_TYPES reach the same
+ *     families listed in AlertMailNotification::MAIL_TYPES reach the same
  *     role-based recipients by email under the identical guarantees.
+ *     Phase 30: each recipient now gets two notifications after commit —
+ *     AlertNotification (database, synchronous → the centre is immediate)
+ *     and AlertMailNotification (mail, queued → the request never waits
+ *     on SMTP, and ShouldQueueAfterCommit keeps the job invisible until
+ *     the business transaction has committed).
  */
 class AlertService
 {
@@ -59,7 +65,14 @@ class AlertService
             DB::connection()->afterCommit(function () use ($type, $severity, $title, $message, $url, $roles, $context): void {
                 foreach ($this->recipients($roles) as $user) {
                     try {
+                        // Phase 30: one synchronous database notification
+                        // (immediate in-app state) and one queued mail
+                        // notification (via() decides whether the alert
+                        // family and address justify a job at all). Both
+                        // run after the business commit; a failure of
+                        // either is contained to this recipient.
                         $user->notify(new AlertNotification($type, $severity, $title, $message, $url, $context));
+                        $user->notify(new AlertMailNotification($type, $severity, $title, $message, $url, $context));
                     } catch (\Throwable) {
                         // A single recipient must never break the others, and
                         // an alert must never surface as a request failure.

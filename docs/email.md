@@ -1,11 +1,11 @@
-# Email & transactional communication (Phase 29)
+# Email & transactional communication (Phases 29 & 30)
 
 Danob sends two kinds of transactional email on top of — never instead of —
 the database notification centre introduced in Phase 28.
 
 ```text
-business event → existing service → database notification (in-app)
-                                  → transactional email (side effect)
+business event → existing service → (after commit) database notification (in-app, immediate)
+                                  → (after commit) queued email job → worker → SMTP
 ```
 
 ## Mail configuration
@@ -63,9 +63,11 @@ MAIL_FROM_NAME=Danob
 
 ### Internal emails (role-based recipients, admin links allowed)
 
-These travel on the **mail channel of the existing `AlertNotification`**,
-gated by `AlertNotification::MAIL_TYPES`; recipients come from the unchanged
-Phase 28 `AlertService` role families (`admin` / `manager` / `staff`).
+These travel on the dedicated **queued `AlertMailNotification`** (Phase 30),
+gated by `AlertMailNotification::MAIL_TYPES`; recipients come from the
+unchanged Phase 28 `AlertService` role families (`admin` / `manager` /
+`staff`). The in-app twin (`AlertNotification`, database channel) is sent
+immediately and stays independent of the queue — see `docs/queue.md`.
 
 | Event | Alert type | Recipients |
 | --- | --- | --- |
@@ -104,23 +106,28 @@ Sent by `TransactionalEmailService` as dedicated notification classes:
   reach role-authorized users.
 - **URLs** are always built with named `route()` calls on the server —
   never from request data.
-- **Failure isolation.** Every send runs post-commit (`DB::afterCommit`),
-  is wrapped in try/catch, and logs only the event name, record id and
-  error message. A mail outage can never roll back an order, confirmation,
-  cancellation, delivery, return, receiving or inquiry.
+- **Failure isolation.** Every send is scheduled post-commit
+  (`DB::afterCommit`), is wrapped in try/catch, and logs only the event
+  name, record id and error message. A mail outage can never roll back an
+  order, confirmation, cancellation, delivery, return, receiving or
+  inquiry: at request time only the job is written, and a delivery failure
+  happens later on the worker, inside the job's bounded retries
+  (`docs/queue.md`).
 - **Skipped deliveries.** Customers without a (valid) email address are
   logged as a `transactional email skipped` info entry; the operation still
-  succeeds.
+  succeeds, and no queue job is created for an undeliverable address.
 - **Recipients without usable addresses** are skipped inside `via()`, so the
-  mail channel is never attempted with an empty/malformed address.
+  mail channel is never attempted — or queued — with an empty/malformed
+  address.
 - **Duplicate prevention.** Emails are triggered only by committed business
   events inside POST-driven services — never from React, page rendering,
   GET controllers, refreshes or viewing a record. A rolled-back attempt
   (e.g. reference-number retry) discards its deferred callback with the
-  transaction.
-- **No queue yet.** Nothing implements `ShouldQueue`; everything is
-  synchronous and queue-ready. Queues, workers and Redis arrive in
-  **Phase 30**.
+  transaction, so no job survives a failed transaction.
+- **Queued delivery (Phase 30).** Every email notification implements
+  `ShouldQueue` + `ShouldQueueAfterCommit` and runs on the database queue
+  through a worker process; nothing sends SMTP from the web request.
+  Full mechanics: `docs/queue.md`.
 
 ## Templates
 

@@ -8,6 +8,8 @@ use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ProductVariant;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Queue\ShouldQueueAfterCommit;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -18,13 +20,30 @@ use Illuminate\Notifications\Notification;
  * Notification::route('mail', ...) and never write rows into the database
  * notification centre (that stays the internal, role-scoped system).
  *
+ * Phase 30 — queued: ShouldQueue + ShouldQueueAfterCommit push delivery to
+ * the database queue only after the business transaction commits, so the
+ * HTTP request returns without waiting on SMTP and a rolled-back
+ * transaction never produces a job. The framework serializes only this
+ * notification's own state — the Order becomes an id and is reloaded by
+ * the worker; every value rendered into the email is immutable event data
+ * (reference, stored lines/prices/totals, fixed per-event status label).
+ *
+ * Retry policy (docs/queue.md): three attempts, ~30s then ~2min backoff;
+ * after that the job rests in failed_jobs and the order data stays intact.
+ *
  * The view only ever receives authoritative order values — reference,
  * status, line quantities, stored prices and stored totals. No calculation
  * is introduced here, and no admin URL, stock level, supplier name or
  * internal note may cross into customer content.
  */
-abstract class CustomerOrderNotification extends Notification
+abstract class CustomerOrderNotification extends Notification implements ShouldQueue, ShouldQueueAfterCommit
 {
+    /** Total delivery attempts before the job is marked failed. */
+    public int $tries = 3;
+
+    /** @var array<int, int> Seconds to wait before the 2nd and 3rd attempt. */
+    public array $backoff = [30, 120];
+
     public function __construct(public readonly Order $order) {}
 
     /**

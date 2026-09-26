@@ -35,9 +35,12 @@ use Illuminate\Support\Facades\Notification as NotificationFacade;
  *     credentials), so an SMTP outage can never roll back an order,
  *     confirmation, cancellation, delivery or return.
  *
- * Queue-ready by construction — delivery is already an isolated, post-commit
- * side effect — but nothing here implements ShouldQueue: queuing belongs to
- * Phase 30.
+ * Phase 30 — delivery is queued: the notifications implement ShouldQueue +
+ * ShouldQueueAfterCommit, so this service's notify() calls hand the mail
+ * to the database queue after commit instead of speaking SMTP inline.
+ * This class still owns validation, skip-logging and failure isolation —
+ * those responsibilities are not provided by Laravel's queue, so the
+ * service stays (it is not duplicate infrastructure).
  */
 class TransactionalEmailService
 {

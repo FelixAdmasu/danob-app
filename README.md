@@ -174,4 +174,5 @@ Before considering a deployment complete:
 - `docs/storage.md` explains durable image storage and the production guard.
 - `docs/first-admin.md` explains safe administrator provisioning.
 - `docs/email.md` explains mail configuration, which events email whom, and the customer/internal email boundary.
+- `docs/queue.md` explains the database queue, the email worker, retries/`failed_jobs`, and the after-commit delivery guarantee.
 - `.github/workflows/tests.yml` is the pull-request and main-branch CI workflow.

@@ -89,3 +89,100 @@ services:
             value: log
 
       healthCheckPath: /up
+
+    # =========================================================================
+    # Phase 30 — queue worker. The web service only writes jobs to the
+    # database queue; this service runs them (transactional email and other
+    # queued work). Same repository, same Docker image — docker/entrypoint.sh
+    # detects the custom command and skips the web bootstrap.
+    #
+    #   * --tries=3 / --backoff=30 are worker-wide defaults; email
+    #     notifications additionally declare their own tries/backoff
+    #     (docs/queue.md).
+    #   * --max-time=3600 makes the worker exit cleanly after an hour so it
+    #     restarts with fresh code/memory; Render restarts it automatically
+    #     and the current job always finishes first (no zombies).
+    #
+    # Keep this envVars list in sync with the web service above. Dashboard-
+    # only values (`sync: false` DB_*/SUPABASE_*, and once SMTP is enabled
+    # the MAIL_HOST/MAIL_PORT/MAIL_USERNAME/MAIL_PASSWORD/MAIL_FROM_*
+    # overrides) must be set on THIS service's dashboard Environment tab as
+    # well. NOTE: workers require a paid Render instance type — see
+    # docs/queue.md if this service fails to provision.
+    # =========================================================================
+    - type: worker
+      name: danob-worker
+      runtime: docker
+      dockerfilePath: Dockerfile
+      dockerContext: .
+      command: php artisan queue:work --tries=3 --backoff=30 --sleep=1 --max-time=3600
+      envVars:
+          # Application
+          - key: APP_NAME
+            value: Danob
+          - key: APP_ENV
+            value: production
+          - key: APP_DEBUG
+            value: 'false'
+          - key: APP_URL
+            value: https://danob.onrender.com # every generated link (email buttons, resets) uses this host
+          - key: APP_KEY
+            generateValue: true # Render auto-generates on first deploy
+
+          # Database — connect to Supabase PostgreSQL
+          - key: DB_CONNECTION
+            value: pgsql
+          - key: DB_HOST
+            sync: false # Set from Supabase dashboard
+          - key: DB_PORT
+            value: '5432'
+          - key: DB_DATABASE
+            sync: false # Set from Supabase dashboard
+          - key: DB_USERNAME
+            sync: false # Set from Supabase dashboard
+          - key: DB_PASSWORD
+            sync: false # Set from Supabase dashboard
+          - key: DB_SSLMODE
+            value: require
+
+          # Session / Cache / Queue — all use database
+          - key: SESSION_DRIVER
+            value: database
+          - key: CACHE_STORE
+            value: database
+          - key: QUEUE_CONNECTION
+            value: database
+
+          # Logging
+          - key: LOG_CHANNEL
+            value: stack
+          - key: LOG_LEVEL
+            value: error
+
+          # Broadcasting
+          - key: BROADCAST_CONNECTION
+            value: log
+
+          # Filesystem
+          - key: FILESYSTEM_DISK
+            value: local
+          - key: FILESYSTEM_DISK_PRODUCT_IMAGES
+            value: supabase
+          - key: SUPABASE_BUCKET
+            value: product-images
+          - key: SUPABASE_DEFAULT_REGION
+            value: us-east-1
+          - key: SUPABASE_USE_PATH_STYLE_ENDPOINT
+            value: 'true'
+          - key: SUPABASE_URL
+            sync: false
+          - key: SUPABASE_ACCESS_KEY_ID
+            sync: false
+          - key: SUPABASE_SECRET_ACCESS_KEY
+            sync: false
+
+          # Mail — identical to the web service: log until SMTP is set on
+          # the Render dashboard. The worker sends whatever the web service
+          # enqueues, so both must agree on the mailer.
+          - key: MAIL_MAILER
+            value: log

@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\Inquiry;
 use App\Models\Category;
 use App\Models\Customer;
+use App\Models\Inquiry;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\User;
