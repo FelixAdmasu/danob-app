@@ -23,6 +23,11 @@ type Inquiry = {
     product: { name: string } | null;
     variant: { name: string; unit: string } | null;
     requested_quantity: number | null;
+    customer: {
+        id: number;
+        contact_name: string | null;
+        company_name: string | null;
+    } | null;
     message: string;
     status: string;
     internal_notes: string | null;
@@ -69,6 +74,15 @@ export default function Index({ inquiries, filters, statuses }: Props) {
             status: nextStatus,
             internal_notes: notes[inquiry.id] ?? inquiry.internal_notes ?? '',
         });
+    };
+
+    const convertToCustomer = (inquiry: Inquiry) => {
+        if (
+            !inquiry.customer &&
+            window.confirm('Convert this inquiry to a customer record?')
+        ) {
+            router.post(`/admin/inquiries/${inquiry.id}/convert-to-customer`);
+        }
     };
 
     return (
@@ -244,6 +258,23 @@ export default function Index({ inquiries, filters, statuses }: Props) {
                                         >
                                             Save notes
                                         </Button>
+                                        {inquiry.customer ? (
+                                            <a
+                                                href={`/admin/customers/${inquiry.customer.id}/edit`}
+                                                className="text-primary text-center text-xs hover:underline"
+                                            >
+                                                Customer #{inquiry.customer.id}
+                                            </a>
+                                        ) : (
+                                            <Button
+                                                type="button"
+                                                onClick={() =>
+                                                    convertToCustomer(inquiry)
+                                                }
+                                            >
+                                                Convert to customer
+                                            </Button>
+                                        )}
                                     </div>
                                 </article>
                             ))

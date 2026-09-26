@@ -91,6 +91,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::get('search', [SearchController::class, 'index'])->name('search');
         Route::get('inquiries', [InquiryController::class, 'index'])->name('inquiries.index');
         Route::patch('inquiries/{inquiry}', [InquiryController::class, 'update'])->name('inquiries.update');
+        Route::post('inquiries/{inquiry}/convert-to-customer', [InquiryController::class, 'convertToCustomer'])->name('inquiries.convert-to-customer');
     });
 
     Route::middleware('role:admin,manager')->group(function () {

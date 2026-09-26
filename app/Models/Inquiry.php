@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['name', 'email', 'phone', 'interest', 'product_id', 'variant_id', 'requested_quantity', 'message', 'status', 'assigned_to', 'internal_notes', 'source'])]
+#[Fillable(['name', 'email', 'phone', 'interest', 'product_id', 'variant_id', 'requested_quantity', 'message', 'status', 'assigned_to', 'customer_id', 'internal_notes', 'source'])]
 class Inquiry extends Model
 {
     public const STATUS_NEW = 'new';
@@ -40,5 +40,10 @@ class Inquiry extends Model
     public function variant(): BelongsTo
     {
         return $this->belongsTo(ProductVariant::class, 'variant_id');
+    }
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class);
     }
 }
