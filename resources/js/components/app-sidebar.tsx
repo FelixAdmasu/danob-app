@@ -18,6 +18,7 @@ import {
     AlertTriangle,
     BarChart3,
     MessageSquareText,
+    UserCog,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
@@ -63,6 +64,7 @@ export function AppSidebar() {
     const isAdmin =
         role === 'super_admin' || role === 'admin' || role === 'manager';
     const isStaffPlus = isAdmin || role === 'staff';
+    const canManageUsers = role === 'super_admin' || role === 'admin';
 
     // Sections mirror the page eyebrows (Catalog / Operations / Inventory /
     // Sales) so the nav, breadcrumbs and page headers tell the same story.
@@ -160,6 +162,10 @@ export function AppSidebar() {
           ]
         : [];
 
+    const administrationItems: NavItem[] = canManageUsers
+        ? [{ title: 'Users', href: '/admin/users', icon: UserCog }]
+        : [];
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader className="border-sidebar-border/70 border-b pb-4">
@@ -198,6 +204,11 @@ export function AppSidebar() {
                 <NavMain
                     items={salesItems}
                     label="Sales"
+                    className={SECTION_DIVIDER}
+                />
+                <NavMain
+                    items={administrationItems}
+                    label="Administration"
                     className={SECTION_DIVIDER}
                 />
             </SidebarContent>

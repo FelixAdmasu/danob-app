@@ -26,5 +26,9 @@ class DatabaseSeeder extends Seeder
             BranchSeeder::class,
             ProductSeeder::class,
         ]);
+
+        if ((bool) env('DANOB_SEED_DEMO_DATA', false)) {
+            $this->call(DemoDataSeeder::class);
+        }
     }
 }
