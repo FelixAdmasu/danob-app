@@ -1,12 +1,12 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import type { LucideIcon } from 'lucide-react';
+import { useState } from 'react';
 import type { ReactNode } from 'react';
 
 import { DonutChart } from '@/components/charts';
 import Heading from '@/components/heading';
 import { ProgressBar } from '@/components/progress-bar';
 import { StatusBadge } from '@/components/status-badge';
-import { Badge, type BadgeVariant } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Table,
@@ -23,23 +23,8 @@ import * as InventoryRoutes from '@/routes/admin/inventory';
 import * as OrderRoutes from '@/routes/admin/orders';
 import * as ProductRoutes from '@/routes/admin/products';
 import * as PurchaseOrderRoutes from '@/routes/admin/purchase-orders';
-import {
-    AlertTriangle,
-    Archive,
-    ArrowUpDown,
-    Building2,
-    CheckCircle2,
-    FileText,
-    History,
-    Layers,
-    Package,
-    PackagePlus,
-    Plus,
-    ScrollText,
-    ShoppingCart,
-    Tag,
-    Users,
-} from 'lucide-react';
+import { Archive, Package, Plus, ShoppingCart, Users } from 'lucide-react';
+import { StatCard } from '@/components/stat-card';
 
 type Order = {
     id: number;
@@ -96,101 +81,10 @@ type Inventory = {
     recent_purchase_orders: PurchaseOrderRow[];
 };
 
-type MetricTone = 'default' | 'success' | 'warning' | 'danger';
-
-// Soft tinted icon chips (TailAdmin metric-card anatomy), sage on hover.
-const METRIC_CHIP: Record<MetricTone, string> = {
-    default:
-        'bg-secondary text-secondary-foreground group-hover:bg-primary group-hover:text-primary-foreground',
-    success:
-        'bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground',
-    warning:
-        'bg-[#F0B429]/15 text-[#92400E] group-hover:bg-[#F0B429] group-hover:text-[#422006] dark:bg-[#2A2411] dark:text-[#F0B429] dark:group-hover:bg-[#F0B429] dark:group-hover:text-[#422006]',
-    danger: 'bg-destructive/10 text-[#B42318] group-hover:bg-destructive group-hover:text-white dark:bg-destructive/60 dark:text-white dark:group-hover:bg-destructive',
-};
-
-const METRIC_VALUE: Record<MetricTone, string> = {
-    default: 'text-foreground',
-    success: 'text-[#2D5016] dark:text-[#95E6B6]',
-    warning: 'text-amber-600 dark:text-[#F0B429]',
-    danger: 'text-red-600 dark:text-red-400',
-};
-
-// Display-only signed quantity derived from the stored before/after ledger values.
-function movementLabel(m: Movement): string {
-    const delta = m.quantity_after - m.quantity_before;
-    if (delta > 0) return `+${m.quantity}`;
-    if (delta < 0) return `-${m.quantity}`;
-    return `${m.quantity}`;
-}
-
-/**
- * TailAdmin-style KPI tile: icon chip, then a label + value row with an
- * optional status pill, closed by a caption line. Kept local to this page so
- * the shared StatCard (sales/purchase dashboards, reports) keeps its own
- * anatomy.
- */
-function MetricCard({
-    label,
-    value,
-    icon: Icon,
-    tone = 'default',
-    pill,
-    caption,
-}: {
-    label: string;
-    value: ReactNode;
-    icon: LucideIcon;
-    tone?: MetricTone;
-    pill?: { label: string; variant?: BadgeVariant };
-    caption?: string;
-}) {
-    return (
-        <div className="group border-border bg-card hover:border-primary/30 relative flex flex-col gap-5 overflow-hidden rounded-2xl border p-5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm md:p-6 dark:shadow-none">
-            <span
-                className={cn(
-                    'flex size-12 shrink-0 items-center justify-center rounded-xl transition-colors duration-200',
-                    METRIC_CHIP[tone],
-                )}
-            >
-                <Icon className="size-6" aria-hidden="true" />
-            </span>
-            <div className="flex items-end justify-between gap-3">
-                <div className="min-w-0">
-                    <p className="text-muted-foreground text-sm">{label}</p>
-                    <p
-                        className={cn(
-                            'font-serif text-3xl leading-none font-medium tracking-tight tabular-nums',
-                            METRIC_VALUE[tone],
-                        )}
-                    >
-                        {value}
-                    </p>
-                </div>
-                {pill && (
-                    <Badge
-                        variant={pill.variant ?? 'secondary'}
-                        className="shrink-0"
-                    >
-                        {pill.label}
-                    </Badge>
-                )}
-            </div>
-            {caption && (
-                <p className="text-muted-foreground text-xs leading-5">
-                    {caption}
-                </p>
-            )}
-        </div>
-    );
-}
-
-/**
- * Dashboard panel in the TailAdmin card language: rounded-2xl surface, title
- * + subtitle with an optional action pushed to the header's right edge, and
- * one padded content block below. `contentClassName` lets full-bleed content
- * (tables) opt out of the side padding.
- */
+/** Panel in the TailAdmin card language: rounded-2xl surface, title + subtitle
+    with an optional action pushed to the header right edge, and one padded
+    content block below. `contentClassName` lets full-bleed content (tables)
+    opt out of the side padding. */
 function Panel({
     title,
     subtitle,
@@ -242,7 +136,6 @@ function Panel({
     );
 }
 
-// Small header link used as every panel's action ("View all →").
 function PanelLink({ href, children }: { href: string; children: ReactNode }) {
     return (
         <Link
@@ -272,24 +165,19 @@ export default function Dashboard({
 }) {
     const page = usePage<{ auth: { user: { role?: string } | null } }>();
     const role = (page.props.auth?.user as { role?: string } | null)?.role;
-    // Mirrors the sidebar: catalog/purchasing links only for admin-level
-    // roles, sales links for staff too — never a tile that 403s.
     const isAdmin =
         role === 'super_admin' || role === 'admin' || role === 'manager';
     const isStaffPlus = isAdmin || role === 'staff';
 
-    const statusMix = ['pending', 'confirmed', 'delivered', 'cancelled']
-        .map((status, i) => ({
-            label: status,
-            value: recent_orders.filter((o) => o.status === status).length,
-            color: [
-                'var(--viz-warning)',
-                'var(--chart-3)',
-                'var(--viz-success)',
-                'var(--viz-danger)',
-            ][i],
-        }))
-        .filter((d) => d.value > 0);
+    const [summaryTab, setSummaryTab] = useState<
+        'overview' | 'orders' | 'stock'
+    >('overview');
+
+    const m = inventory?.metrics;
+    const availability =
+        m && m.total_active > 0
+            ? Math.round((m.in_stock / m.total_active) * 100)
+            : 0;
 
     const statusCounts = ['pending', 'confirmed', 'delivered', 'cancelled'].map(
         (status) => ({
@@ -299,93 +187,46 @@ export default function Dashboard({
         }),
     );
 
-    const m = inventory?.metrics;
-    const availability =
-        m && m.total_active > 0
-            ? Math.round((m.in_stock / m.total_active) * 100)
-            : 0;
+    const pending = stats.pending_orders;
+    const delivered = recent_orders.filter(
+        (o) => o.status === 'delivered',
+    ).length;
+    const confirmed = recent_orders.filter(
+        (o) => o.status === 'confirmed',
+    ).length;
+    const cancelled = recent_orders.filter(
+        (o) => o.status === 'cancelled',
+    ).length;
 
-    const catalogLinks = [
-        {
-            title: 'Products',
-            href: '/admin/products',
-            icon: Package,
-            desc: 'Catalog',
-        },
-        {
-            title: 'Categories',
-            href: '/admin/categories',
-            icon: Tag,
-            desc: 'Groups',
-        },
-        {
-            title: 'Brands',
-            href: '/admin/brands',
-            icon: Layers,
-            desc: 'Brands',
-        },
-        {
-            title: 'Branches',
-            href: '/admin/branches',
-            icon: Building2,
-            desc: 'Locations',
-        },
-    ];
-    const stockLinks = [
-        {
-            title: 'Opening Stock',
-            href: '/admin/inventory/opening-stock',
-            icon: Archive,
-            desc: 'Initial',
-        },
-        {
-            title: 'Stock Adjustments',
-            href: '/admin/inventory/adjustments',
-            icon: ArrowUpDown,
-            desc: 'Correct',
-        },
-        {
-            title: 'Inventory History',
-            href: '/admin/inventory/history',
-            icon: History,
-            desc: 'Ledger',
-        },
-        ...(inventory
-            ? [
-                  {
-                      title: 'Low Stock',
-                      href: '/admin/inventory/low-stock',
-                      icon: AlertTriangle,
-                      desc: 'Alerts',
-                  },
-                  {
-                      title: 'Purchase Orders',
-                      href: '/admin/purchase-orders',
-                      icon: FileText,
-                      desc: 'Purchasing',
-                  },
-              ]
-            : []),
-    ];
-    const salesLinks = [
-        {
-            title: 'Orders',
-            href: '/admin/orders',
-            icon: ShoppingCart,
-            desc: 'Sales',
-        },
-        {
-            title: 'Customers',
-            href: '/admin/customers',
-            icon: Users,
-            desc: 'Clients',
-        },
-    ];
-    const quickLinks = [
-        ...(isAdmin ? catalogLinks : []),
-        ...(isAdmin ? stockLinks : []),
-        ...salesLinks,
-    ];
+    const summarySets: Record<
+        'overview' | 'orders' | 'stock',
+        { label: string; value: number }[]
+    > = {
+        overview: [
+            { label: 'Orders', value: stats.orders },
+            { label: 'Products', value: stats.products },
+            { label: 'Customers', value: stats.customers },
+            { label: 'Pending', value: pending },
+            { label: 'Branches', value: stats.branches },
+            { label: 'Categories', value: stats.categories },
+        ],
+        orders: [
+            { label: 'Total', value: stats.orders },
+            { label: 'Delivered', value: delivered },
+            { label: 'Confirmed', value: confirmed },
+            { label: 'Pending', value: pending },
+            { label: 'Cancelled', value: cancelled },
+            { label: 'Revenue', value: recent_orders.length },
+        ],
+        stock: [
+            { label: 'Active', value: m?.total_active ?? 0 },
+            { label: 'Units', value: m?.total_units ?? 0 },
+            { label: 'In Stock', value: m?.in_stock ?? 0 },
+            { label: 'Low', value: m?.low_stock ?? 0 },
+            { label: 'Out', value: m?.out_of_stock ?? 0 },
+            { label: 'Monitored', value: m?.monitored ?? 0 },
+        ],
+    };
 
     return (
         <>
@@ -400,7 +241,6 @@ export default function Dashboard({
                             {isAdmin && (
                                 <Button variant="outline" asChild>
                                     <Link href={ProductRoutes.create().url}>
-                                        <PackagePlus aria-hidden="true" />
                                         Add Product
                                     </Link>
                                 </Button>
@@ -408,218 +248,257 @@ export default function Dashboard({
                             {isStaffPlus && (
                                 <Button asChild>
                                     <Link href={OrderRoutes.create().url}>
-                                        <Plus aria-hidden="true" />
+                                        <Plus className="size-4" />
                                         New Order
                                     </Link>
                                 </Button>
                             )}
+                            <input
+                                type="date"
+                                className="datepicker text-theme-sm shadow-theme-xs border-input bg-background text-foreground focus:ring-ring dark:text-foreground h-9 w-full max-w-28 rounded-lg border px-3 py-2 text-sm focus:ring-2 focus-visible:outline-none xl:max-w-fit dark:border-[#33452A] dark:bg-transparent"
+                                aria-label="Select a date range"
+                            />
                         </>
                     }
                 />
 
-                {/* Business KPIs — TailAdmin metric-card row */}
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-                    <MetricCard
+                {/* Metric strip — 4 across (TailAdmin KPI row) */}
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <StatCard
                         label="Orders"
                         value={stats.orders}
                         icon={ShoppingCart}
-                        pill={
-                            stats.pending_orders > 0
+                        hint={`${pending} pending`}
+                        trend={
+                            pending > 0
                                 ? {
-                                      label: `${stats.pending_orders} pending`,
+                                      value: `${pending} pending`,
                                       variant: 'warning',
                                   }
-                                : { label: 'All clear', variant: 'success' }
+                                : undefined
                         }
-                        caption="Placed to date"
                     />
-                    <MetricCard
+                    <StatCard
                         label="Pending Orders"
                         value={stats.pending_orders}
-                        icon={ScrollText}
-                        tone={stats.pending_orders > 0 ? 'warning' : 'success'}
-                        caption={
-                            stats.pending_orders > 0
+                        icon={ShoppingCart}
+                        tone={pending > 0 ? 'warning' : 'success'}
+                        hint={
+                            pending > 0
                                 ? 'Awaiting confirmation'
                                 : 'Queue is clear'
                         }
                     />
-                    <MetricCard
+                    <StatCard
                         label="Customers"
                         value={stats.customers}
                         icon={Users}
-                        caption="Registered accounts"
+                        hint="Registered accounts"
                     />
-                    <MetricCard
+                    <StatCard
                         label="Products"
                         value={stats.products}
                         icon={Package}
-                        caption={`Across ${stats.categories} categories`}
+                        hint={`Across ${stats.categories} categories`}
                     />
-                    <MetricCard
-                        label="Categories"
-                        value={stats.categories}
-                        icon={Tag}
-                        caption="Catalog groups"
-                    />
-                    <MetricCard
-                        label="Branches"
-                        value={stats.branches}
-                        icon={Building2}
-                        caption="Active locations"
-                    />
-                </div>
-
-                {m && (
-                    <>
-                        {/* Inventory KPIs */}
-                        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-                            <MetricCard
+                    {m && (
+                        <>
+                            <StatCard
                                 label="Active Variants"
                                 value={m.total_active}
-                                icon={Layers}
-                                caption="Tracked SKUs"
+                                icon={Package}
+                                hint="Tracked SKUs"
                             />
-                            <MetricCard
+                            <StatCard
                                 label="Total Units"
                                 value={m.total_units}
                                 icon={Archive}
-                                caption="On hand, all variants"
+                                hint="On hand, all variants"
                             />
-                            <MetricCard
+                            <StatCard
                                 label="In Stock"
                                 value={m.in_stock}
-                                icon={CheckCircle2}
+                                icon={Package}
                                 tone="success"
-                                caption={`${availability}% of tracked variants`}
+                                hint={`${availability}% of tracked variants`}
+                                trend={
+                                    availability >= 70
+                                        ? {
+                                              value: '+Healthy',
+                                              variant: 'success',
+                                          }
+                                        : { value: 'Watch', variant: 'warning' }
+                                }
                             />
-                            <MetricCard
+                            <StatCard
                                 label="Low Stock"
                                 value={m.low_stock}
-                                icon={AlertTriangle}
+                                icon={Package}
                                 tone={m.low_stock > 0 ? 'warning' : 'default'}
-                                pill={
+                                hint="At or below threshold"
+                                trend={
                                     m.low_stock > 0
                                         ? {
-                                              label: 'Reorder soon',
+                                              value: 'Alerts',
                                               variant: 'warning',
-                                          }
-                                        : { label: 'Clear', variant: 'success' }
-                                }
-                                caption="At or below threshold"
-                            />
-                            <MetricCard
-                                label="Out of Stock"
-                                value={m.out_of_stock}
-                                icon={Package}
-                                tone={m.out_of_stock > 0 ? 'danger' : 'default'}
-                                pill={
-                                    m.out_of_stock > 0
-                                        ? {
-                                              label: 'Unavailable',
-                                              variant: 'destructive',
                                           }
                                         : undefined
                                 }
-                                caption="Zero on hand"
                             />
-                            <MetricCard
-                                label="Monitored"
-                                value={m.monitored}
-                                icon={ScrollText}
-                                caption="With thresholds set"
-                            />
-                        </div>
+                        </>
+                    )}
+                </div>
 
-                        {/* Chart row: Stock Health (7) + Order Status Mix (5) */}
-                        <div className="grid grid-cols-12 gap-4 md:gap-5">
-                            <Panel
-                                className="col-span-12 xl:col-span-7"
-                                title="Stock Health"
-                                subtitle="Availability across active variants"
-                                action={
-                                    <PanelLink
-                                        href={InventoryRoutes.lowStock().url}
-                                    >
-                                        View report →
-                                    </PanelLink>
-                                }
-                            >
-                                <DonutChart
-                                    size={168}
-                                    centerValue={m.total_active}
-                                    centerLabel="Variants"
-                                    data={[
-                                        {
-                                            label: 'In stock',
-                                            value: m.in_stock,
-                                            color: 'var(--viz-success)',
-                                        },
-                                        {
-                                            label: 'Low stock',
-                                            value: m.low_stock,
-                                            color: 'var(--viz-warning)',
-                                        },
-                                        {
-                                            label: 'Out of stock',
-                                            value: m.out_of_stock,
-                                            color: 'var(--viz-danger)',
-                                        },
-                                    ]}
-                                    emptyText="No tracked variants."
+                {/* Charts row: Stock Health (7) + Order Status Mix (5) */}
+                {m && (
+                    <div className="grid grid-cols-12 gap-4 md:gap-6">
+                        <Panel
+                            className="col-span-12 xl:col-span-7"
+                            title="Stock Health"
+                            subtitle="Availability across active variants"
+                            action={
+                                <PanelLink
+                                    href={InventoryRoutes.lowStock().url}
+                                >
+                                    View report →
+                                </PanelLink>
+                            }
+                        >
+                            <DonutChart
+                                size={168}
+                                centerValue={m.total_active}
+                                centerLabel="Variants"
+                                data={[
+                                    {
+                                        label: 'In stock',
+                                        value: m.in_stock,
+                                        color: 'var(--viz-success)',
+                                    },
+                                    {
+                                        label: 'Low stock',
+                                        value: m.low_stock,
+                                        color: 'var(--viz-warning)',
+                                    },
+                                    {
+                                        label: 'Out of stock',
+                                        value: m.out_of_stock,
+                                        color: 'var(--viz-danger)',
+                                    },
+                                ]}
+                                emptyText="No tracked variants."
+                            />
+                            <div className="border-border mt-6 border-t pt-5">
+                                <ProgressBar
+                                    label="Stock availability"
+                                    value={m.total_active > 0 ? m.in_stock : 0}
+                                    max={m.total_active || 1}
+                                    valueLabel={`${availability}%`}
+                                    tone="success"
+                                    showValue
                                 />
-                                <div className="border-border mt-6 border-t pt-5">
-                                    <ProgressBar
-                                        label="Stock availability"
-                                        value={
-                                            m.total_active > 0 ? m.in_stock : 0
-                                        }
-                                        max={m.total_active || 1}
-                                        valueLabel={`${availability}%`}
-                                        tone="success"
-                                        showValue
-                                    />
+                            </div>
+                        </Panel>
+
+                        <Panel
+                            className="col-span-12 xl:col-span-5"
+                            title="Order Status Mix"
+                            subtitle="Share of the latest orders by status"
+                            action={
+                                <PanelLink href={OrderRoutes.index().url}>
+                                    View all →
+                                </PanelLink>
+                            }
+                        >
+                            <DonutChart
+                                size={150}
+                                centerValue={recent_orders.length}
+                                centerLabel="Recent"
+                                data={[
+                                    {
+                                        label: 'Pending',
+                                        value: pending,
+                                        color: 'var(--viz-warning)',
+                                    },
+                                    {
+                                        label: 'Confirmed',
+                                        value: confirmed,
+                                        color: 'var(--chart-3)',
+                                    },
+                                    {
+                                        label: 'Delivered',
+                                        value: delivered,
+                                        color: 'var(--viz-success)',
+                                    },
+                                ]}
+                                emptyText="No recent orders."
+                            />
+                            {recent_orders.length > 0 && (
+                                <div className="border-border divide-border mt-6 grid grid-cols-4 divide-x border-t pt-4">
+                                    {statusCounts.map((s) => (
+                                        <div
+                                            key={s.status}
+                                            className="flex flex-col items-center gap-1 px-1"
+                                        >
+                                            <span className="text-muted-foreground text-[10px] leading-3 font-semibold tracking-[0.12em] uppercase">
+                                                {s.label}
+                                            </span>
+                                            <span className="text-xl leading-none font-bold tabular-nums">
+                                                {s.value}
+                                            </span>
+                                        </div>
+                                    ))}
                                 </div>
-                            </Panel>
-
-                            <Panel
-                                className="col-span-12 xl:col-span-5"
-                                title="Order Status Mix"
-                                subtitle="Share of the latest orders by status"
-                                action={
-                                    <PanelLink href={OrderRoutes.index().url}>
-                                        View all →
-                                    </PanelLink>
-                                }
-                            >
-                                <DonutChart
-                                    size={150}
-                                    centerValue={recent_orders.length}
-                                    centerLabel="Recent"
-                                    data={statusMix}
-                                    emptyText="No recent orders."
-                                />
-                                {recent_orders.length > 0 && (
-                                    <div className="border-border divide-border mt-6 grid grid-cols-4 divide-x border-t pt-4">
-                                        {statusCounts.map((s) => (
-                                            <div
-                                                key={s.status}
-                                                className="flex flex-col items-center gap-1 px-1"
-                                            >
-                                                <span className="text-muted-foreground text-[10px] leading-3 font-semibold tracking-[0.12em] uppercase">
-                                                    {s.label}
-                                                </span>
-                                                <span className="font-serif text-lg leading-none font-semibold tabular-nums">
-                                                    {s.value}
-                                                </span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </Panel>
-                        </div>
-                    </>
+                            )}
+                        </Panel>
+                    </div>
                 )}
+
+                {/* Statistics card with segmented tabs (client-side toggle) */}
+                <Panel
+                    title="Dashboard Summary"
+                    subtitle="Key figures for the current period"
+                    action={
+                        <div className="flex items-center gap-2">
+                            {(['overview', 'orders', 'stock'] as const).map(
+                                (key) => (
+                                    <button
+                                        key={key}
+                                        type="button"
+                                        onClick={() => setSummaryTab(key)}
+                                        className={cn(
+                                            'text-theme-sm rounded-md px-3 py-1.5 font-medium transition-colors',
+                                            summaryTab === key
+                                                ? 'shadow-theme-xs bg-white text-gray-900 dark:bg-[#18240F] dark:text-white'
+                                                : 'hover:bg-muted/60 text-gray-500 dark:text-gray-400 dark:hover:bg-[#1C2B12]',
+                                        )}
+                                    >
+                                        {key === 'overview'
+                                            ? 'Overview'
+                                            : key === 'orders'
+                                              ? 'Orders'
+                                              : 'Stock'}
+                                    </button>
+                                ),
+                            )}
+                        </div>
+                    }
+                >
+                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-6">
+                        {(summarySets[summaryTab] ?? []).map((item) => (
+                            <div
+                                key={item.label}
+                                className="bg-muted/50 border-border rounded-xl border p-4"
+                            >
+                                <span className="text-muted-foreground text-xs font-semibold">
+                                    {item.label}
+                                </span>
+                                <p className="mt-1.5 text-2xl font-bold tabular-nums">
+                                    {item.value}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </Panel>
 
                 {/* Recent orders — full-width data table */}
                 <Panel
@@ -677,7 +556,7 @@ export default function Dashboard({
                 {m && (
                     <>
                         {/* Alert lists */}
-                        <div className="grid grid-cols-12 gap-4 md:gap-5">
+                        <div className="grid grid-cols-12 gap-4 md:gap-6">
                             <Panel
                                 className="col-span-12 lg:col-span-6"
                                 title="Low Stock Variants"
@@ -796,7 +675,7 @@ export default function Dashboard({
                         </div>
 
                         {/* Activity lists */}
-                        <div className="grid grid-cols-12 gap-4 md:gap-5">
+                        <div className="grid grid-cols-12 gap-4 md:gap-6">
                             <Panel
                                 className="col-span-12 lg:col-span-6"
                                 title="Recent Stock Movements"
@@ -922,35 +801,15 @@ export default function Dashboard({
                         </div>
                     </>
                 )}
-
-                {/* Quick navigation — role-gated tiles */}
-                <Panel title="Quick Navigation" subtitle="Jump to a workspace">
-                    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
-                        {quickLinks.map((item) => (
-                            <Link
-                                key={item.title}
-                                href={item.href}
-                                className="group border-border bg-card hover:border-primary/30 flex items-center gap-3 rounded-xl border p-4 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm dark:shadow-none"
-                            >
-                                <span className="bg-secondary text-secondary-foreground group-hover:bg-primary group-hover:text-primary-foreground flex size-9 shrink-0 items-center justify-center rounded-lg transition-colors duration-200">
-                                    <item.icon
-                                        className="size-4.5"
-                                        aria-hidden="true"
-                                    />
-                                </span>
-                                <span className="min-w-0">
-                                    <span className="block truncate text-sm font-medium">
-                                        {item.title}
-                                    </span>
-                                    <span className="text-muted-foreground block truncate text-xs">
-                                        {item.desc}
-                                    </span>
-                                </span>
-                            </Link>
-                        ))}
-                    </div>
-                </Panel>
             </div>
         </>
     );
+}
+
+// Display-only signed quantity derived from the stored before/after ledger values.
+function movementLabel(m: Movement): string {
+    const delta = m.quantity_after - m.quantity_before;
+    if (delta > 0) return `+${m.quantity}`;
+    if (delta < 0) return `-${m.quantity}`;
+    return `${m.quantity}`;
 }
