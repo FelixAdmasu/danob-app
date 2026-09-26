@@ -13,18 +13,18 @@ business event → existing service → (after commit) database notification (in
 All configuration is standard Laravel, read from environment variables
 (`config/mail.php`):
 
-| Variable | Purpose | Safe default |
-| --- | --- | --- |
-| `MAIL_MAILER` | transport driver (`log`, `smtp`, `array`, …) | `log` |
-| `MAIL_HOST` / `MAIL_PORT` | SMTP server | `127.0.0.1` / `2525` |
-| `MAIL_SCHEME` | `ssl`/`tls` (optional) | unset |
-| `MAIL_USERNAME` / `MAIL_PASSWORD` | SMTP credentials (never committed) | unset |
-| `MAIL_FROM_ADDRESS` / `MAIL_FROM_NAME` | global sender identity | `hello@example.com` / app name |
-| `APP_URL` | base host for every link generated inside an email | `https://danob.onrender.com` in production |
+| Variable                               | Purpose                                            | Safe default                               |
+| -------------------------------------- | -------------------------------------------------- | ------------------------------------------ |
+| `MAIL_MAILER`                          | transport driver (`log`, `smtp`, `array`, …)       | `log`                                      |
+| `MAIL_HOST` / `MAIL_PORT`              | SMTP server                                        | `127.0.0.1` / `2525`                       |
+| `MAIL_SCHEME`                          | `ssl`/`tls` (optional)                             | unset                                      |
+| `MAIL_USERNAME` / `MAIL_PASSWORD`      | SMTP credentials (never committed)                 | unset                                      |
+| `MAIL_FROM_ADDRESS` / `MAIL_FROM_NAME` | global sender identity                             | `hello@example.com` / app name             |
+| `APP_URL`                              | base host for every link generated inside an email | `https://danob.onrender.com` in production |
 
 No provider is hard-coded: any SMTP-compatible service works.
 
-Links inside emails (the internal *Open in Danob* button, for example) are
+Links inside emails (the internal _Open in Danob_ button, for example) are
 built from named routes and `APP_URL` — never hard-coded — so production
 links always point at `https://danob.onrender.com`. Localhost only ever
 appears when running against a local `.env`.
@@ -69,14 +69,14 @@ unchanged Phase 28 `AlertService` role families (`admin` / `manager` /
 `staff`). The in-app twin (`AlertNotification`, database channel) is sent
 immediately and stays independent of the queue — see `docs/queue.md`.
 
-| Event | Alert type | Recipients |
-| --- | --- | --- |
-| New website inquiry | `inquiry_created` | sales roles |
-| Product quote request | `inquiry_created` (same event, with product/variant/quantity context) | sales roles |
-| Low stock transition | `low_stock` | inventory roles |
-| Out-of-stock transition | `out_of_stock` | inventory roles |
-| PO partially received | `purchase_order_partially_received` | purchasing roles |
-| PO fully received | `purchase_order_received` | purchasing roles |
+| Event                   | Alert type                                                            | Recipients       |
+| ----------------------- | --------------------------------------------------------------------- | ---------------- |
+| New website inquiry     | `inquiry_created`                                                     | sales roles      |
+| Product quote request   | `inquiry_created` (same event, with product/variant/quantity context) | sales roles      |
+| Low stock transition    | `low_stock`                                                           | inventory roles  |
+| Out-of-stock transition | `out_of_stock`                                                        | inventory roles  |
+| PO partially received   | `purchase_order_partially_received`                                   | purchasing roles |
+| PO fully received       | `purchase_order_received`                                             | purchasing roles |
 
 Every other alert (order created/confirmed/cancelled/delivered, return
 processed) stays **database-only**: those events reach the customer through
@@ -89,13 +89,13 @@ workflow has no notification requirement for it.
 
 Sent by `TransactionalEmailService` as dedicated notification classes:
 
-| Event | Notification |
-| --- | --- |
-| Sales order created (pending) | `OrderCreatedNotification` |
-| Sales order confirmed | `OrderConfirmedNotification` |
-| Sales order cancelled | `OrderCancelledNotification` |
-| Sales order delivered | `OrderDeliveredNotification` |
-| Sales return processed | `SalesReturnProcessedNotification` |
+| Event                         | Notification                       |
+| ----------------------------- | ---------------------------------- |
+| Sales order created (pending) | `OrderCreatedNotification`         |
+| Sales order confirmed         | `OrderConfirmedNotification`       |
+| Sales order cancelled         | `OrderCancelledNotification`       |
+| Sales order delivered         | `OrderDeliveredNotification`       |
+| Sales return processed        | `SalesReturnProcessedNotification` |
 
 ## Boundaries & safety rules
 

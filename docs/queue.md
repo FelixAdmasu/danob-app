@@ -17,26 +17,26 @@ business event (POST, inside DB transaction)
 
 ## Driver & configuration
 
-| Variable | Value | Meaning |
-| --- | --- | --- |
-| `QUEUE_CONNECTION` | `database` (`.env.example`, `render.yaml`) | jobs live in PostgreSQL/SQLite `jobs` table |
-| `DB_QUEUE_TABLE` | `jobs` (default) | queue table name |
-| `DB_QUEUE` | `default` (default) | queue name |
-| `DB_QUEUE_RETRY_AFTER` | `90` (default) | seconds before a stuck job is re-delivered |
+| Variable               | Value                                      | Meaning                                     |
+| ---------------------- | ------------------------------------------ | ------------------------------------------- |
+| `QUEUE_CONNECTION`     | `database` (`.env.example`, `render.yaml`) | jobs live in PostgreSQL/SQLite `jobs` table |
+| `DB_QUEUE_TABLE`       | `jobs` (default)                           | queue table name                            |
+| `DB_QUEUE`             | `default` (default)                        | queue name                                  |
+| `DB_QUEUE_RETRY_AFTER` | `90` (default)                             | seconds before a stuck job is re-delivered  |
 
 The tables `jobs`, `job_batches` and `failed_jobs` come from the standard
 Laravel migration (`0001_01_01_000002_create_jobs_table.php`) — they already
 migrate with `php artisan migrate`, exactly like every application table.
 `QUEUE_CONNECTION=sync` executes jobs inline instead of queueing; it is only
-for throwaway scripts (the test suite uses it deliberately — see *Testing*).
+for throwaway scripts (the test suite uses it deliberately — see _Testing_).
 
 ## What is queued — and what never is
 
-| Work | Transport | Why |
-| --- | --- | --- |
-| Customer emails (order created / confirmed / cancelled / delivered, return processed) | **queued** (`ShouldQueue` + `ShouldQueueAfterCommit`) | SMTP must not run inside the request |
-| Internal alert emails (`inquiry_created`, `low_stock`, `out_of_stock`, PO received / partially received) — `AlertMailNotification` | **queued** (`ShouldQueue` + `ShouldQueueAfterCommit`) | same |
-| In-app notifications (`AlertNotification`, database channel) | **synchronous, after commit** | the notification centre must be immediate and must never depend on a worker |
+| Work                                                                                                                               | Transport                                             | Why                                                                         |
+| ---------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- | --------------------------------------------------------------------------- |
+| Customer emails (order created / confirmed / cancelled / delivered, return processed)                                              | **queued** (`ShouldQueue` + `ShouldQueueAfterCommit`) | SMTP must not run inside the request                                        |
+| Internal alert emails (`inquiry_created`, `low_stock`, `out_of_stock`, PO received / partially received) — `AlertMailNotification` | **queued** (`ShouldQueue` + `ShouldQueueAfterCommit`) | same                                                                        |
+| In-app notifications (`AlertNotification`, database channel)                                                                       | **synchronous, after commit**                         | the notification centre must be immediate and must never depend on a worker |
 
 The internal alert is split into two classes on purpose: Laravel queues a
 `ShouldQueue` notification **per channel**, so keeping `mail` on
@@ -62,7 +62,7 @@ not exist at all if it rolls back). Two native mechanisms enforce this:
    dispatched directly inside a transaction, the job would still only become
    available at commit, and a rollback removes the pending dispatch.
 
-`QueueProcessingTest` proves both directions with the *production*
+`QueueProcessingTest` proves both directions with the _production_
 transactions manager installed (the test double otherwise runs callbacks
 immediately): inside an open transaction the `jobs` table is empty; after
 the outermost commit the job appears; after a rollback neither job nor
@@ -70,11 +70,11 @@ notification ever exists.
 
 ## Retries, backoff and failed jobs
 
-| Policy | Value | Declared on |
-| --- | --- | --- |
-| Total attempts | **3** | each email notification (`$tries`) |
-| Backoff | **30 s, then 120 s** | each email notification (`$backoff`) |
-| Worker defaults | `--tries=3 --backoff=30` | `render.yaml` worker command |
+| Policy          | Value                    | Declared on                          |
+| --------------- | ------------------------ | ------------------------------------ |
+| Total attempts  | **3**                    | each email notification (`$tries`)   |
+| Backoff         | **30 s, then 120 s**     | each email notification (`$backoff`) |
+| Worker defaults | `--tries=3 --backoff=30` | `render.yaml` worker command         |
 
 - After the 3rd failed attempt the job is moved to **`failed_jobs`** with
   the exception trace; the business data is untouched (email is a side
@@ -140,6 +140,6 @@ php artisan queue:failed
 - `TransactionalEmailTest` keeps the Phase 29 content assertions:
   `Notification::fake()` records queued sends too, so email content and
   recipient rules are asserted unchanged.
-- `phpunit.xml` sets `QUEUE_CONNECTION=sync`: tests that care about *content*
-  get instant inline execution, tests that care about *queueing* install
+- `phpunit.xml` sets `QUEUE_CONNECTION=sync`: tests that care about _content_
+  get instant inline execution, tests that care about _queueing_ install
   `Queue::fake()` or switch to the `database` connection explicitly.

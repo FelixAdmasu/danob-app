@@ -26,9 +26,12 @@ class ProductController extends Controller
             ]);
 
         if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
+            // Case-insensitive LIKE: PostgreSQL LIKE is case-sensitive (SQLite
+            // is not), so LOWER() keeps behaviour consistent across both.
+            $needle = '%'.mb_strtolower($search).'%';
+            $query->where(function ($q) use ($needle) {
+                $q->whereRaw('LOWER(name) LIKE ?', [$needle])
+                    ->orWhereRaw('LOWER(description) LIKE ?', [$needle]);
             });
         }
 
@@ -67,6 +70,13 @@ class ProductController extends Controller
     {
         abort_if($product->status !== 'active', 404);
 
+        $eagerLoads = [
+            'category',
+            'brand',
+            'images' => fn ($q) => $q->orderBy('sort_order')->orderBy('id'),
+            'variants' => fn ($q) => $q->where('is_active', true),
+        ];
+
         $product->load([
             'category',
             'brand',
@@ -74,8 +84,30 @@ class ProductController extends Controller
             'variants' => fn ($q) => $q->where('is_active', true)->orderBy('id'),
         ]);
 
+        // Related products: same category first, then newest active products.
+        $related = Product::where('status', 'active')
+            ->where('id', '!=', $product->id)
+            ->when(
+                $product->category_id,
+                fn ($q) => $q->where('category_id', $product->category_id)
+            )
+            ->with($eagerLoads)
+            ->latest()
+            ->limit(4)
+            ->get();
+
+        if ($related->isEmpty()) {
+            $related = Product::where('status', 'active')
+                ->where('id', '!=', $product->id)
+                ->with($eagerLoads)
+                ->latest()
+                ->limit(4)
+                ->get();
+        }
+
         return Inertia::render('Products/Show', [
             'product' => $product,
+            'related' => $related,
         ]);
     }
 }

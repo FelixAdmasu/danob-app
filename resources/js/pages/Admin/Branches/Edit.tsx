@@ -163,7 +163,7 @@ export default function Edit({ branch }: { branch: Branch }) {
                                                 is_active: e.target.checked,
                                             })
                                         }
-                                        className="h-4 w-4 rounded border-border"
+                                        className="border-border h-4 w-4 rounded"
                                         id="is_active"
                                     />
                                     <Label htmlFor="is_active">Active</Label>
@@ -181,7 +181,7 @@ export default function Edit({ branch }: { branch: Branch }) {
                                                 opening_hours: e.target.value,
                                             })
                                         }
-                                        className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                        className="border-input placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[80px] w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs focus-visible:ring-1 focus-visible:outline-none"
                                     />
                                     <InputError
                                         message={errors.opening_hours}
@@ -198,7 +198,7 @@ export default function Edit({ branch }: { branch: Branch }) {
                                                 services: e.target.value,
                                             })
                                         }
-                                        className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                        className="border-input placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[80px] w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs focus-visible:ring-1 focus-visible:outline-none"
                                     />
                                     <InputError message={errors.services} />
                                 </div>

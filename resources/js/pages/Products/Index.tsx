@@ -1,4 +1,5 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
+import { useEffect, useRef, useState } from 'react';
 import { Package, Search, X } from 'lucide-react';
 import { onImageError } from '@/lib/image-fallback';
 
@@ -13,6 +14,7 @@ type ProductImage = {
 type ProductVariant = {
     id: number;
     public_price: string | null;
+    quantity: number;
     is_active: boolean;
 };
 
@@ -71,6 +73,32 @@ export default function ProductsIndex({
 }: Props) {
     const baseUrl = '/products';
 
+    const [searchValue, setSearchValue] = useState(filters.search || '');
+    const isFirstRender = useRef(true);
+
+    // Debounced SPA search: one navigation per pause instead of a full page
+    // reload on every keystroke (which lost input focus mid-word).
+    useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            router.get(
+                buildUrl({
+                    search: searchValue.trim() || null,
+                    category: filters.category || null,
+                    brand: filters.brand || null,
+                }),
+                {},
+                { preserveScroll: true, preserveState: true },
+            );
+        }, 400);
+
+        return () => clearTimeout(timer);
+    }, [searchValue, filters.category, filters.brand]);
+
     function buildUrl(params: Record<string, string | null>): string {
         const searchParams = new URLSearchParams();
         Object.entries(params).forEach(([key, value]) => {
@@ -123,15 +151,8 @@ export default function ProductsIndex({
                             <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[#4A4A4A]" />
                             <input
                                 type="search"
-                                defaultValue={filters.search}
-                                onChange={(e) => {
-                                    const val = e.target.value;
-                                    window.location.href = buildUrl({
-                                        search: val || null,
-                                        category: filters.category || null,
-                                        brand: filters.brand || null,
-                                    });
-                                }}
+                                value={searchValue}
+                                onChange={(e) => setSearchValue(e.target.value)}
                                 placeholder="Search products..."
                                 className="w-full rounded-lg border border-[#070E01]/10 bg-white py-2.5 pr-4 pl-10 font-serif text-sm text-[#070E01] transition-colors placeholder:text-[#4A4A4A]/40 focus:border-[#2D5016] focus:outline-none"
                             />
@@ -231,6 +252,12 @@ export default function ProductsIndex({
                                         )
                                         .filter((n) => !isNaN(n))
                                         .sort((a, b) => a - b)[0] ?? null;
+                                const totalStock = product.variants
+                                    .filter((v) => v.is_active)
+                                    .reduce(
+                                        (sum, v) => sum + (v.quantity || 0),
+                                        0,
+                                    );
                                 return (
                                     <Link
                                         key={product.id}
@@ -258,6 +285,12 @@ export default function ProductsIndex({
                                                     {product.brand.name}
                                                 </div>
                                             )}
+                                            {product.variants.length > 0 &&
+                                                totalStock <= 0 && (
+                                                    <div className="absolute top-6 right-6 bg-[#ECF3E5] px-3 py-1 text-[9px] font-bold tracking-widest text-[#070E01] uppercase">
+                                                        Out of stock
+                                                    </div>
+                                                )}
                                         </div>
                                         <div className="flex items-start justify-between border-b border-[#070E01]/10 pb-6">
                                             <div>
@@ -272,6 +305,7 @@ export default function ProductsIndex({
                                             <div className="text-right">
                                                 {cheapestPrice !== null ? (
                                                     <p className="text-sm font-bold text-[#070E01]">
+                                                        From ETB{' '}
                                                         {cheapestPrice.toFixed(
                                                             2,
                                                         )}
