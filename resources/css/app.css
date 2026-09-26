@@ -335,6 +335,36 @@
     animation: bar-grow 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+@keyframes fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-up {
+    animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes grow-up {
+    from {
+        transform: scaleY(0);
+    }
+    to {
+        transform: scaleY(1);
+    }
+}
+
+.grow-up {
+    transform-box: fill-box;
+    transform-origin: bottom;
+    animation: grow-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 /*
  * Global Inertia visit feedback: every table body dims and shimmers while
  * the next slice of data loads (the html flag is toggled around each visit
