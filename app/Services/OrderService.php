@@ -6,11 +6,18 @@ use App\Models\Customer;
 use App\Models\Order;
 use App\Models\ProductVariant;
 use App\Models\StockMovement;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class OrderService
 {
+    /**
+     * How many times create() may be re-run when the unique reference index
+     * rejects a number another transaction claimed first.
+     */
+    private const REFERENCE_ATTEMPTS = 3;
+
     /**
      * Create a pending sales order from validated entry data. Pending means
      * exactly that: no stock is touched here — the deduction happens later in
@@ -21,6 +28,16 @@ class OrderService
      * product, positive quantity, and no duplicate variant lines.
      */
     public function create(array $data): Order
+    {
+        return $this->withReferenceRetry(fn (): Order => $this->createOrder($data));
+    }
+
+    /**
+     * The whole create() work runs in one transaction, so the reference
+     * number, the order row and its lines all persist — or all roll back —
+     * together.
+     */
+    private function createOrder(array $data): Order
     {
         return DB::transaction(function () use ($data) {
             $customer = Customer::findOrFail($data['customer_id']);
@@ -70,6 +87,48 @@ class OrderService
 
             return $order->load('items');
         });
+    }
+
+    /**
+     * Run $attempt, retrying only when the unique reference index rejects the
+     * number that was picked. That happens whenever two transactions choose
+     * the same number because there was no row to lock — the first order of a
+     * calendar year, or of a fresh database. Every retry starts a brand new
+     * transaction, so the recomputed number is built from the rows the failed
+     * attempt could not see. Bounded, so a genuinely broken state fails
+     * loudly instead of looping forever.
+     *
+     * @param  callable(): Order  $attempt
+     */
+    private function withReferenceRetry(callable $attempt): Order
+    {
+        $try = 1;
+
+        while (true) {
+            try {
+                return $attempt();
+            } catch (QueryException $e) {
+                if ($try >= self::REFERENCE_ATTEMPTS || ! $this->isDuplicateReference($e)) {
+                    throw $e;
+                }
+
+                $try++;
+            }
+        }
+    }
+
+    /**
+     * True only for a unique-index rejection on orders.reference_number:
+     * PostgreSQL reports "unique constraint ... reference_number" (SQLSTATE
+     * 23505), SQLite reports "UNIQUE constraint failed:
+     * orders.reference_number". Every other query failure escapes untouched.
+     */
+    private function isDuplicateReference(QueryException $e): bool
+    {
+        $message = strtolower($e->getMessage());
+
+        return str_contains($message, 'reference_number')
+            && str_contains($message, 'unique');
     }
 
     /**
@@ -296,15 +355,43 @@ class OrderService
     }
 
     /**
-     * ORD-YYYY-NNNNNN per calendar year, counted under a row lock inside the
-     * create() transaction so concurrent entries serialise instead of racing
-     * (PurchaseOrderService generates its PO numbers the same way).
+     * ORD-YYYY-NNNNNN per calendar year, generated inside the create()
+     * transaction so the number commits together with the order it labels.
+     *
+     * PostgreSQL rejects `SELECT COUNT(*) ... FOR UPDATE` (SQLSTATE 0A000:
+     * only row-returning queries may take a row lock), while SQLite drops the
+     * lock clause entirely — which is exactly how the old aggregate version
+     * passed this suite and failed in production. The lock is therefore taken
+     * on a real row: the newest order of the year, which is the row every
+     * concurrent creator must lock too, so a second transaction waits here
+     * until the first one commits. The sequence is read in a separate
+     * statement whose snapshot is taken after that wait, so it already
+     * contains the number the blocking transaction committed, and it continues
+     * from the highest reference of the year rather than from COUNT — a
+     * deleted row can never push the next number onto one that is still
+     * stored. The one gap the lock cannot cover (a year with no rows to lock)
+     * is caught by the unique index and retried in withReferenceRetry().
      */
     private function generateReferenceNumber(): string
     {
         $year = date('Y');
-        $count = DB::table('orders')->whereYear('created_at', $year)->lockForUpdate()->count() + 1;
 
-        return sprintf('ORD-%s-%06d', $year, $count);
+        // Lock real rows, never an aggregate.
+        DB::table('orders')
+            ->whereYear('created_at', $year)
+            ->orderByDesc('id')
+            ->lockForUpdate()
+            ->first('id');
+
+        $highest = 0;
+        foreach (DB::table('orders')->whereYear('created_at', $year)->pluck('reference_number') as $reference) {
+            if (! preg_match('/^ORD-(\d{4})-(\d{6})$/', (string) $reference, $matches) || $matches[1] !== $year) {
+                continue;
+            }
+
+            $highest = max($highest, (int) $matches[2]);
+        }
+
+        return sprintf('ORD-%s-%06d', $year, $highest + 1);
     }
 }
