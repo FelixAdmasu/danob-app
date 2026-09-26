@@ -1,4 +1,5 @@
 import { useForm } from '@inertiajs/react';
+import { useState } from 'react';
 import InputError from '@/components/input-error';
 
 const interests = [
@@ -10,9 +11,20 @@ const interests = [
 
 type InquiryFormProps = {
     compact?: boolean;
+    productId?: number;
+    productName?: string;
+    variants?: { id: number; name: string; unit: string }[];
 };
 
-export default function InquiryForm({ compact = false }: InquiryFormProps) {
+export default function InquiryForm({
+    compact = false,
+    productId,
+    productName,
+    variants = [],
+}: InquiryFormProps) {
+    const [selectedVariantId, setSelectedVariantId] = useState<number | null>(
+        variants.length === 1 ? variants[0].id : null,
+    );
     const { data, setData, post, processing, errors, recentlySuccessful } =
         useForm({
             name: '',
@@ -21,6 +33,9 @@ export default function InquiryForm({ compact = false }: InquiryFormProps) {
             interest: 'Product Inquiry',
             message: '',
             website: '',
+            product_id: productId ?? null,
+            variant_id: variants.length === 1 ? variants[0].id : null,
+            requested_quantity: productId ? 1 : null,
         });
 
     const submit = (event: React.FormEvent) => {
@@ -35,6 +50,9 @@ export default function InquiryForm({ compact = false }: InquiryFormProps) {
                     interest: 'Product Inquiry',
                     message: '',
                     website: '',
+                    product_id: productId ?? null,
+                    variant_id: selectedVariantId,
+                    requested_quantity: productId ? 1 : null,
                 }),
         });
     };
@@ -45,6 +63,80 @@ export default function InquiryForm({ compact = false }: InquiryFormProps) {
             className={`rounded-[16px] border border-[#070E01]/10 bg-white p-8 md:p-12 ${compact ? '' : 'lg:w-1/2'}`}
         >
             <div className="space-y-8 md:space-y-12">
+                {productId && (
+                    <div className="border-b border-[#070E01]/20 pb-6">
+                        <span className="mb-2 block text-[9px] font-bold tracking-[0.4em] text-[#2D5016] uppercase">
+                            Request a quote
+                        </span>
+                        <p className="font-serif text-2xl text-[#070E01]">
+                            {productName}
+                        </p>
+                        <div className="mt-5 grid gap-5 md:grid-cols-2">
+                            {variants.length > 0 && (
+                                <div className="space-y-2">
+                                    <label
+                                        htmlFor="inquiry-variant"
+                                        className="text-[9px] font-bold tracking-[0.4em] text-[#4A4A4A] uppercase"
+                                    >
+                                        Option
+                                    </label>
+                                    <select
+                                        id="inquiry-variant"
+                                        value={selectedVariantId ?? ''}
+                                        onChange={(event) => {
+                                            const value = event.target.value
+                                                ? Number(event.target.value)
+                                                : null;
+                                            setSelectedVariantId(value);
+                                            setData('variant_id', value);
+                                        }}
+                                        className="w-full cursor-pointer appearance-none border-b border-[#070E01]/20 bg-transparent py-2 font-serif text-lg outline-none"
+                                    >
+                                        <option value="">
+                                            Any available option
+                                        </option>
+                                        {variants.map((variant) => (
+                                            <option
+                                                key={variant.id}
+                                                value={variant.id}
+                                            >
+                                                {variant.name} · {variant.unit}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <InputError message={errors.variant_id} />
+                                </div>
+                            )}
+                            <div className="space-y-2">
+                                <label
+                                    htmlFor="inquiry-quantity"
+                                    className="text-[9px] font-bold tracking-[0.4em] text-[#4A4A4A] uppercase"
+                                >
+                                    Estimated quantity
+                                </label>
+                                <input
+                                    id="inquiry-quantity"
+                                    type="number"
+                                    min="1"
+                                    max="1000000"
+                                    value={data.requested_quantity ?? ''}
+                                    onChange={(event) =>
+                                        setData(
+                                            'requested_quantity',
+                                            event.target.value
+                                                ? Number(event.target.value)
+                                                : null,
+                                        )
+                                    }
+                                    className="w-full border-b border-[#070E01]/20 bg-transparent py-2 font-serif text-lg outline-none"
+                                />
+                                <InputError
+                                    message={errors.requested_quantity}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                )}
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                     <div className="space-y-2 border-b border-[#070E01]/20 pb-2">
                         <label

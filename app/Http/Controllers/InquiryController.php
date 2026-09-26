@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreInquiryRequest;
 use App\Models\Inquiry;
+use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Services\AlertService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -25,13 +28,35 @@ class InquiryController extends Controller
         $validated = $request->validated();
         unset($validated['website']);
 
+        $product = null;
+        if (! empty($validated['product_id'])) {
+            $product = Product::whereKey($validated['product_id'])
+                ->where('status', 'active')
+                ->first();
+            if (! $product) {
+                throw ValidationException::withMessages(['product_id' => 'That product is no longer available.']);
+            }
+        }
+
+        if (! empty($validated['variant_id'])) {
+            $variant = ProductVariant::whereKey($validated['variant_id'])
+                ->where('product_id', $product?->id)
+                ->where('is_active', true)
+                ->first();
+            if (! $variant) {
+                throw ValidationException::withMessages(['variant_id' => 'That product option is no longer available.']);
+            }
+        }
+
         $inquiry = Inquiry::create($validated + ['source' => 'website']);
+
+        $context = $product ? ' for '.$product->name : '';
 
         app(AlertService::class)->dispatch(
             'inquiry_created',
             'info',
-            'New website inquiry',
-            $inquiry->name.' sent a '.$inquiry->interest.'.',
+            'New website inquiry'.$context,
+            $inquiry->name.' sent a '.$inquiry->interest.$context.'.',
             route('admin.inquiries.index'),
             AlertService::SALES_ROLES,
         );
@@ -46,7 +71,7 @@ class InquiryController extends Controller
             'status' => ['nullable', 'string', Rule::in(Inquiry::STATUSES)],
         ]);
 
-        $inquiries = Inquiry::with('assignee')
+        $inquiries = Inquiry::with(['assignee', 'product', 'variant'])
             ->when($validated['search'] ?? null, function ($query, string $search): void {
                 $query->where(function ($where) use ($search): void {
                     $where->where('name', 'like', "%{$search}%")

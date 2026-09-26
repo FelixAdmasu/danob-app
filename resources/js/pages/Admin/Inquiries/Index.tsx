@@ -20,6 +20,9 @@ type Inquiry = {
     email: string;
     phone: string | null;
     interest: string;
+    product: { name: string } | null;
+    variant: { name: string; unit: string } | null;
+    requested_quantity: number | null;
     message: string;
     status: string;
     internal_notes: string | null;
@@ -156,6 +159,26 @@ export default function Index({ inquiries, filters, statuses }: Props) {
                                         <p className="text-muted-foreground text-xs font-medium uppercase">
                                             {inquiry.interest}
                                         </p>
+                                        {inquiry.product && (
+                                            <div className="bg-muted/50 rounded-md p-3 text-sm">
+                                                <p className="font-medium">
+                                                    Quote:{' '}
+                                                    {inquiry.product.name}
+                                                </p>
+                                                {inquiry.variant && (
+                                                    <p className="text-muted-foreground text-xs">
+                                                        {inquiry.variant.name} ·{' '}
+                                                        {inquiry.variant.unit}
+                                                    </p>
+                                                )}
+                                                {inquiry.requested_quantity && (
+                                                    <p className="text-muted-foreground text-xs">
+                                                        Estimated quantity:{' '}
+                                                        {inquiry.requested_quantity.toLocaleString()}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="space-y-3">
                                         <p className="text-sm leading-relaxed whitespace-pre-wrap">
