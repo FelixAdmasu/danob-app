@@ -1,6 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import { Package, ArrowRight } from 'lucide-react';
 import { onImageError } from '@/lib/image-fallback';
+import InquiryForm from '@/components/inquiry-form';
 
 type Variant = {
     id: number;
@@ -176,6 +177,17 @@ export default function ProductShow({ product }: Props) {
                                     </div>
                                 </div>
                             )}
+
+                            <InquiryForm
+                                compact
+                                productId={product.id}
+                                productName={product.name}
+                                variants={activeVariants.map((variant) => ({
+                                    id: variant.id,
+                                    name: variant.name,
+                                    unit: variant.unit,
+                                }))}
+                            />
 
                             <div>
                                 <Link

@@ -3,6 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\Inquiry;
+use App\Models\Category;
+use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -47,6 +50,88 @@ class InquiryTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors('website');
+        $this->assertDatabaseCount('inquiries', 0);
+    }
+
+    public function test_product_quote_request_keeps_catalog_context(): void
+    {
+        $category = Category::create([
+            'name' => 'Quote Category',
+            'slug' => 'quote-category',
+            'is_active' => true,
+        ]);
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Bulk Cocoa Powder',
+            'slug' => 'bulk-cocoa-powder',
+            'description' => 'Wholesale cocoa powder',
+            'status' => 'active',
+        ]);
+        $variant = ProductVariant::create([
+            'product_id' => $product->id,
+            'name' => '25 kg bag',
+            'unit' => 'bag',
+            'quantity' => 12,
+            'is_active' => true,
+        ]);
+
+        $this->post(route('inquiries.store'), [
+            'name' => 'Wholesale Buyer',
+            'email' => 'buyer@example.com',
+            'interest' => 'Wholesale Order',
+            'product_id' => $product->id,
+            'variant_id' => $variant->id,
+            'requested_quantity' => 40,
+            'message' => 'Please send a quote for forty bags of cocoa powder.',
+        ])->assertSessionHas('success');
+
+        $this->assertDatabaseHas('inquiries', [
+            'product_id' => $product->id,
+            'variant_id' => $variant->id,
+            'requested_quantity' => 40,
+        ]);
+    }
+
+    public function test_quote_request_rejects_a_variant_from_another_product(): void
+    {
+        $category = Category::create([
+            'name' => 'Mismatch Category',
+            'slug' => 'mismatch-category',
+            'is_active' => true,
+        ]);
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Product One',
+            'slug' => 'product-one',
+            'description' => 'Product one',
+            'status' => 'active',
+        ]);
+        $otherProduct = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Product Two',
+            'slug' => 'product-two',
+            'description' => 'Product two',
+            'status' => 'active',
+        ]);
+        $variant = ProductVariant::create([
+            'product_id' => $otherProduct->id,
+            'name' => 'Other option',
+            'unit' => 'case',
+            'quantity' => 5,
+            'is_active' => true,
+        ]);
+
+        $this->from(route('home'))
+            ->post(route('inquiries.store'), [
+                'name' => 'Buyer',
+                'email' => 'buyer@example.com',
+                'interest' => 'Product Inquiry',
+                'product_id' => $product->id,
+                'variant_id' => $variant->id,
+                'message' => 'This should be rejected because the option does not belong to the product.',
+            ])
+            ->assertSessionHasErrors('variant_id');
+
         $this->assertDatabaseCount('inquiries', 0);
     }
 
