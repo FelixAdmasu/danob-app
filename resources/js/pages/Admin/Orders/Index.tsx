@@ -4,7 +4,6 @@ import Heading from '@/components/heading';
 import { Pagination } from '@/components/pagination';
 import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -13,6 +12,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { FilterPanel, FilterField } from '@/components/filter-panel';
+import { Panel, PanelLink } from '@/components/panel';
 import {
     Table,
     TableBody,
@@ -78,120 +79,125 @@ export default function Index({ orders, filters }: Props) {
                     description="Track and manage customer orders."
                     actions={
                         <Link href={OrderRoutes.create().url}>
-                            <Button type="button">
+                            <Button>
                                 <Plus className="mr-2 h-4 w-4" /> New Order
                             </Button>
                         </Link>
                     }
                 />
 
-                <form
+                <FilterPanel
                     onSubmit={handleSearch}
-                    className="border-border/70 bg-card dark:border-border/60 flex flex-wrap items-center gap-2 rounded-xl border p-3 shadow-xs transition-colors dark:shadow-none"
+                    onClear={() =>
+                        router.get(
+                            OrderRoutes.index().url,
+                            {},
+                            { preserveState: true, replace: true },
+                        )
+                    }
+                    activeCount={filters.search || filters.status ? 1 : 0}
                 >
-                    <div className="relative flex-1">
-                        <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-                        <Input
-                            placeholder="Search reference or customer..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="pl-9"
-                        />
-                    </div>
-                    <Select value={status} onValueChange={setStatus}>
-                        <SelectTrigger className="w-[160px]">
-                            <SelectValue placeholder="Status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">All Status</SelectItem>
-                            <SelectItem value="pending">Pending</SelectItem>
-                            <SelectItem value="confirmed">Confirmed</SelectItem>
-                            <SelectItem value="delivered">Delivered</SelectItem>
-                            <SelectItem value="cancelled">Cancelled</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <Button type="submit" variant="outline">
-                        Search
-                    </Button>
-                </form>
-
-                <Card>
-                    <CardHeader>
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                            <CardTitle>All Orders</CardTitle>
-                            <span className="text-muted-foreground text-xs font-medium tabular-nums">
-                                {orders.total.toLocaleString()} record
-                                {orders.total === 1 ? '' : 's'}
-                            </span>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="px-0">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Reference</TableHead>
-                                    <TableHead>Customer</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead className="text-right">
-                                        Total
-                                    </TableHead>
-                                    <TableHead>Date</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {orders.data.length === 0 ? (
-                                    <TableEmpty colSpan={5}>
-                                        No orders found.
-                                    </TableEmpty>
-                                ) : (
-                                    orders.data.map((order) => (
-                                        <TableRow key={order.id}>
-                                            <TableCell className="font-mono">
-                                                <Link
-                                                    href={
-                                                        OrderRoutes.show(
-                                                            order.id,
-                                                        ).url
-                                                    }
-                                                    className="hover:underline"
-                                                >
-                                                    {order.reference_number}
-                                                </Link>
-                                            </TableCell>
-                                            <TableCell>
-                                                {order.customer?.company_name ||
-                                                    order.customer
-                                                        ?.contact_name ||
-                                                    '—'}
-                                            </TableCell>
-                                            <TableCell>
-                                                <StatusBadge
-                                                    status={order.status}
-                                                />
-                                            </TableCell>
-                                            <TableCell className="text-right font-mono tabular-nums">
-                                                {order.total}
-                                            </TableCell>
-                                            <TableCell>
-                                                {order.ordered_at
-                                                    ? formatDate(
-                                                          order.ordered_at,
-                                                      )
-                                                    : '—'}
-                                            </TableCell>
-                                        </TableRow>
-                                    ))
-                                )}
-                            </TableBody>
-                        </Table>
-                        {orders.last_page > 1 && (
-                            <Pagination
-                                links={orders.links}
-                                className="px-6 pt-4 pb-2"
+                    <FilterField label="Search" htmlFor="order-search">
+                        <div className="relative flex-1">
+                            <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                            <Input
+                                id="order-search"
+                                placeholder="Search by reference..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="pl-9"
                             />
-                        )}
-                    </CardContent>
-                </Card>
+                        </div>
+                    </FilterField>
+                    <FilterField label="Status" htmlFor="order-status">
+                        <Select value={status} onValueChange={setStatus}>
+                            <SelectTrigger id="order-status">
+                                <SelectValue placeholder="Status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">
+                                    All Statuses
+                                </SelectItem>
+                                <SelectItem value="pending">Pending</SelectItem>
+                                <SelectItem value="confirmed">
+                                    Confirmed
+                                </SelectItem>
+                                <SelectItem value="delivered">
+                                    Delivered
+                                </SelectItem>
+                                <SelectItem value="cancelled">
+                                    Cancelled
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </FilterField>
+                </FilterPanel>
+
+                <Panel
+                    title="Recent Orders"
+                    subtitle={`${orders.total.toLocaleString()} record${orders.total === 1 ? '' : 's'}`}
+                    action={
+                        <PanelLink href={OrderRoutes.create().url}>
+                            + New Order
+                        </PanelLink>
+                    }
+                >
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Order</TableHead>
+                                <TableHead>Customer</TableHead>
+                                <TableHead>Date</TableHead>
+                                <TableHead className="text-right">
+                                    Total
+                                </TableHead>
+                                <TableHead>Status</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {orders.data.length === 0 ? (
+                                <TableEmpty colSpan={5}>
+                                    No orders yet.
+                                </TableEmpty>
+                            ) : (
+                                orders.data.map((o) => (
+                                    <TableRow key={o.id}>
+                                        <TableCell className="font-mono text-sm">
+                                            <Link
+                                                href={
+                                                    OrderRoutes.show(o.id).url
+                                                }
+                                                className="hover:underline"
+                                            >
+                                                {o.reference_number}
+                                            </Link>
+                                        </TableCell>
+                                        <TableCell className="text-sm">
+                                            {o.customer?.company_name ||
+                                                o.customer?.contact_name ||
+                                                '—'}
+                                        </TableCell>
+                                        <TableCell className="text-muted-foreground text-sm">
+                                            {formatDate(o.ordered_at)}
+                                        </TableCell>
+                                        <TableCell className="text-right font-mono text-sm">
+                                            {o.total}
+                                        </TableCell>
+                                        <TableCell>
+                                            <StatusBadge status={o.status} />
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            )}
+                        </TableBody>
+                    </Table>
+                    {orders.last_page > 1 && (
+                        <Pagination
+                            links={orders.links}
+                            className="px-6 pt-4 pb-2"
+                        />
+                    )}
+                </Panel>
             </div>
         </>
     );

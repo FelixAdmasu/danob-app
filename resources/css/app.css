@@ -211,6 +211,55 @@
     --sidebar-ring: #7fb069;
 }
 
+/*
+ * Modern admin design system — shared base styles.
+ *
+ * Design language: foundation sage/green palette, Inter Tight + Playfair
+ * Display, generous whitespace, subtle depth, rounded-xl/2xl corners,
+ * and a soft sage canvas behind the floating sidebar panel.
+ */
+
+/* ---- Selection ---- */
+::selection {
+    background: var(--primary);
+    color: var(--primary-foreground);
+}
+::-moz-selection {
+    background: var(--primary);
+    color: var(--primary-foreground);
+}
+
+/* ---- Focus ---- */
+:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--muted);
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
+}
+
+/* ---- Selection-safe focus for links ---- */
+a:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* ---- Modern base ---- */
 @layer base {
     * {
         @apply border-border;
@@ -218,6 +267,9 @@
 
     body {
         @apply bg-background text-foreground;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
     }
 
     html {
@@ -232,7 +284,28 @@
     }
 }
 
-/* Scroll reveal */
+/* ---- Subtle background pattern for the sage canvas ---- */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+        radial-gradient(
+            ellipse at 20% 0%,
+            rgba(127, 176, 105, 0.08) 0%,
+            transparent 60%
+        ),
+        radial-gradient(
+            ellipse at 80% 100%,
+            rgba(74, 140, 42, 0.06) 0%,
+            transparent 50%
+        ),
+        var(--background);
+    pointer-events: none;
+}
+
+/* ---- Scroll reveal ---- */
 .animate-on-scroll-hidden {
     opacity: 0;
     transform: translateY(30px);
@@ -246,6 +319,7 @@
     transform: translateY(0);
 }
 
+/* ---- Float / trail / marquee (kept for marketing pages) ---- */
 @keyframes float {
     0%,
     100% {
@@ -260,18 +334,34 @@
     animation: float 4s ease-in-out infinite;
 }
 
-/* Trail animation */
+@keyframes moveTrail {
+    0% {
+        top: -20%;
+    }
+    100% {
+        top: 120%;
+    }
+}
+
 .animate-trail {
     animation: moveTrail 8s ease-in-out infinite;
 }
 
-/* Marquee */
+@keyframes marquee {
+    0% {
+        transform: translateX(0%);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
 .animate-marquee {
     display: flex;
     min-width: 200%;
 }
 
-/* No scrollbar utility */
+/* ---- No scrollbar utility ---- */
 .no-scrollbar::-webkit-scrollbar {
     display: none;
 }
@@ -281,46 +371,7 @@
     scrollbar-width: none;
 }
 
-/* Passkey button — match input size, distinct outline style */
-.login-passkey-wrap .grid.gap-2 button {
-    height: 52px !important;
-    width: 100% !important;
-    background: transparent !important;
-    border: 1.5px solid rgba(7, 14, 1, 0.15) !important;
-    border-radius: 16px !important;
-    font-size: 13px !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.08em !important;
-    color: #070e01 !important;
-    transition: all 0.2s ease !important;
-    cursor: pointer !important;
-}
-
-.login-passkey-wrap .grid.gap-2 button:hover {
-    background: rgba(7, 14, 1, 0.04) !important;
-    border-color: rgba(7, 14, 1, 0.3) !important;
-}
-
-/* Auth page separator — subtle styling */
-.login-passkey-wrap .relative.my-6 .bg-background {
-    background: #ecf3e5 !important;
-}
-
-.login-passkey-wrap .relative.my-6 span {
-    background: #ecf3e5 !important;
-    color: rgba(7, 14, 1, 0.2) !important;
-    font-size: 9px !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.3em !important;
-    text-transform: uppercase !important;
-}
-
-.login-passkey-wrap [data-orientation='horizontal'] {
-    background: rgba(7, 14, 1, 0.06) !important;
-    height: 1px !important;
-}
-
-/* Shared grow-in for progress bars and chart bars (see components/progress-bar.tsx, components/charts.tsx) */
+/* ---- Shared grow-in for progress bars and chart bars ---- */
 @keyframes bar-grow {
     from {
         transform: scaleX(0);
@@ -335,6 +386,7 @@
     animation: bar-grow 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* ---- Staggered fade-up entrance ---- */
 @keyframes fade-up {
     from {
         opacity: 0;
@@ -350,6 +402,7 @@
     animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* ---- Vertical bar grow-up (column charts) ---- */
 @keyframes grow-up {
     from {
         transform: scaleY(0);
@@ -453,7 +506,7 @@ img.img-fallback {
     display: none !important;
 }
 
-/* Respect reduced-motion preferences (motion budget: 150–250ms otherwise) */
+/* Respect reduced-motion preferences */
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

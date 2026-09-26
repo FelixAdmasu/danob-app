@@ -7,20 +7,18 @@ import { cn } from '@/lib/utils';
 /**
  * Premium table primitives.
  *
- * Design rules baked in (so every admin table looks identical):
- * - card-colored sticky header with a backdrop blur — rows scroll under it
- *   instead of sitting beneath a filled color band
- * - sentence-case 12px semibold column labels in muted foreground (no
- *   uppercase micro-type)
- * - hairline row rules at 40% border opacity with a soft green hover wash
+ * Design rules baked in:
+ * - card-colored sticky header with backdrop blur — rows scroll under it
+ * - zebra striping for scanability
+ * - sentence-case 12px semibold column labels in muted foreground
+ * - hairline row rules at 40% border opacity with a green hover wash
  * - airier 14px cell rhythm, card-gutter alignment on first/last cells
- *   (pl/pr-6) while inter-column padding stays on the 4px grid (px-4)
- * - centered empty state: muted glyph in a soft circle + medium text
- * - tables cap at 70vh with an inner scrollport (keeps page rhythm)
+ * - centered empty state with muted glyph in a soft circle
+ * - tables cap at 70vh with an inner scrollport
  */
 function Table({ className, children, ...props }: React.ComponentProps<'table'>) {
     return (
-        <div data-slot="table-scroll" className="relative max-h-[70vh] w-full overflow-auto">
+        <div data-slot="table-scroll" className="relative max-h-[70vh] w-full overflow-auto rounded-xl border border-border/60">
             <table
                 data-slot="table"
                 className={cn(
@@ -49,14 +47,20 @@ function TableHeader({ className, ...props }: React.ComponentProps<'thead'>) {
 }
 
 function TableBody({ className, ...props }: React.ComponentProps<'tbody'>) {
-    return <tbody data-slot="table-body" className={cn('[&_tr:last-child]:border-b-0', className)} {...props} />;
+    return (
+        <tbody
+            data-slot="table-body"
+            className={cn('[&_tr:nth-child(even)]:bg-muted/20 [&_tr:last-child]:border-b-0', className)}
+            {...props}
+        />
+    );
 }
 
 function TableHead({ className, ...props }: React.ComponentProps<'th'>) {
     return (
         <th
             data-slot="table-head"
-            className={cn('h-11 px-4 py-3 text-left text-xs font-semibold tracking-normal text-muted-foreground', className)}
+            className={cn('h-11 px-4 py-3 text-left text-xs font-semibold tracking-normal text-muted-foreground/80 uppercase tracking-wider', className)}
             {...props}
         />
     );
@@ -66,7 +70,7 @@ function TableRow({ className, ...props }: React.ComponentProps<'tr'>) {
     return (
         <tr
             data-slot="table-row"
-            className={cn('border-b border-border/40 transition-colors hover:bg-muted/50', className)}
+            className={cn('border-b border-border/30 transition-all hover:bg-muted/40', className)}
             {...props}
         />
     );
@@ -78,8 +82,7 @@ function TableCell({ className, ...props }: React.ComponentProps<'td'>) {
 
 /**
  * Centered empty-state cell. Plain-text children get their own glyph in a
- * soft circle; richer ReactNode children (custom markup) pass through
- * untouched.
+ * soft circle; richer ReactNode children (custom markup) pass through untouched.
  */
 function TableEmpty({ colSpan, className, children, ...props }: React.ComponentProps<'td'> & { colSpan: number }) {
     return (
@@ -87,10 +90,10 @@ function TableEmpty({ colSpan, className, children, ...props }: React.ComponentP
             <td colSpan={colSpan} className={cn('px-6 py-16 text-center text-sm text-muted-foreground', className)} {...props}>
                 {typeof children === 'string' ? (
                     <span className="flex flex-col items-center gap-3">
-                        <span className="flex size-10 items-center justify-center rounded-full bg-muted">
-                            <Inbox className="size-4 text-muted-foreground/70" aria-hidden="true" />
+                        <span className="flex size-12 items-center justify-center rounded-full bg-muted/60 ring-1 ring-border/40">
+                            <Inbox className="size-5 text-muted-foreground/60" aria-hidden="true" />
                         </span>
-                        <span className="font-medium">{children}</span>
+                        <span className="font-medium text-foreground/80">{children}</span>
                     </span>
                 ) : (
                     children

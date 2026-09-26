@@ -7,19 +7,23 @@ interface EmptyStateProps {
     action?: React.ReactNode;
 }
 
+/**
+ * Friendly empty state with sage-themed styling.
+ * Centered illustration, clear heading, description, and optional CTA.
+ */
 export function EmptyState({ icon: Icon = InboxIcon, title, description, action }: EmptyStateProps) {
     return (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-neutral-300 bg-neutral-50 p-10 text-center dark:border-[#26331C] dark:bg-[#111B0A]">
-            <span className="flex h-12 w-12 items-center justify-center rounded-lg border border-neutral-200 bg-white text-neutral-500 dark:border-[#26331C] dark:bg-[#18240F] dark:text-[#9DAE8E]">
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#26331C] bg-[#111B0A] p-10 text-center">
+            <span className="flex h-14 w-14 items-center justify-center rounded-xl border border-[#26331C] bg-[#18240F] text-[#9DAE8E]">
                 <Icon className="h-6 w-6" />
             </span>
-            <h3 className="mt-4 font-serif text-lg font-semibold text-neutral-900 dark:text-foreground">
+            <h3 className="mt-5 font-serif text-lg font-semibold text-foreground">
                 {title}
             </h3>
-            <p className="mt-1 text-sm text-neutral-600 dark:text-muted-foreground">
+            <p className="mt-2 max-w-sm text-sm text-[#9DAE8E] leading-relaxed">
                 {description}
             </p>
-            {action && <div className="mt-5">{action}</div>}
+            {action && <div className="mt-6">{action}</div>}
         </div>
     );
 }
