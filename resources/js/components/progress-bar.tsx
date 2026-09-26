@@ -65,14 +65,12 @@ export function ProgressBar({
             >
                 <div
                     className={cn(
-                        'h-full rounded-full',
+                        'bar-grow h-full rounded-full',
                         TONE_FILL[tone],
                         barClassName,
                     )}
                     style={{
                         width: `${pct}%`,
-                        animation:
-                            'bar-grow 0.7s cubic-bezier(0.22, 1, 0.36, 1) both',
                     }}
                 />
             </div>
