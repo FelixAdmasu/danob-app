@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreInquiryRequest;
 use App\Models\Inquiry;
+use App\Models\Customer;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Services\AlertService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
@@ -71,7 +73,7 @@ class InquiryController extends Controller
             'status' => ['nullable', 'string', Rule::in(Inquiry::STATUSES)],
         ]);
 
-        $inquiries = Inquiry::with(['assignee', 'product', 'variant'])
+        $inquiries = Inquiry::with(['assignee', 'product', 'variant', 'customer'])
             ->when($validated['search'] ?? null, function ($query, string $search): void {
                 $query->where(function ($where) use ($search): void {
                     $where->where('name', 'like', "%{$search}%")
@@ -104,5 +106,38 @@ class InquiryController extends Controller
         $inquiry->update($validated + ['assigned_to' => $request->user()->id]);
 
         return back()->with('success', 'Inquiry updated.');
+    }
+
+    public function convertToCustomer(Request $request, Inquiry $inquiry): RedirectResponse
+    {
+        $customer = DB::transaction(function () use ($request, $inquiry): Customer {
+            if ($inquiry->customer_id) {
+                return $inquiry->customer()->firstOrFail();
+            }
+
+            $customer = null;
+            if ($inquiry->email) {
+                $customer = Customer::where('email', $inquiry->email)->lockForUpdate()->first();
+            }
+
+            $customer ??= Customer::create([
+                'type' => $inquiry->interest === 'Wholesale Order' ? 'business' : 'individual',
+                'contact_name' => $inquiry->name,
+                'phone' => $inquiry->phone,
+                'email' => $inquiry->email,
+                'notes' => 'Created from website inquiry #'.$inquiry->id.'. '.$inquiry->message,
+                'is_active' => true,
+            ]);
+
+            $inquiry->update([
+                'customer_id' => $customer->id,
+                'status' => Inquiry::STATUS_CONVERTED,
+                'assigned_to' => $request->user()->id,
+            ]);
+
+            return $customer;
+        });
+
+        return back()->with('success', 'Inquiry converted to customer #'.$customer->id.'.');
     }
 }

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Inquiry;
 use App\Models\Category;
+use App\Models\Customer;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\User;
@@ -173,5 +174,59 @@ class InquiryTest extends TestCase
         $this->actingAs($user)
             ->get(route('admin.inquiries.index'))
             ->assertForbidden();
+    }
+
+    public function test_staff_can_convert_an_inquiry_to_a_customer(): void
+    {
+        $staff = User::factory()->create(['role' => 'staff']);
+        $inquiry = Inquiry::create([
+            'name' => 'Sunrise Bakery',
+            'email' => 'buyer@sunrise.example',
+            'phone' => '+251911111111',
+            'interest' => 'Wholesale Order',
+            'message' => 'Please open a wholesale customer account for our bakery.',
+            'source' => 'website',
+        ]);
+
+        $this->actingAs($staff)
+            ->post(route('admin.inquiries.convert-to-customer', $inquiry))
+            ->assertSessionHas('success');
+
+        $customer = Customer::where('email', 'buyer@sunrise.example')->firstOrFail();
+        $this->assertSame('business', $customer->type);
+        $this->assertDatabaseHas('inquiries', [
+            'id' => $inquiry->id,
+            'customer_id' => $customer->id,
+            'status' => Inquiry::STATUS_CONVERTED,
+            'assigned_to' => $staff->id,
+        ]);
+    }
+
+    public function test_conversion_reuses_an_existing_customer_with_the_same_email(): void
+    {
+        $staff = User::factory()->create(['role' => 'staff']);
+        $customer = Customer::create([
+            'type' => 'business',
+            'company_name' => 'Existing Bakery',
+            'email' => 'existing@example.com',
+            'is_active' => true,
+        ]);
+        $inquiry = Inquiry::create([
+            'name' => 'Existing Buyer',
+            'email' => 'existing@example.com',
+            'interest' => 'Product Inquiry',
+            'message' => 'Please send the updated product catalog.',
+            'source' => 'website',
+        ]);
+
+        $this->actingAs($staff)
+            ->post(route('admin.inquiries.convert-to-customer', $inquiry))
+            ->assertSessionHas('success');
+
+        $this->assertSame(1, Customer::where('email', 'existing@example.com')->count());
+        $this->assertDatabaseHas('inquiries', [
+            'id' => $inquiry->id,
+            'customer_id' => $customer->id,
+        ]);
     }
 }
