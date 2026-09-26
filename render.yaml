@@ -79,7 +79,12 @@ services:
           - key: SUPABASE_SECRET_ACCESS_KEY
             sync: false # Supabase → Project Settings → Storage → S3-compatible keys
 
-          # Mail — default to log until SMTP is configured
+          # Mail — default to log until SMTP is configured. This blueprint
+          # never stores mail credentials. To send real email in production,
+          # set these on the Render dashboard (Environment tab) instead:
+          #   MAIL_MAILER=smtp  (plus MAIL_HOST, MAIL_PORT, MAIL_USERNAME,
+          #   MAIL_PASSWORD, MAIL_SCHEME, MAIL_FROM_ADDRESS, MAIL_FROM_NAME).
+          # Left unset, the app keeps MAIL_MAILER=log (safe no-send default).
           - key: MAIL_MAILER
             value: log
 

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\ProductVariant;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseReceipt;
 use App\Models\PurchaseReceiptItem;
@@ -84,9 +85,58 @@ class ReceivingService
                 $lockedPo->po_number.($hasPartial ? ' has new goods received ('.$receipt->receipt_number.').' : ' was fully received ('.$receipt->receipt_number.').'),
                 route('admin.purchase-orders.show', $lockedPo),
                 AlertService::PURCHASING_ROLES,
+                $this->receivingMailContext($lockedPo, $receipt, $hasPartial),
             );
 
             return $receipt->load('items');
         });
+    }
+
+    /**
+     * Phase 29 — structured detail for the internal receiving email: who
+     * supplied, what arrived in this receipt and what is still outstanding.
+     * All values are read back from the records the transaction just wrote;
+     * none of the receiving logic above is duplicated or re-decided here.
+     *
+     * @return array<string, string|array<int, string>>
+     */
+    private function receivingMailContext(PurchaseOrder $po, PurchaseReceipt $receipt, bool $hasPartial): array
+    {
+        $receipt->loadMissing('items.variant.product');
+        $po->loadMissing('supplier');
+
+        $received = [];
+        foreach ($receipt->items as $receiptItem) {
+            $received[] = $this->variantLabel($receiptItem->variant).' × '.$receiptItem->quantity;
+        }
+
+        $context = [
+            'Supplier' => $po->supplier->name,
+            'Status' => $hasPartial ? 'Partially received' : 'Fully received',
+            'Receipt' => $receipt->receipt_number,
+            'Received this receipt' => $received === [] ? ['nothing'] : $received,
+        ];
+
+        $outstanding = [];
+        foreach ($po->items as $poItem) {
+            if ($poItem->remaining > 0) {
+                $outstanding[] = $this->variantLabel($poItem->variant).' — '.$poItem->remaining.' of '.$poItem->quantity.' outstanding';
+            }
+        }
+
+        if ($outstanding !== []) {
+            $context['Still outstanding'] = $outstanding;
+        }
+
+        return $context;
+    }
+
+    private function variantLabel(?ProductVariant $variant): string
+    {
+        if (! $variant) {
+            return 'Removed variant';
+        }
+
+        return $variant->product ? $variant->product->name.' — '.$variant->name : $variant->name;
     }
 }

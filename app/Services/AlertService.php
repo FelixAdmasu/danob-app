@@ -25,7 +25,10 @@ use Illuminate\Support\Facades\DB;
  *     at a page its recipient is authorized to open.
  *  3. HOW — delivery is deferred with DB::afterCommit() and every step is
  *     best-effort: an alert is a side effect and can never roll back or
- *     fail the business transaction that produced it.
+ *     fail the business transaction that produced it. Phase 29: the same
+ *     dispatch also carries the mail-only $context rows, so the alert
+ *     families listed in AlertNotification::MAIL_TYPES reach the same
+ *     role-based recipients by email under the identical guarantees.
  */
 class AlertService
 {
@@ -42,14 +45,21 @@ class AlertService
      * Persist one alert for every authorized user. Delivered after the
      * outermost transaction commits (immediately when none is open);
      * never throws.
+     *
+     * $context is Phase 29 mail-only detail (label => value rows) for the
+     * alert families that also send an email; it is ignored by the
+     * database channel, so the in-app payload stays exactly as Phase 28
+     * defined it.
+     *
+     * @param  array<string, string|array<int, string>>  $context
      */
-    public function dispatch(string $type, string $severity, string $title, string $message, ?string $url, array $roles): void
+    public function dispatch(string $type, string $severity, string $title, string $message, ?string $url, array $roles, array $context = []): void
     {
         try {
-            DB::connection()->afterCommit(function () use ($type, $severity, $title, $message, $url, $roles): void {
+            DB::connection()->afterCommit(function () use ($type, $severity, $title, $message, $url, $roles, $context): void {
                 foreach ($this->recipients($roles) as $user) {
                     try {
-                        $user->notify(new AlertNotification($type, $severity, $title, $message, $url));
+                        $user->notify(new AlertNotification($type, $severity, $title, $message, $url, $context));
                     } catch (\Throwable) {
                         // A single recipient must never break the others, and
                         // an alert must never surface as a request failure.
@@ -96,6 +106,7 @@ class AlertService
                 $label.' is out of stock.',
                 $url,
                 self::INVENTORY_ROLES,
+                $this->stockContext($variant),
             );
 
             return;
@@ -108,7 +119,25 @@ class AlertService
             $label.' has '.$variant->quantity.' left, at or below its low-stock threshold of '.$variant->low_stock_threshold.'.',
             $url,
             self::INVENTORY_ROLES,
+            $this->stockContext($variant),
         );
+    }
+
+    /**
+     * Phase 29: structured detail for the stock alert email. Values are the
+     * same authoritative fields the message already reports — nothing is
+     * recomputed here, ProductVariant::stockStatus() remains the only
+     * authority for whether an alert fires at all.
+     *
+     * @return array<string, string>
+     */
+    private function stockContext(ProductVariant $variant): array
+    {
+        return [
+            'Product' => $variant->product?->name ? $variant->product->name.' — '.$variant->name : $variant->name,
+            'On hand' => (string) $variant->quantity,
+            'Low-stock threshold' => $variant->low_stock_threshold === null ? 'not set' : (string) $variant->low_stock_threshold,
+        ];
     }
 
     /**

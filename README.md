@@ -173,4 +173,5 @@ Before considering a deployment complete:
 - `render.yaml` is the committed deployment blueprint.
 - `docs/storage.md` explains durable image storage and the production guard.
 - `docs/first-admin.md` explains safe administrator provisioning.
+- `docs/email.md` explains mail configuration, which events email whom, and the customer/internal email boundary.
 - `.github/workflows/tests.yml` is the pull-request and main-branch CI workflow.

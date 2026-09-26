@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreInquiryRequest;
-use App\Models\Inquiry;
 use App\Models\Customer;
+use App\Models\Inquiry;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Services\AlertService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
@@ -61,9 +61,47 @@ class InquiryController extends Controller
             $inquiry->name.' sent a '.$inquiry->interest.$context.'.',
             route('admin.inquiries.index'),
             AlertService::SALES_ROLES,
+            $this->inquiryMailContext($inquiry),
         );
 
         return back()->with('success', 'Thank you. Danob will be in touch soon.');
+    }
+
+    /**
+     * Phase 29 — structured detail for the internal inquiry email (a product
+     * quote request is this same event with product context attached). Plain
+     * text only: the values come from the public submission and are escaped
+     * by the mail view, so a submission can never inject markup or links.
+     *
+     * @return array<string, string|array<int, string>>
+     */
+    private function inquiryMailContext(Inquiry $inquiry): array
+    {
+        $context = [
+            'Contact' => $inquiry->name,
+            'Reply to' => $inquiry->email,
+            'Type' => $inquiry->interest,
+        ];
+
+        if ($inquiry->phone) {
+            $context['Phone'] = $inquiry->phone;
+        }
+
+        if ($inquiry->product) {
+            $context['Product'] = $inquiry->product->name;
+        }
+
+        if ($inquiry->variant) {
+            $context['Variant'] = $inquiry->variant->name.($inquiry->variant->sku ? ' ('.$inquiry->variant->sku.')' : '');
+        }
+
+        if ($inquiry->requested_quantity !== null && $inquiry->requested_quantity !== '') {
+            $context['Requested quantity'] = (string) $inquiry->requested_quantity;
+        }
+
+        $context['Message'] = $inquiry->message;
+
+        return $context;
     }
 
     public function index(Request $request): Response

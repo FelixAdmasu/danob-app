@@ -103,6 +103,10 @@ class SalesReturnService
                 AlertService::SALES_ROLES,
             );
 
+            // Phase 29: customer return email — post commit, best effort,
+            // skipped when the customer has no valid address.
+            app(TransactionalEmailService::class)->returnProcessed($return);
+
             return $return->load('items');
         });
     }

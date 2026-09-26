@@ -85,6 +85,10 @@ class OrderService
                 AlertService::SALES_ROLES,
             );
 
+            // Phase 29: customer receipt email, same guarantees — post
+            // commit, best effort, skipped when no valid customer email.
+            app(TransactionalEmailService::class)->orderCreated($order);
+
             return $order->load('items');
         });
     }
@@ -178,6 +182,10 @@ class OrderService
                 AlertService::SALES_ROLES,
             );
 
+            // Phase 29: customer confirmation email (same post-commit,
+            // never-failing side-effect rules as the alert above).
+            app(TransactionalEmailService::class)->orderConfirmed($locked);
+
             return $locked;
         });
     }
@@ -216,6 +224,8 @@ class OrderService
                     AlertService::SALES_ROLES,
                 );
 
+                app(TransactionalEmailService::class)->orderCancelled($locked);
+
                 return $locked;
             }
 
@@ -251,6 +261,8 @@ class OrderService
                 AlertService::SALES_ROLES,
             );
 
+            app(TransactionalEmailService::class)->orderCancelled($locked);
+
             return $locked;
         });
     }
@@ -274,6 +286,9 @@ class OrderService
             route('admin.orders.show', $delivered),
             AlertService::SALES_ROLES,
         );
+
+        // Phase 29: customer delivery email — post commit, best effort.
+        app(TransactionalEmailService::class)->orderDelivered($delivered);
 
         return $delivered;
     }
